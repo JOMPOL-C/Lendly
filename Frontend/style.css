@@ -4,13 +4,17 @@ body{
     align-items: center;
     min-height: 100vh;
 }
-
+.wrapper{
+    display: block;
+    padding: 40px;
+}
 .input-box{
     display: flex;
-    justify-content: space-around;
     flex-wrap: wrap;
+    gap: 10px;
 }
 .input-field{
+    display: flex;
     position: relative;
     width: 100%;
     height: 40px;
@@ -35,8 +39,17 @@ body{
             margin-top: 10px;
         }
 
-@media (max-width:576px) {
-    .input-box .input-field{
-        width: 100%;
+@media (max-width:960px) {
+    .logo{
+        display: none;
     }
+}
+
+.btn{
+    background-color: darkslateblue;
+    color: #fff;
+    width: 100%;
+    height: 100%;
+    border-radius: 10px;
+    border: 2px solid rgba(0, 0, 0, .2);
 }

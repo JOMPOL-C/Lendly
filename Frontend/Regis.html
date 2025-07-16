@@ -15,38 +15,41 @@
         <form id="RegisForm">
             <h1>สมัครบัญชี Lendly</h1>
 
-            <div>
-                <div>
-                    <input type="text" placeholder="Name" name="name" id="name" >
+            <div class="input-box">
+                <div class="input-field">
+                    <input type="text" placeholder="ชื่อ" name="name" id="name" >
                 </div>
-                <div>
-                    <input type="text" placeholder="Lastname" name="lastname" id="lastname" >
+                <div class="input-field">
+                    <input type="text" placeholder="นามสกุล" name="lastname" id="lastname" >
                 </div>
             </div>
 
-            <div>
-                    <input type="text" placeholder="Username" name="username" id="username" >
-                    <i class='bxr  bx-user'  ></i> 
+            
+            <div class="input-box">
+                <div class="input-field">
+                    <input type="text" placeholder="ชื่อผู้ใช้" name="username" id="username" >
+                    <i class='bxr  bx-user'  ></i>
+                </div>
             </div>
 
-             <div>
-                <div>
-                    <input type="number" placeholder="Phone" name="phone" id="phone" >
+             <div class="input-box">
+                <div class="input-field">
+                    <input type="number" placeholder="เบอร์โทรศัพท์" name="phone" id="phone" >
                     <i class='bxr  bx-phone'  ></i> 
                 </div>
-                <div>
-                    <input type="email" placeholder="Email" name="email" id="email" >
+                <div class="input-field">
+                    <input type="email" placeholder="อีเมล" name="email" id="email" >
                     <i class='bxr  bx-envelope'  ></i> 
                 </div>
             </div>
 
-            <div>
-                <div>
-                    <input type="password" placeholder="Password" name="password" id="password" >
+            <div  class="input-box">
+                <div class="input-field">
+                    <input type="password" placeholder="รหัสผ่าน" name="password" id="password" >
                     <i class='bxr  bx-lock'  ></i> 
                 </div>
-                <div>
-                    <input type="password" placeholder="ConfirmPassword" name="confirm_password" id="confirm_password" >
+                <div class="input-field">
+                    <input type="password" placeholder="ยืนยันรหัสผ่าน" name="confirm_password" id="confirm_password" >
                     <i class='bxr  bx-lock'  ></i> 
                 </div>
             </div>
@@ -56,7 +59,11 @@
                 <a href="#">ข้อตกลง และเงื่อนไข</a>
             </label>
 
-            <button type="submit" class="btn">สมัครบัญชี</button>
+            <div class="input-box">
+                <div class="input-field">
+                    <button id="submitBtn" type="submit" class="btn">สมัครบัญชี</button>
+                </div>
+            </div>
             <p id="error"></p>
         </form>
     </div>

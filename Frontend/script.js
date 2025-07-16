@@ -8,7 +8,7 @@ document.getElementById('RegisForm').addEventListener("submit", function(e) {
     const email = document.getElementById('email').value.trim();
     const password = document.getElementById('password').value.trim();
     const confirm_password = document.getElementById('confirm_password').value.trim();
-    const confirm = document.getElementById('confirm').value.trim();
+    const confirm = document.getElementById('confirm').checked;
     const errorMsg = document.getElementById("error");
 
     let errors = [];
@@ -29,7 +29,7 @@ document.getElementById('RegisForm').addEventListener("submit", function(e) {
         errors.push("กรุณากรอกรหัสผ่าน");
     }
 
-    if (password === "") {
+    if (confirm_password === "") {
         errors.push("กรุณายืนยันรหัสผ่าน");
     }
 
