@@ -1,7 +1,7 @@
 ![Logo](LogoLenedly-removebg-preview.png)
 
 
-# Project Lendly
+# LENDLY
 
 เว็บไซต์ให้บริการ ซื้อขาย และ เช่าชุด
 
