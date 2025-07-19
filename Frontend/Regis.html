@@ -11,7 +11,7 @@
     <link href='https://cdn.boxicons.com/fonts/basic/boxicons.min.css' rel='stylesheet'>
 </head>
 <body>
-    <div>
+    <div class="wrapper">
         <form id="RegisForm">
             <h1>สมัครบัญชี Lendly</h1>
 
@@ -22,17 +22,13 @@
                 <div class="input-field">
                     <input type="text" placeholder="นามสกุล" name="lastname" id="lastname" >
                 </div>
-            </div>
 
-            
-            <div class="input-box">
                 <div class="input-field">
                     <input type="text" placeholder="ชื่อผู้ใช้" name="username" id="username" >
                     <i class='bxr  bx-user'  ></i>
                 </div>
-            </div>
 
-             <div class="input-box">
+            
                 <div class="input-field">
                     <input type="number" placeholder="เบอร์โทรศัพท์" name="phone" id="phone" >
                     <i class='bxr  bx-phone'  ></i> 
@@ -41,9 +37,9 @@
                     <input type="email" placeholder="อีเมล" name="email" id="email" >
                     <i class='bxr  bx-envelope'  ></i> 
                 </div>
-            </div>
+            
 
-            <div  class="input-box">
+            
                 <div class="input-field">
                     <input type="password" placeholder="รหัสผ่าน" name="password" id="password" >
                     <i class='bxr  bx-lock'  ></i> 
@@ -54,10 +50,12 @@
                 </div>
             </div>
 
-            <label for="termsCheck" class="form-check-label">
+            <div style="margin-top: 10px;">
+                <label for="termsCheck" class="form-check-label">
                 <input type="checkbox" name="confirm" id="confirm"> ยอมรับ
                 <a href="#">ข้อตกลง และเงื่อนไข</a>
             </label>
+            </div>
 
             <div class="input-box">
                 <div class="input-field">
