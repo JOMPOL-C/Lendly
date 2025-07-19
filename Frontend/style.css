@@ -4,6 +4,7 @@ body{
     align-items: center;
     min-height: 100vh;
     background-color: #f4f4f4;
+    padding: 40px;
 }
 
 .wrapper{
@@ -17,19 +18,17 @@ body{
     width: 100%;
     max-width: 400px;
 }
-header {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 50px;
-}
-.wrapper header{
+
+.wrapper .otp-icon{
     height: 65px;
     width: 65px;
-    background-color:  darkslateblue;
+    background-color: darkslateblue;
     color: white;
     font-size: 2.5rem;
     border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 a{
     color: darkslateblue;
