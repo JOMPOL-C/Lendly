@@ -1,4 +1,4 @@
-![Logo](LogoLenedly-removebg-preview.png)
+![Logo](LENDLY_logo.png)
 
 
 # LENDLY
