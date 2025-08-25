@@ -5,28 +5,33 @@ const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const bcrypt = require('bcryptjs');
-const path = require('path');
-const e = require('cors');
-
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+const cors = require('cors');
 
 const app = express();
-const port = 3000;
+app.use(express.json());
+app.use(cors({
+    credentials: true,
+    origin: ['http://localhost:8888',]
+}))
+app.use(cookieParser());
 
-const connection = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: 'root',
-    database: 'Lendly'
+app.use(session({
+    secret: 'secret_key',
+    resave: false,
+    saveUninitialized: true,
+}));
+
+const port = 8000;
+const secret = 'mysecret';
+
+app.get('/api', (req, res) => {
+    res.json({ message: 'Welcome to the Lendly API!' });
 });
 
-connection.connect((err) => {
-    if (err) {
-        console.error('Error connecting to the database:', err);
-        return;
-    }
-    console.log('Connected to the MySQL database');
+app.listen(port, async () => {
+    console.log(`Server running on http://localhost:${port}`);
 });
 
-app.use(express.static(path.join(__dirname, 'public')));
+//API Routes
+const registerRouter = require('./router/api/register');
+app.use('/api/register', registerRouter);

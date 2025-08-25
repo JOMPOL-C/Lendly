@@ -1,0 +1,292 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Customer {
+  customer_id            String      @id @db.VarChar(9) @default(dbgenerated())
+  fk_customer_proportion String?     @db.VarChar(9)
+  name                   String      @db.VarChar(45)
+  last_name              String      @db.VarChar(45)
+  customer_email         String?     @unique(map: "customer_email_UNIQUE") @db.VarChar(45)
+  customer_phone         String?     @unique(map: "customer_phone_UNIQUE") @db.VarChar(10)
+  address                String?     @db.VarChar(255)
+  id_card_number         String?     @unique(map: "id_card_number") @db.VarChar(13)
+  card_image             Bytes?      @db.Blob
+  username               String      @unique(map: "username_UNIQUE") @db.VarChar(30)
+  password               String      @db.VarChar(255)
+  createdAt              DateTime    @default(now()) @map("customer_datetime") @db.DateTime(0)
+  Calender               Calender[]
+  Chat                   Chat[]
+  Proportion             Proportion? @relation(fields: [fk_customer_proportion], references: [proportion_id], map: "fk_customer_proportion")
+  Order                  Order[]
+  Review                 Review[]
+
+  @@index([fk_customer_proportion], map: "_idx")
+}
+
+model Bank {
+  bank_id   String    @id @db.VarChar(9)
+  bank_name String?   @db.VarChar(45)
+  Payment   Payment[]
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model Calender {
+  rental_id            String                  @id @db.VarChar(9)
+  fk_calender_customer String?                 @db.VarChar(9)
+  fk_calender_product  String?                 @db.VarChar(9)
+  rental_date          DateTime?               @default(now()) @db.DateTime(0)
+  rental_end_date      DateTime?               @default(now()) @db.DateTime(0)
+  rental_status        Calender_rental_status?
+  Customer             Customer?               @relation(fields: [fk_calender_customer], references: [customer_id], onDelete: Restrict, map: "fk_calender_customer")
+  Product              Product?                @relation(fields: [fk_calender_product], references: [product_id], onDelete: Restrict, map: "fk_calender_product")
+  Report               Report[]
+
+  @@index([fk_calender_customer], map: "FK_customer_id_idx")
+  @@index([fk_calender_product], map: "FK_product_id")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model Category {
+  category_id   String    @id @db.VarChar(9)
+  category_name String    @db.VarChar(45)
+  Product       Product[]
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model Chat {
+  chat_id          String    @id @db.VarChar(9)
+  fk_chat_customer String?   @db.VarChar(9)
+  fk_chat_store    String?   @db.VarChar(9)
+  chat_detail      String?   @db.Text
+  chat_datetime    DateTime? @default(now()) @db.DateTime(0)
+  Customer         Customer? @relation(fields: [fk_chat_customer], references: [customer_id], onDelete: NoAction, map: "fk_chat_customer")
+  Store            Store?    @relation(fields: [fk_chat_store], references: [store_id], onDelete: NoAction, map: "fk_chat_store")
+
+  @@index([fk_chat_customer], map: "FK_customer_id")
+  @@index([fk_chat_store], map: "fk_chat_store_idx")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model County {
+  county_id   String    @id @db.VarChar(9)
+  county_name String    @db.VarChar(40)
+  Product     Product[]
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model Order {
+  order_id          String     @id @db.VarChar(9)
+  fk_order_customer String?    @db.VarChar(9)
+  total_price       Decimal    @db.Decimal(10, 2)
+  deposit_amount    Decimal?   @db.Decimal(10, 2)
+  Customer          Customer?  @relation(fields: [fk_order_customer], references: [customer_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_order_customer")
+  Payment           Payment[]
+  Shipping          Shipping[]
+
+  @@index([fk_order_customer], map: "fk_order_customer_idx")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model Payment {
+  payment_id       String          @id @db.VarChar(9)
+  fk_payment_order String?         @db.VarChar(9)
+  fk_payment_pmt   String?         @db.VarChar(9)
+  fk_payment_bank  String?         @db.VarChar(9)
+  payment_date     DateTime?       @default(now()) @db.DateTime(0)
+  payment_amounf   Decimal         @db.Decimal(10, 2)
+  payment_proof    Bytes?          @db.Blob
+  Bank             Bank?           @relation(fields: [fk_payment_bank], references: [bank_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_payment_bank")
+  Order            Order?          @relation(fields: [fk_payment_order], references: [order_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_payment_order")
+  Payment_method   Payment_method? @relation(fields: [fk_payment_pmt], references: [payment_method_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_payment_pmt")
+
+  @@index([fk_payment_bank], map: "fk_payment_bank_idx")
+  @@index([fk_payment_order], map: "fk_payment_order_idx")
+  @@index([fk_payment_pmt], map: "fk_payment_pmt_idx")
+}
+
+model Payment_method {
+  payment_method_id   String    @id @db.VarChar(9)
+  payment_method_name String?   @db.VarChar(45)
+  Payment             Payment[]
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model Product {
+  product_id          String              @id @db.VarChar(9)
+  fk_product_store    String?             @db.VarChar(9)
+  fk_product_pp       String?             @db.VarChar(9)
+  fk_product_category String?             @db.VarChar(9)
+  fk_product_county   String?             @db.VarChar(9)
+  product_name        String              @db.VarChar(45)
+  price               Decimal             @db.Decimal(10, 2)
+  shipping_info       String?             @db.VarChar(255)
+  rental_period       DateTime            @default(now()) @db.DateTime(0)
+  Calender            Calender[]
+  Category            Category?           @relation(fields: [fk_product_category], references: [category_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_product_category")
+  County              County?             @relation(fields: [fk_product_county], references: [county_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_product_county")
+  Proportion_product  Proportion_product? @relation(fields: [fk_product_pp], references: [proportion_product_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_product_pp")
+  Store               Store?              @relation(fields: [fk_product_store], references: [store_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_product_store")
+  Report              Report[]
+  Review              Review[]
+
+  @@index([fk_product_category], map: "category_id_idx")
+  @@index([fk_product_county], map: "county_id_idx")
+  @@index([fk_product_pp], map: "fk_product_pp_idx")
+  @@index([fk_product_store], map: "store_id_idx")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model Proportion {
+  proportion_id String     @id @db.VarChar(9)
+  chest         Decimal?   @db.Decimal(5, 1)
+  waist         Decimal?   @db.Decimal(5, 1)
+  hips          Decimal?   @db.Decimal(5, 1)
+  Customer      Customer[]
+}
+
+model Proportion_product {
+  proportion_product_id String    @id @db.VarChar(9)
+  chest                 Decimal?  @db.Decimal(5, 1)
+  waist                 Decimal?  @db.Decimal(5, 1)
+  hips                  Decimal?  @db.Decimal(5, 1)
+  Product               Product[]
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model Report {
+  report_id         String    @id @db.VarChar(9)
+  fk_report_product String?   @db.VarChar(9)
+  fk_report_rental  String?   @db.VarChar(9)
+  report_topics     String    @db.Text
+  report_detail     String?   @db.Text
+  report_file       Bytes?    @db.Blob
+  report_fine       Decimal?  @db.Decimal(10, 2)
+  report_datetime   DateTime? @default(now()) @db.DateTime(0)
+  Product           Product?  @relation(fields: [fk_report_product], references: [product_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_report_product")
+  Calender          Calender? @relation(fields: [fk_report_rental], references: [rental_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_report_rental")
+
+  @@index([fk_report_product], map: "fk_report_product_idx")
+  @@index([fk_report_rental], map: "fk_report_rental_idx")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model Review {
+  review_id          String    @id @db.VarChar(9)
+  fk_review_customer String?   @db.VarChar(9)
+  fk_review_product  String?   @db.VarChar(9)
+  review_details     String?   @db.Text
+  review_datetime    DateTime? @default(now()) @db.DateTime(0)
+  review_score       Int       @db.TinyInt
+  review_file        Bytes?    @db.Blob
+  Customer           Customer? @relation(fields: [fk_review_customer], references: [customer_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_review_customer")
+  Product            Product?  @relation(fields: [fk_review_product], references: [product_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_review_product")
+
+  @@index([fk_review_customer], map: "fk_review_customer_idx")
+  @@index([fk_review_product], map: "fk_review_product_idx")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model Shipping {
+  shipping_id       String                    @id @db.VarChar(9)
+  fk_shipping_order String?                   @db.VarChar(9)
+  tracking          String                    @db.VarChar(13)
+  shipping_date     DateTime?                 @db.DateTime(0)
+  shipping_status   Shipping_shipping_status?
+  shipping_name     String?                   @db.VarChar(45)
+  shipping_end_date DateTime?                 @default(now()) @db.DateTime(0)
+  Order             Order?                    @relation(fields: [fk_shipping_order], references: [order_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_shipping_order")
+
+  @@index([fk_shipping_order], map: "fk_shipping_order_idx")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model Store {
+  store_id    String    @id @db.VarChar(9)
+  store_name  String    @db.VarChar(45)
+  store_email String?   @db.VarChar(45)
+  store_phone String?   @db.VarChar(10)
+  Chat        Chat[]
+  Product     Product[]
+}
+
+model bank_seq {
+  id_bank Int @id @default(autoincrement())
+}
+
+model calender_seq {
+  id_calender Int @id @default(autoincrement())
+}
+
+model category_seq {
+  id_category Int @id @default(autoincrement())
+}
+
+model chat_seq {
+  id_chat Int @id @default(autoincrement())
+}
+
+model county_seq {
+  id_county Int @id @default(autoincrement())
+}
+
+model customer_seq {
+  id_c Int @id @default(autoincrement())
+}
+
+model order_seq {
+  id_order Int @id @default(autoincrement())
+}
+
+model payment_method_seq {
+  id_pay_method Int @id @default(autoincrement())
+}
+
+model payment_seq {
+  id_payment Int @id @default(autoincrement())
+}
+
+model product_seq {
+  id_p Int @id @default(autoincrement())
+}
+
+model proportion_product_seq {
+  id_pp_product Int @id @default(autoincrement())
+}
+
+model proportion_seq {
+  id_pp Int @id @default(autoincrement())
+}
+
+model report_seq {
+  id_report Int @id @default(autoincrement())
+}
+
+model review_seq {
+  id_review Int @id @default(autoincrement())
+}
+
+model shipping_seq {
+  id_post Int @id @default(autoincrement())
+}
+
+model store_seq {
+  id_s Int @id @default(autoincrement())
+}
+
+enum Shipping_shipping_status {
+  IN_PROGRESS @map("กำลังจัดส่ง")
+  DELIVERED   @map("จัดส่งสำเร็จ")
+}
+
+enum Calender_rental_status {
+  PENDING_PAYMENT @map("รอชำระเงิน")
+  RENTING         @map("กำลังเช่า")
+  RETURNED        @map("คืนแล้ว")
+  CANCELED        @map("ยกเลิก")
+}
