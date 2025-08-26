@@ -7,60 +7,35 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Customer {
-  customer_id            String      @id @db.VarChar(9) @default(dbgenerated())
-  fk_customer_proportion String?     @db.VarChar(9)
-  name                   String      @db.VarChar(45)
-  last_name              String      @db.VarChar(45)
-  customer_email         String?     @unique(map: "customer_email_UNIQUE") @db.VarChar(45)
-  customer_phone         String?     @unique(map: "customer_phone_UNIQUE") @db.VarChar(10)
-  address                String?     @db.VarChar(255)
-  id_card_number         String?     @unique(map: "id_card_number") @db.VarChar(13)
-  card_image             Bytes?      @db.Blob
-  username               String      @unique(map: "username_UNIQUE") @db.VarChar(30)
-  password               String      @db.VarChar(255)
-  createdAt              DateTime    @default(now()) @map("customer_datetime") @db.DateTime(0)
-  Calender               Calender[]
-  Chat                   Chat[]
-  Proportion             Proportion? @relation(fields: [fk_customer_proportion], references: [proportion_id], map: "fk_customer_proportion")
-  Order                  Order[]
-  Review                 Review[]
-
-  @@index([fk_customer_proportion], map: "_idx")
-}
-
 model Bank {
-  bank_id   String    @id @db.VarChar(9)
+  bank_id   String    @id @default(dbgenerated()) @db.VarChar(9)
   bank_name String?   @db.VarChar(45)
   Payment   Payment[]
 }
 
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model Calender {
-  rental_id            String                  @id @db.VarChar(9)
-  fk_calender_customer String?                 @db.VarChar(9)
-  fk_calender_product  String?                 @db.VarChar(9)
-  rental_date          DateTime?               @default(now()) @db.DateTime(0)
-  rental_end_date      DateTime?               @default(now()) @db.DateTime(0)
-  rental_status        Calender_rental_status?
-  Customer             Customer?               @relation(fields: [fk_calender_customer], references: [customer_id], onDelete: Restrict, map: "fk_calender_customer")
-  Product              Product?                @relation(fields: [fk_calender_product], references: [product_id], onDelete: Restrict, map: "fk_calender_product")
+  rental_id            String        @id @default(dbgenerated()) @db.VarChar(9)
+  fk_calender_customer String?       @db.VarChar(9)
+  fk_calender_product  String?       @db.VarChar(9)
+  rental_date          DateTime?     @default(now()) @db.DateTime(0)
+  rental_end_date      DateTime?     @default(now()) @db.DateTime(0)
+  rental_status        RentalStatus?
+  Customer             Customer?     @relation(fields: [fk_calender_customer], references: [customer_id], onDelete: Restrict, map: "fk_calender_customer")
+  Product              Product?      @relation(fields: [fk_calender_product], references: [product_id], onDelete: Restrict, map: "fk_calender_product")
   Report               Report[]
 
   @@index([fk_calender_customer], map: "FK_customer_id_idx")
   @@index([fk_calender_product], map: "FK_product_id")
 }
 
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model Category {
-  category_id   String    @id @db.VarChar(9)
+  category_id   String    @id @default(dbgenerated()) @db.VarChar(9)
   category_name String    @db.VarChar(45)
   Product       Product[]
 }
 
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model Chat {
-  chat_id          String    @id @db.VarChar(9)
+  chat_id          String    @id @default(dbgenerated()) @db.VarChar(9)
   fk_chat_customer String?   @db.VarChar(9)
   fk_chat_store    String?   @db.VarChar(9)
   chat_detail      String?   @db.Text
@@ -72,16 +47,36 @@ model Chat {
   @@index([fk_chat_store], map: "fk_chat_store_idx")
 }
 
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model County {
-  county_id   String    @id @db.VarChar(9)
+  county_id   String    @id @default(dbgenerated()) @db.VarChar(9)
   county_name String    @db.VarChar(40)
   Product     Product[]
 }
 
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model Customer {
+  customer_id            String      @id @default(dbgenerated()) @db.VarChar(9)  
+  fk_customer_proportion String?     @db.VarChar(9)
+  name                   String      @db.VarChar(45)
+  last_name              String      @db.VarChar(45)
+  customer_email         String?     @unique(map: "customer_email_UNIQUE") @db.VarChar(45)
+  customer_phone         String?     @unique(map: "customer_phone_UNIQUE") @db.VarChar(10)
+  address                String?     @db.VarChar(255)
+  id_card_number         String?     @unique(map: "id_card_number") @db.VarChar(13)
+  card_image             Bytes?      @db.Blob
+  username               String      @unique(map: "username_UNIQUE") @db.VarChar(30)
+  password               String      @db.VarChar(255)
+  customer_datetime      DateTime    @default(now()) @db.DateTime(0)
+  Calender               Calender[]
+  Chat                   Chat[]
+  Proportion             Proportion? @relation(fields: [fk_customer_proportion], references: [proportion_id], map: "fk_customer_proportion")
+  Order                  Order[]
+  Review                 Review[]
+
+  @@index([fk_customer_proportion], map: "_idx")
+}
+
 model Order {
-  order_id          String     @id @db.VarChar(9)
+  order_id          String     @id @default(dbgenerated()) @db.VarChar(9)
   fk_order_customer String?    @db.VarChar(9)
   total_price       Decimal    @db.Decimal(10, 2)
   deposit_amount    Decimal?   @db.Decimal(10, 2)
@@ -92,9 +87,8 @@ model Order {
   @@index([fk_order_customer], map: "fk_order_customer_idx")
 }
 
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model Payment {
-  payment_id       String          @id @db.VarChar(9)
+  payment_id       String          @id @default(dbgenerated()) @db.VarChar(9)
   fk_payment_order String?         @db.VarChar(9)
   fk_payment_pmt   String?         @db.VarChar(9)
   fk_payment_bank  String?         @db.VarChar(9)
@@ -111,14 +105,13 @@ model Payment {
 }
 
 model Payment_method {
-  payment_method_id   String    @id @db.VarChar(9)
+  payment_method_id   String    @id @default(dbgenerated()) @db.VarChar(9)
   payment_method_name String?   @db.VarChar(45)
   Payment             Payment[]
 }
 
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model Product {
-  product_id          String              @id @db.VarChar(9)
+  product_id          String              @id @default(dbgenerated()) @db.VarChar(9)
   fk_product_store    String?             @db.VarChar(9)
   fk_product_pp       String?             @db.VarChar(9)
   fk_product_category String?             @db.VarChar(9)
@@ -141,9 +134,8 @@ model Product {
   @@index([fk_product_store], map: "store_id_idx")
 }
 
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model Proportion {
-  proportion_id String     @id @db.VarChar(9)
+  proportion_id String     @id @default(dbgenerated()) @db.VarChar(9)
   chest         Decimal?   @db.Decimal(5, 1)
   waist         Decimal?   @db.Decimal(5, 1)
   hips          Decimal?   @db.Decimal(5, 1)
@@ -151,16 +143,15 @@ model Proportion {
 }
 
 model Proportion_product {
-  proportion_product_id String    @id @db.VarChar(9)
+  proportion_product_id String    @id @default(dbgenerated()) @db.VarChar(9)
   chest                 Decimal?  @db.Decimal(5, 1)
   waist                 Decimal?  @db.Decimal(5, 1)
   hips                  Decimal?  @db.Decimal(5, 1)
   Product               Product[]
 }
 
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model Report {
-  report_id         String    @id @db.VarChar(9)
+  report_id         String    @id @default(dbgenerated()) @db.VarChar(9)
   fk_report_product String?   @db.VarChar(9)
   fk_report_rental  String?   @db.VarChar(9)
   report_topics     String    @db.Text
@@ -175,9 +166,8 @@ model Report {
   @@index([fk_report_rental], map: "fk_report_rental_idx")
 }
 
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model Review {
-  review_id          String    @id @db.VarChar(9)
+  review_id          String    @id @default(dbgenerated()) @db.VarChar(9)
   fk_review_customer String?   @db.VarChar(9)
   fk_review_product  String?   @db.VarChar(9)
   review_details     String?   @db.Text
@@ -191,28 +181,41 @@ model Review {
   @@index([fk_review_product], map: "fk_review_product_idx")
 }
 
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model Shipping {
-  shipping_id       String                    @id @db.VarChar(9)
-  fk_shipping_order String?                   @db.VarChar(9)
-  tracking          String                    @db.VarChar(13)
-  shipping_date     DateTime?                 @db.DateTime(0)
-  shipping_status   Shipping_shipping_status?
-  shipping_name     String?                   @db.VarChar(45)
-  shipping_end_date DateTime?                 @default(now()) @db.DateTime(0)
-  Order             Order?                    @relation(fields: [fk_shipping_order], references: [order_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_shipping_order")
+  shipping_id       String          @id @default(dbgenerated()) @db.VarChar(9)
+  fk_shipping_order String?         @db.VarChar(9)
+  tracking          String          @db.VarChar(13)
+  shipping_date     DateTime?       @db.DateTime(0)
+  shipping_status   ShippingStatus?
+  shipping_name     String?         @db.VarChar(45)
+  shipping_end_date DateTime?       @default(now()) @db.DateTime(0)
+  Order             Order?          @relation(fields: [fk_shipping_order], references: [order_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_shipping_order")
 
   @@index([fk_shipping_order], map: "fk_shipping_order_idx")
 }
 
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model Store {
-  store_id    String    @id @db.VarChar(9)
+  store_id    String    @id @default(dbgenerated()) @db.VarChar(9)
   store_name  String    @db.VarChar(45)
   store_email String?   @db.VarChar(45)
   store_phone String?   @db.VarChar(10)
   Chat        Chat[]
   Product     Product[]
+}
+
+model atlas_schema_revisions {
+  version          String   @id @db.VarChar(255)
+  description      String   @db.VarChar(255)
+  type             BigInt   @default(2) @db.UnsignedBigInt
+  applied          BigInt   @default(0)
+  total            BigInt   @default(0)
+  executed_at      DateTime @db.Timestamp(0)
+  execution_time   BigInt
+  error            String?  @db.LongText
+  error_stmt       String?  @db.LongText
+  hash             String   @db.VarChar(255)
+  partial_hashes   Json?
+  operator_version String   @db.VarChar(255)
 }
 
 model bank_seq {
@@ -279,14 +282,14 @@ model store_seq {
   id_s Int @id @default(autoincrement())
 }
 
-enum Shipping_shipping_status {
-  IN_PROGRESS @map("กำลังจัดส่ง")
-  DELIVERED   @map("จัดส่งสำเร็จ")
-}
-
-enum Calender_rental_status {
-  PENDING_PAYMENT @map("รอชำระเงิน")
+enum RentalStatus {
+  WAITING_PAYMENT @map("รอชำระเงิน")
   RENTING         @map("กำลังเช่า")
   RETURNED        @map("คืนแล้ว")
   CANCELED        @map("ยกเลิก")
+}
+
+enum ShippingStatus {
+  SHIPPING  @map("กำลังจัดส่ง")
+  DELIVERED @map("จัดส่งสำเร็จ")
 }
