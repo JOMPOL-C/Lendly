@@ -1,30 +1,12 @@
 const express = require('express');
 const router = express.Router();
 
-router.get('/products', (req, res) => {
-    res.send('List of products GET');
-});
+const { create, list, read, update, remove } = require('../Controllers/product');
 
-router.get('/products/:productId', (req, res) => {
-    const { productId } = req.params;
-    console.log(productId);
-    res.send(`Get product with ID: ${productId}`);
-});
-
-router.post('/products',(req, res) => {
-    res.send('Create a new product POST');
-});
-
-router.put('/products/:productId',(req, res) => {
-    const { productId } = req.params;
-    console.log(productId);
-    res.send('Update a product PUT');
-});
-
-router.delete('/products/:productId',(req, res) => {
-    const { productId } = req.params;
-    console.log(productId);
-    res.send('Delete a product DELETE');
-});
+router.get('/products',list);
+router.post('/products',create);
+router.get('/products/:productId',read);
+router.put('/products/:productId',update);
+router.delete('/products/:productId',remove);
 
 module.exports = router;
