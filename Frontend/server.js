@@ -1,0 +1,31 @@
+const express = require("express");
+const path = require("path");
+const app = express();
+const port = 3000;
+
+app.use(express.static(path.join(__dirname, "public")));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+app.set("view engine", "ejs");
+app.set("views", path.join(__dirname, "views"));
+
+//const adminRouter = require("./router/admin");
+
+//app.use("/admin", adminRouter);
+
+
+// ---------- Page render ----------
+app.get("/", (req, res) => {
+  try {
+    //res.sendFile(path.join(__dirname, "../views/main.html"));
+    res.render("home");
+  } catch (error) {
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+
+app.listen(port, () => {
+  console.log(`Server running at http://localhost:${port}`);
+});
