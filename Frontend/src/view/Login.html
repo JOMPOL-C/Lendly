@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta 
+    name="viewport" 
+    content="width=device-width, initial-scale=1.0">
+    <title>Lendly</title>
+    <link rel="stylesheet" href="/styles/style.css">
+    <script  src="script.js" defer></script>
+    <link href='https://cdn.boxicons.com/fonts/basic/boxicons.min.css' rel='stylesheet'>
+</head>
+<body>
+    <div class="logo">
+        <img src="LogoLenedly-removebg-preview.png">
+    </div>
+    <div class="wrapper">
+        <form id="RegisForm">
+            <h1>Lendly</h1>
+            <div class="input-box">
+                <div class="input-field">
+                    <input type="text" placeholder="ชื่อผู้ใช้" name="username" id="username" >
+                    <i class='bxr  bx-user'  ></i>
+                </div>
+            </div>
+
+            <div class="input-box">
+                <div class="input-field">
+                    <input type="password" placeholder="รหัสผ่าน" name="password" id="password" >
+                    <i class='bxr  bx-lock'  ></i> 
+                </div>
+            </div>
+
+            <div class="input-box">
+                <div  class="input-field">
+                    <button id="submitBtn" type="submit" class="btn">เข้าสู่ระบบ</button>
+                    <p id="error"></p>
+                </div>
+            </div>  
+        </form>
+
+        <hr class="my-5">
+
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 10px;">
+        
+        <a href="forgetPassword.html">ลืมรหัสผ่านใช่ไหม</a>
+
+        <div style="display: flex; align-items: center; gap: 5px;">
+            <p style="margin: 0;">ไม่มีบัญชีใช่ไหม</p>
+            <a href="Regis.html">สมัครบัญชี</a>
+        </div>
+        </div>
+    </div>
+</body>
+</html>
