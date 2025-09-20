@@ -1,6 +1,6 @@
 const prisma = require('../prisma/prisma');
 
-exports.create = async (req, res) => {
+exports.createProduct = async (req, res) => {
 try {
     const { product_name, price } = req.body
     const newProduct = await prisma.product.create({
@@ -15,7 +15,7 @@ try {
 }
 };
 
-exports.list = async (req, res) => {
+exports.listProduct = async (req, res) => {
     try {
         res.send('Controllers LIST');
     } catch(err) {
@@ -23,7 +23,7 @@ exports.list = async (req, res) => {
     }
 };
 
-exports.read = async (req, res) => {
+exports.readProduct = async (req, res) => {
     try {
     const { productId } = req.params;
     console.log(productId);
@@ -33,7 +33,7 @@ exports.read = async (req, res) => {
     }
 };
 
-exports.update = async (req, res) => {
+exports.updateProduct = async (req, res) => {
     try {
     res.send('Controllers UPDATE');
     } catch(err) {
@@ -41,7 +41,7 @@ exports.update = async (req, res) => {
     }
 };
 
-exports.remove = async (req, res) => {
+exports.removeProduct = async (req, res) => {
     try {
     res.send('Controllers DELETE');
     } catch(err) {

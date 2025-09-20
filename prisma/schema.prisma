@@ -9,15 +9,15 @@ datasource db {
 }
 
 model Bank {
-  bank_id   String  @id @db.VarChar(9)
+  bank_id   Int     @id @default(autoincrement())
   bank_name String? @db.VarChar(45)
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model Calender {
-  rental_id            String                  @id @db.VarChar(9)
-  fk_calender_customer String?                 @db.VarChar(9)
-  fk_calender_product  String?                 @db.VarChar(9)
+  rental_id            Int                     @id @default(autoincrement())
+  fk_calender_customer Int
+  fk_calender_product  Int
   rental_date          DateTime?               @default(now()) @db.DateTime(0)
   rental_end_date      DateTime?               @default(now()) @db.DateTime(0)
   rental_status        Calender_rental_status?
@@ -28,15 +28,17 @@ model Calender {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model Category {
-  category_id   String @id @db.VarChar(9)
-  category_name String @db.VarChar(45)
+  category_id       String   @id @db.VarChar(9)
+  category_name     String   @db.VarChar(45)
+  category_datetime DateTime @default(now()) @db.DateTime(0)
+  category_update   DateTime @updatedAt
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model Chat {
-  chat_id          String    @id @db.VarChar(9)
-  fk_chat_customer String?   @db.VarChar(9)
-  fk_chat_store    String?   @db.VarChar(9)
+  chat_id          Int       @id @default(autoincrement())
+  fk_chat_customer Int
+  fk_chat_store    Int
   chat_detail      String?   @db.Text
   chat_datetime    DateTime? @default(now()) @db.DateTime(0)
 
@@ -46,14 +48,14 @@ model Chat {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model County {
-  county_id   String @id @db.VarChar(9)
+  county_id   Int    @id @default(autoincrement())
   county_name String @db.VarChar(40)
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model Customer {
-  customer_id            String   @id @db.VarChar(9)
-  fk_customer_proportion String?  @db.VarChar(9)
+  customer_id            Int      @id @default(autoincrement())
+  fk_customer_proportion Int?
   name                   String   @db.VarChar(45)
   last_name              String   @db.VarChar(45)
   customer_email         String?  @unique(map: "customer_email_UNIQUE") @db.VarChar(45)
@@ -71,8 +73,8 @@ model Customer {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model Order {
-  order_id          String   @id @db.VarChar(9)
-  fk_order_customer String?  @db.VarChar(9)
+  order_id          Int      @id @default(autoincrement())
+  fk_order_customer Int
   total_price       Decimal  @db.Decimal(10, 2)
   deposit_amount    Decimal? @db.Decimal(10, 2)
 
@@ -81,10 +83,10 @@ model Order {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model Payment {
-  payment_id       String    @id @db.VarChar(9)
-  fk_payment_order String?   @db.VarChar(9)
-  fk_payment_pmt   String?   @db.VarChar(9)
-  fk_payment_bank  String?   @db.VarChar(9)
+  payment_id       Int       @id @default(autoincrement())
+  fk_payment_order Int
+  fk_payment_pmt   Int
+  fk_payment_bank  Int
   payment_date     DateTime? @default(now()) @db.DateTime(0)
   payment_amounf   Decimal   @db.Decimal(10, 2)
   payment_proof    Bytes?    @db.Blob
@@ -95,17 +97,17 @@ model Payment {
 }
 
 model Payment_method {
-  payment_method_id   String  @id @db.VarChar(9)
+  payment_method_id   Int     @id @default(autoincrement())
   payment_method_name String? @db.VarChar(45)
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model Product {
-  product_id          String   @id @default(autoincrement()) @db.VarChar(9) 
-  fk_product_store    String?  @db.VarChar(9)
-  fk_product_pp       String?  @db.VarChar(9)
-  fk_product_category String?  @db.VarChar(9)
-  fk_product_county   String?  @db.VarChar(9)
+  product_id          Int      @id @default(autoincrement())
+  fk_product_store    Int
+  fk_product_pp       Int?
+  fk_product_category String   @db.VarChar(9)
+  fk_product_county   Int
   product_name        String   @db.VarChar(45)
   price               Decimal  @db.Decimal(10, 2)
   shipping_info       String?  @db.VarChar(255)
@@ -120,15 +122,15 @@ model Product {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model Proportion {
-  proportion_id            String   @id @db.VarChar(9)
-  chest                    Decimal? @db.Decimal(5, 1)
-  waist                    Decimal? @db.Decimal(5, 1)
-  hips                     Decimal? @db.Decimal(5, 1)
-  proportion_update        DateTime @updatedAt
+  proportion_id     Int      @id @default(autoincrement())
+  chest             Decimal? @db.Decimal(5, 1)
+  waist             Decimal? @db.Decimal(5, 1)
+  hips              Decimal? @db.Decimal(5, 1)
+  proportion_update DateTime @updatedAt
 }
 
 model Proportion_product {
-  proportion_product_id String   @id @db.VarChar(9)
+  proportion_product_id Int      @id @default(autoincrement())
   chest                 Decimal? @db.Decimal(5, 1)
   waist                 Decimal? @db.Decimal(5, 1)
   hips                  Decimal? @db.Decimal(5, 1)
@@ -136,9 +138,9 @@ model Proportion_product {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model Report {
-  report_id         String    @id @db.VarChar(9)
-  fk_report_product String?   @db.VarChar(9)
-  fk_report_rental  String?   @db.VarChar(9)
+  report_id         Int       @id @default(autoincrement())
+  fk_report_product Int
+  fk_report_rental  Int
   report_topics     String    @db.Text
   report_detail     String?   @db.Text
   report_file       Bytes?    @db.Blob
@@ -151,9 +153,9 @@ model Report {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model Review {
-  review_id          String    @id @db.VarChar(9)
-  fk_review_customer String?   @db.VarChar(9)
-  fk_review_product  String?   @db.VarChar(9)
+  review_id          Int       @id @default(autoincrement())
+  fk_review_customer Int
+  fk_review_product  Int
   review_details     String?   @db.Text
   review_datetime    DateTime? @default(now()) @db.DateTime(0)
   review_score       Int       @db.TinyInt
@@ -165,8 +167,8 @@ model Review {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model Shipping {
-  shipping_id       String                    @id @db.VarChar(9)
-  fk_shipping_order String?                   @db.VarChar(9)
+  shipping_id       Int                       @id @default(autoincrement())
+  fk_shipping_order Int
   tracking          String                    @db.VarChar(13)
   shipping_date     DateTime?                 @db.DateTime(0)
   shipping_status   Shipping_shipping_status?
@@ -178,74 +180,10 @@ model Shipping {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model Store {
-  store_id    String  @id @db.VarChar(9)
+  store_id    Int     @id @default(autoincrement())
   store_name  String  @db.VarChar(45)
   store_email String? @db.VarChar(45)
   store_phone String? @db.VarChar(10)
-}
-
-model bank_seq {
-  id_bank Int @id @default(autoincrement())
-}
-
-model calender_seq {
-  id_calender Int @id @default(autoincrement())
-}
-
-model category_seq {
-  id_category Int @id @default(autoincrement())
-}
-
-model chat_seq {
-  id_chat Int @id @default(autoincrement())
-}
-
-model county_seq {
-  id_county Int @id @default(autoincrement())
-}
-
-model customer_seq {
-  id_c Int @id @default(autoincrement())
-}
-
-model order_seq {
-  id_order Int @id @default(autoincrement())
-}
-
-model payment_method_seq {
-  id_pay_method Int @id @default(autoincrement())
-}
-
-model payment_seq {
-  id_payment Int @id @default(autoincrement())
-}
-
-model product_seq {
-  id_p Int @id @default(autoincrement())
-}
-
-model proportion_product_seq {
-  id_pp_product Int @id @default(autoincrement())
-}
-
-model proportion_seq {
-  id_pp Int @id @default(autoincrement())
-}
-
-model report_seq {
-  id_report Int @id @default(autoincrement())
-}
-
-model review_seq {
-  id_review Int @id @default(autoincrement())
-}
-
-model shipping_seq {
-  id_post Int @id @default(autoincrement())
-}
-
-model store_seq {
-  id_s Int @id @default(autoincrement())
 }
 
 enum Shipping_shipping_status {
@@ -259,4 +197,3 @@ enum Calender_rental_status {
   RETURNED        @map("คืนแล้ว")
   CANCELLED       @map("ยกเลิก")
 }
-

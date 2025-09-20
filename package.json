@@ -215,8 +215,10 @@
     "dev": "nodemon server.js",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "prisma db pull": "prisma pull",
-    "prisma generate": "generate"
+    "prisma:generate": "prisma generate",
+    "prisma:pull": "prisma db pull",
+    "prisma:push": "prisma db push",
+    "prisma:studio": "prisma studio"
   },
   "keywords": [],
   "author": "",
