@@ -49,6 +49,8 @@
 [![Morgan](https://img.shields.io/badge/Morgan-000000?style=for-the-badge&logo=node.js&logoColor=white)](https://www.npmjs.com/package/morgan)
 [![Chalk](https://img.shields.io/badge/Chalk-3DDC84?style=for-the-badge&logo=javascript&logoColor=black)](https://www.npmjs.com/package/chalk)
 [![Consola](https://img.shields.io/badge/Consola-2E86C1?style=for-the-badge&logo=javascript&logoColor=white)](https://github.com/unjs/consola)
+[![MySQL Workbench](https://img.shields.io/badge/MySQL_Workbench-4479A1?style=for-the-badge&logo=mysql&logoColor=white)](https://www.mysql.com/products/workbench/)
+
 
 ### Frontend
 [![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)](https://developer.mozilla.org/docs/Web/HTML)
