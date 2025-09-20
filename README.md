@@ -59,6 +59,9 @@
 ![ESLint](https://img.shields.io/badge/ESLint-4B32C3?style=for-the-badge&logo=eslint&logoColor=white)
 ![fast-check](https://img.shields.io/badge/fast--check-000000?style=for-the-badge&logo=testinglibrary&logoColor=white)
 
+### ☁️ Deployment
+![Vercel](https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)
+
 ### 💳 Payment
 ![Omise](https://img.shields.io/badge/Omise-1A6AFF?style=for-the-badge&logo=omise&logoColor=white)
 
