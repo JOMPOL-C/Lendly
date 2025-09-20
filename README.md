@@ -29,6 +29,8 @@
 ![Router](https://img.shields.io/badge/Router-000000?style=for-the-badge&logo=node.js&logoColor=white)
 ![CORS](https://img.shields.io/badge/CORS-000000?style=for-the-badge&logo=node.js&logoColor=white)
 ![express-session](https://img.shields.io/badge/express--session-000000?style=for-the-badge&logo=node.js&logoColor=white)
+![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=node.js&logoColor=white)
+
 
 ### 🗄️ Database & ORM
 ![Prisma](https://img.shields.io/badge/Prisma-2D3748?style=for-the-badge&logo=prisma&logoColor=white)
