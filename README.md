@@ -70,8 +70,7 @@
 
 ## Links
 
-[![facebook Jompol](https://img.shields.io/badge/Jompol_Chuenarrom-1877F2?style=for-the-badge&logo=facebook&logoColor=white)](https://www.facebook.com/jompol.chuenrarom.9)    
-[![github JOMPOL‐C](https://img.shields.io/badge/JOMPOL--C-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/JOMPOL-C)
+[![facebook Jompol](https://img.shields.io/badge/Jompol_Chuenarrom-1877F2?style=for-the-badge&logo=facebook&logoColor=white)](https://www.facebook.com/jompol.chuenrarom.9)    [![github JOMPOL‐C](https://img.shields.io/badge/JOMPOL--C-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/JOMPOL-C)
 
 [![facebook Pimpakarn](https://img.shields.io/badge/Pimpakarn_Wuthiweroj-1877F2?style=for-the-badge&logo=facebook&logoColor=white)](https://www.facebook.com/pimpakarn.wuthiweroj.96?locale=th_TH)
 [![github Chom‐rose](https://img.shields.io/badge/Chom--rose-ff69b4?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Chom-rose)
