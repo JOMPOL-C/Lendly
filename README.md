@@ -22,6 +22,46 @@
 - แชทบอท
 - ชำระเงินผ่าน Omise
 
+## 🚀 Tech Stack  
+
+### 🌐 Backend
+![Express.js](https://img.shields.io/badge/Express.js-9C9C9C?style=for-the-badge&logo=express&logoColor=white)
+![Router](https://img.shields.io/badge/Router-000000?style=for-the-badge&logo=node.js&logoColor=white)
+![CORS](https://img.shields.io/badge/CORS-000000?style=for-the-badge&logo=node.js&logoColor=white)
+![express-session](https://img.shields.io/badge/express--session-000000?style=for-the-badge&logo=node.js&logoColor=white)
+
+### 🗄️ Database & ORM
+![Prisma](https://img.shields.io/badge/Prisma-2D3748?style=for-the-badge&logo=prisma&logoColor=white)
+![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white)
+![MySQL2](https://img.shields.io/badge/MySQL2-4479A1?style=for-the-badge&logo=mysql&logoColor=white)
+
+### 🔐 Authentication & Security
+![bcrypt](https://img.shields.io/badge/bcrypt-336791?style=for-the-badge&logo=lock&logoColor=white)
+![bcryptjs](https://img.shields.io/badge/bcryptjs-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
+![jsonwebtoken](https://img.shields.io/badge/JSONWebToken-000000?style=for-the-badge&logo=jsonwebtokens&logoColor=white)
+![cookie-parser](https://img.shields.io/badge/cookie--parser-000000?style=for-the-badge&logo=node.js&logoColor=white)
+
+### 🛠️ Utilities & Dev Tools
+![dotenv](https://img.shields.io/badge/dotenv-ECD53F?style=for-the-badge&logo=dotenv&logoColor=black)
+![Nodemon](https://img.shields.io/badge/Nodemon-76D04B?style=for-the-badge&logo=nodemon&logoColor=black)
+![Morgan](https://img.shields.io/badge/Morgan-000000?style=for-the-badge&logo=node.js&logoColor=white)
+![Chalk](https://img.shields.io/badge/Chalk-3DDC84?style=for-the-badge&logo=javascript&logoColor=black)
+![Consola](https://img.shields.io/badge/Consola-2E86C1?style=for-the-badge&logo=javascript&logoColor=white)
+
+### 🎨 Frontend
+![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
+![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/TailwindCSS-38B2AC?style=for-the-badge&logo=tailwindcss&logoColor=white)
+![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
+![Next.js](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=next.js&logoColor=white)
+
+### 🧪 Testing & Quality
+![ESLint](https://img.shields.io/badge/ESLint-4B32C3?style=for-the-badge&logo=eslint&logoColor=white)
+![fast-check](https://img.shields.io/badge/fast--check-000000?style=for-the-badge&logo=testinglibrary&logoColor=white)
+
+### 💳 Payment
+![Omise](https://img.shields.io/badge/Omise-1A6AFF?style=for-the-badge&logo=omise&logoColor=white)
+
 
 ## 🔗 Links
 
