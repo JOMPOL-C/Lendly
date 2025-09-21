@@ -14,7 +14,7 @@ exports.createCategory = async (req, res) => {
         res.json(newCategory);
     } catch(err) {
         console.log(err);
-        return res.status(500).json({ message: 'สร้างหมวดหมู่ล้มเหลว' });
+        res.status(500).json({ message: 'สร้างหมวดหมู่ล้มเหลว' });
     };
 };
 

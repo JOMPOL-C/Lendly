@@ -8,33 +8,34 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Bank {
-  bank_id   Int     @id @default(autoincrement())
-  bank_name String? @db.VarChar(45)
-}
-
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model Calender {
-  rental_id            Int                     @id @default(autoincrement())
-  fk_calender_customer Int
-  fk_calender_product  Int
-  rental_date          DateTime?               @default(now()) @db.DateTime(0)
-  rental_end_date      DateTime?               @default(now()) @db.DateTime(0)
-  rental_status        Calender_rental_status?
+  rental_id       Int                     @id @default(autoincrement())
+  customerId      Int
+  productId       Int
+  rental_date     DateTime?               @default(now()) @db.DateTime(0)
+  rental_end_date DateTime?               @default(now()) @db.DateTime(0)
+  rental_status   Calender_rental_status?
+  rental_datetime DateTime?               @default(now()) @db.DateTime(0)
+  rental_update   DateTime                @updatedAt
 
-  @@index([fk_calender_customer], map: "FK_customer_id_idx")
-  @@index([fk_calender_product], map: "FK_product_id")
+  // relations
+  customer Customer @relation(fields: [customerId], references: [customer_id])
+  product  Product  @relation(fields: [productId], references: [product_id])
+  reports  Report[]
+
+  @@index([customerId], map: "FK_customer_id_idx")
+  @@index([productId], map: "FK_product_id")
 }
 
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model Category {
   category_id       String   @id @db.VarChar(9)
   category_name     String   @db.VarChar(45)
   category_datetime DateTime @default(now()) @db.DateTime(0)
   category_update   DateTime @updatedAt
+
+  products Product[]
 }
 
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model Chat {
   chat_id          Int       @id @default(autoincrement())
   fk_chat_customer Int
@@ -42,17 +43,21 @@ model Chat {
   chat_detail      String?   @db.Text
   chat_datetime    DateTime? @default(now()) @db.DateTime(0)
 
+  // relations
+  customer Customer @relation(fields: [fk_chat_customer], references: [customer_id])
+  store    Store    @relation(fields: [fk_chat_store], references: [store_id])
+
   @@index([fk_chat_customer], map: "FK_customer_id")
   @@index([fk_chat_store], map: "fk_chat_store_idx")
 }
 
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model County {
   county_id   Int    @id @default(autoincrement())
   county_name String @db.VarChar(40)
+
+  products Product[]
 }
 
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model Customer {
   customer_id            Int      @id @default(autoincrement())
   fk_customer_proportion Int?
@@ -61,37 +66,47 @@ model Customer {
   customer_email         String?  @unique(map: "customer_email_UNIQUE") @db.VarChar(45)
   customer_phone         String?  @unique(map: "customer_phone_UNIQUE") @db.VarChar(10)
   address                String?  @db.VarChar(255)
-  id_card_number         Int?     @unique(map: "id_card_number_UNIQUE") @db.UnsignedInt
+  id_card_number         String?  @unique(map: "id_card_number_UNIQUE") @db.VarChar(13)
   card_image             Bytes?   @db.Blob
   username               String   @unique(map: "username_UNIQUE") @db.VarChar(30)
   password               String   @db.VarChar(255)
   customer_datetime      DateTime @default(now()) @db.DateTime(0)
   customer_update        DateTime @updatedAt
 
-  @@index([fk_customer_proportion], map: "_idx")
+  // relations
+  proportion Proportion? @relation(fields: [fk_customer_proportion], references: [proportion_id])
+  orders     Orders[]
+  chats      Chat[]
+  rentals    Calender[]
+  reviews    Review[]
 }
 
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model Order {
+model Orders {
   order_id          Int      @id @default(autoincrement())
   fk_order_customer Int
   total_price       Decimal  @db.Decimal(10, 2)
   deposit_amount    Decimal? @db.Decimal(10, 2)
 
+  // relations
+  customer  Customer   @relation(fields: [fk_order_customer], references: [customer_id])
+  payments  Payment[]
+  shippings Shipping[]
+
   @@index([fk_order_customer], map: "fk_order_customer_idx")
 }
 
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model Payment {
   payment_id       Int       @id @default(autoincrement())
   fk_payment_order Int
   fk_payment_pmt   Int
-  fk_payment_bank  Int
+  omise_charge_id  String    @db.VarChar(100)
   payment_date     DateTime? @default(now()) @db.DateTime(0)
-  payment_amounf   Decimal   @db.Decimal(10, 2)
-  payment_proof    Bytes?    @db.Blob
+  payment_amount   Decimal   @db.Decimal(10, 2)
 
-  @@index([fk_payment_bank], map: "fk_payment_bank_idx")
+  // relations
+  order  Orders         @relation(fields: [fk_payment_order], references: [order_id])
+  method Payment_method @relation(fields: [fk_payment_pmt], references: [payment_method_id])
+
   @@index([fk_payment_order], map: "fk_payment_order_idx")
   @@index([fk_payment_pmt], map: "fk_payment_pmt_idx")
 }
@@ -99,9 +114,10 @@ model Payment {
 model Payment_method {
   payment_method_id   Int     @id @default(autoincrement())
   payment_method_name String? @db.VarChar(45)
+
+  payments Payment[]
 }
 
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model Product {
   product_id          Int      @id @default(autoincrement())
   fk_product_store    Int
@@ -109,10 +125,19 @@ model Product {
   fk_product_category String   @db.VarChar(9)
   fk_product_county   Int
   product_name        String   @db.VarChar(45)
-  price               Decimal  @db.Decimal(10, 2)
   shipping_info       String?  @db.VarChar(255)
-  rental_period       DateTime @default(now()) @db.DateTime(0)
+  rental_period       Int
   product_update      DateTime @updatedAt
+
+  // relations
+  store    Store               @relation(fields: [fk_product_store], references: [store_id])
+  category Category            @relation(fields: [fk_product_category], references: [category_id])
+  county   County              @relation(fields: [fk_product_county], references: [county_id])
+  size     Proportion_product? @relation(fields: [fk_product_pp], references: [proportion_product_id])
+  rentals  Calender[]
+  reviews  Review[]
+  reports  Report[]
+  prices   ProductPrice[]
 
   @@index([fk_product_category], map: "category_id_idx")
   @@index([fk_product_county], map: "county_id_idx")
@@ -120,13 +145,14 @@ model Product {
   @@index([fk_product_store], map: "store_id_idx")
 }
 
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model Proportion {
   proportion_id     Int      @id @default(autoincrement())
   chest             Decimal? @db.Decimal(5, 1)
   waist             Decimal? @db.Decimal(5, 1)
   hips              Decimal? @db.Decimal(5, 1)
   proportion_update DateTime @updatedAt
+
+  customers Customer[]
 }
 
 model Proportion_product {
@@ -134,9 +160,10 @@ model Proportion_product {
   chest                 Decimal? @db.Decimal(5, 1)
   waist                 Decimal? @db.Decimal(5, 1)
   hips                  Decimal? @db.Decimal(5, 1)
+
+  products Product[]
 }
 
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model Report {
   report_id         Int       @id @default(autoincrement())
   fk_report_product Int
@@ -147,11 +174,14 @@ model Report {
   report_fine       Decimal?  @db.Decimal(10, 2)
   report_datetime   DateTime? @default(now()) @db.DateTime(0)
 
+  // relations
+  product Product  @relation(fields: [fk_report_product], references: [product_id])
+  rental  Calender @relation(fields: [fk_report_rental], references: [rental_id])
+
   @@index([fk_report_product], map: "fk_report_product_idx")
   @@index([fk_report_rental], map: "fk_report_rental_idx")
 }
 
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model Review {
   review_id          Int       @id @default(autoincrement())
   fk_review_customer Int
@@ -161,11 +191,14 @@ model Review {
   review_score       Int       @db.TinyInt
   review_file        Bytes?    @db.Blob
 
+  // relations
+  customer Customer @relation(fields: [fk_review_customer], references: [customer_id])
+  product  Product  @relation(fields: [fk_review_product], references: [product_id])
+
   @@index([fk_review_customer], map: "fk_review_customer_idx")
   @@index([fk_review_product], map: "fk_review_product_idx")
 }
 
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model Shipping {
   shipping_id       Int                       @id @default(autoincrement())
   fk_shipping_order Int
@@ -175,15 +208,33 @@ model Shipping {
   shipping_name     String?                   @db.VarChar(45)
   shipping_end_date DateTime?                 @default(now()) @db.DateTime(0)
 
+  // relations
+  order Orders @relation(fields: [fk_shipping_order], references: [order_id])
+
   @@index([fk_shipping_order], map: "fk_shipping_order_idx")
 }
 
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model Store {
   store_id    Int     @id @default(autoincrement())
   store_name  String  @db.VarChar(45)
   store_email String? @db.VarChar(45)
   store_phone String? @db.VarChar(10)
+
+  products Product[]
+  chats    Chat[]
+}
+
+model ProductPrice {
+  productPrice_id Int                 @id @default(autoincrement())
+  productId       Int
+  type            ProductPrice_status
+  price_pri       Decimal             @db.Decimal(10, 2)
+  price_test      Decimal             @db.Decimal(10, 2)
+
+  // Relation
+  product Product @relation(fields: [productId], references: [product_id])
+
+  @@index([productId], map: "fk_Product_ProductPrice_idx")
 }
 
 enum Shipping_shipping_status {
@@ -196,4 +247,14 @@ enum Calender_rental_status {
   RENTED          @map("กำลังเช่า")
   RETURNED        @map("คืนแล้ว")
   CANCELLED       @map("ยกเลิก")
+}
+
+enum ProductPrice_status {
+  suit       @map("ชุด")
+  wig        @map("วิก")
+  suit_wig   @map("ชุด+วิก")
+  addon_prop @map("พร็อพเสริม")
+  addon_shoe @map("รองเท้า")
+  solo_prop  @map("พร็อพเดี่ยว")
+  solo_shoe  @map("รองเท้าเดี่ยว")
 }
