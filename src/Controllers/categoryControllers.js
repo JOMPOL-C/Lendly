@@ -1,4 +1,4 @@
-const prisma = require('../prisma/prisma');
+const prisma = require('../../prisma/prisma');
 
 //สร้างหมวดหมู่
 exports.createCategory = async (req, res) => {

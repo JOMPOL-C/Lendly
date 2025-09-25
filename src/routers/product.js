@@ -7,7 +7,7 @@ const {
     readProduct, 
     updateProduct, 
     removeProduct 
-} = require('../Controllers/product');
+} = require('../Controllers/productControllers');
 
 router.get('/products',listProduct);
 router.post('/products',createProduct);

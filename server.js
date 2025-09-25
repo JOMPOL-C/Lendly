@@ -1,19 +1,31 @@
-/* The code snippet is setting up a Node.js server using Express framework along with some middleware
-modules. Here's a breakdown of what each line is doing: */
 const express = require('express');
 const morgan = require('morgan');
 const app = express();
-const bodyParser = require('body-parser');
 const cors = require('cors');
+const bodyParser = require('body-parser');
 const { readdirSync } = require('fs');
+
+
+require('dotenv').config();
+
+
 
 // middlewares
 app.use(morgan('dev'));
-app.use(bodyParser.json());
 app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 
-readdirSync('./routers')
-.map((r) => app.use('/api', require('./routers/' + r)));
+
+// route
+readdirSync('./src/routers')
+.forEach((file) => {
+    const route = require('./src/routers/' + file);
+    console.log('👉 Loaded file:', file,);
+    app.use('/api', route);
+  });
+
 
 app.listen(8000, () => {
     console.log('Server is running on port 8000');
