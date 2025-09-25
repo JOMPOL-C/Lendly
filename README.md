@@ -1,3 +1,6 @@
+![Logo](LENDLY_logo.png)
+
+
 # LENDLY
 
 เว็บสำหรับ **ซื้อขายและเช่าชุดออนไลน์**  
@@ -29,7 +32,9 @@
 [![CORS](https://img.shields.io/badge/CORS-000000?style=for-the-badge&logo=node.js&logoColor=white)](https://developer.mozilla.org/docs/Web/HTTP/CORS)
 [![express-session](https://img.shields.io/badge/express--session-000000?style=for-the-badge&logo=node.js&logoColor=white)](https://www.npmjs.com/package/express-session)
 [![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org/)
+
 [![java_script](https://img.shields.io/badge/java_script-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
+
 
 ### Database & ORM
 [![Prisma](https://img.shields.io/badge/Prisma-2D3748?style=for-the-badge&logo=prisma&logoColor=white)](https://www.prisma.io/)
@@ -70,7 +75,9 @@
 
 ## Links
 
+
 [![facebook Jompol](https://img.shields.io/badge/Jompol_Chuenarrom-1877F2?style=for-the-badge&logo=facebook&logoColor=white)](https://www.facebook.com/jompol.chuenrarom.9)    [![github JOMPOL‐C](https://img.shields.io/badge/JOMPOL--C-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/JOMPOL-C)
 
 [![facebook Pimpakarn](https://img.shields.io/badge/Pimpakarn_Wuthiweroj-1877F2?style=for-the-badge&logo=facebook&logoColor=white)](https://www.facebook.com/pimpakarn.wuthiweroj.96?locale=th_TH)
+
 [![github Chom‐rose](https://img.shields.io/badge/Chom--rose-ff69b4?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Chom-rose)

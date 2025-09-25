@@ -1,0 +1,72 @@
+/* rental.css */
+.rental-card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+.rental-card img {
+    width: 200px;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+.rental-info {
+    flex: 1;
+}
+
+.rental-info h3 {
+    margin: 0 0 10px 0;
+    font-size: 22px;
+}
+.rental-info p {
+    margin: 5px 0;
+    font-size: 16px;
+}
+.rental-info .btn {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 10px 15px;
+    background-color: #bf8bfe;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+}
+.rental-info .btn:hover {
+    background-color: rgb(159, 20, 252);
+}
+.tab-content {
+    display: none;
+}
+
+.rental-info a {
+    text-decoration: none;
+    color: #000000;
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.rental-info a:hover {
+    color: #bf8bfe;
+}
+
+i{
+    font-size: 24px;
+    font-weight: 600;
+}
+
+@media (max-width: 477px) {
+    .rental-card {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .rental-card img {
+        width: 100%;
+        height: auto;
+    }
+    
+}
