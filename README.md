@@ -1,5 +1,6 @@
 ![Logo](LENDLY_logo.png)
 
+
 # LENDLY
 
 เว็บสำหรับ **ซื้อขายและเช่าชุดออนไลน์**  
@@ -32,6 +33,9 @@
 [![express-session](https://img.shields.io/badge/express--session-000000?style=for-the-badge&logo=node.js&logoColor=white)](https://www.npmjs.com/package/express-session)
 [![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org/)
 
+[![java_script](https://img.shields.io/badge/java_script-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
+
+
 ### Database & ORM
 [![Prisma](https://img.shields.io/badge/Prisma-2D3748?style=for-the-badge&logo=prisma&logoColor=white)](https://www.prisma.io/)
 [![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white)](https://www.mysql.com/)
@@ -50,7 +54,6 @@
 [![Chalk](https://img.shields.io/badge/Chalk-3DDC84?style=for-the-badge&logo=javascript&logoColor=black)](https://www.npmjs.com/package/chalk)
 [![Consola](https://img.shields.io/badge/Consola-2E86C1?style=for-the-badge&logo=javascript&logoColor=white)](https://github.com/unjs/consola)
 [![MySQL Workbench](https://img.shields.io/badge/MySQL_Workbench-4479A1?style=for-the-badge&logo=mysql&logoColor=white)](https://www.mysql.com/products/workbench/)
-
 
 ### Frontend
 [![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)](https://developer.mozilla.org/docs/Web/HTML)
@@ -72,7 +75,9 @@
 
 ## Links
 
-[![facebook Jompol](https://img.shields.io/badge/Jompol_Chuenarrom-1877F2?style=for-the-badge&logo=facebook&logoColor=white)](https://www.facebook.com/jompol.chuenrarom.9)  
-[![facebook Pimpakarn](https://img.shields.io/badge/Pimpakarn_Wuthiweroj-1877F2?style=for-the-badge&logo=facebook&logoColor=white)](https://www.facebook.com/pimpakarn.wuthiweroj.96?locale=th_TH)  
-[![github JOMPOL‐C](https://img.shields.io/badge/JOMPOL--C-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/JOMPOL-C)  
+
+[![facebook Jompol](https://img.shields.io/badge/Jompol_Chuenarrom-1877F2?style=for-the-badge&logo=facebook&logoColor=white)](https://www.facebook.com/jompol.chuenrarom.9)    [![github JOMPOL‐C](https://img.shields.io/badge/JOMPOL--C-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/JOMPOL-C)
+
+[![facebook Pimpakarn](https://img.shields.io/badge/Pimpakarn_Wuthiweroj-1877F2?style=for-the-badge&logo=facebook&logoColor=white)](https://www.facebook.com/pimpakarn.wuthiweroj.96?locale=th_TH)
+
 [![github Chom‐rose](https://img.shields.io/badge/Chom--rose-ff69b4?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Chom-rose)

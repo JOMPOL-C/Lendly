@@ -1,0 +1,319 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Calender {
+  rental_id       Int                     @id @default(autoincrement())
+  customerId      Int
+  productId       Int
+  rental_date     DateTime?               @default(now()) @db.DateTime(0)
+  rental_end_date DateTime?               @default(now()) @db.DateTime(0)
+  rental_status   Calender_rental_status?
+  rental_datetime DateTime?               @default(now()) @db.DateTime(0)
+  rental_update   DateTime                @updatedAt
+  customer        Customer                @relation(fields: [customerId], references: [customer_id])
+  product         Product                 @relation(fields: [productId], references: [product_id])
+  reports         Report[]
+
+  @@index([customerId], map: "FK_customer_id_idx")
+  @@index([productId], map: "FK_product_id")
+}
+
+model Category {
+  category_id       String    @id @db.VarChar(9)
+  category_name     String    @db.VarChar(45)
+  category_datetime DateTime  @default(now()) @db.DateTime(0)
+  category_update   DateTime  @updatedAt
+  products          Product[]
+}
+
+model Chat {
+  chat_id       Int       @id @default(autoincrement())
+  customerId    Int
+  storeId       Int
+  chat_detail   String?   @db.Text
+  chat_datetime DateTime? @default(now()) @db.DateTime(0)
+  customer      Customer  @relation(fields: [customerId], references: [customer_id])
+  store         Store     @relation(fields: [storeId], references: [store_id])
+
+  @@index([customerId], map: "FK_customer_id")
+  @@index([storeId], map: "fk_chat_store_idx")
+}
+
+model County {
+  county_id   Int       @id @default(autoincrement())
+  county_name String    @db.VarChar(40)
+  products    Product[]
+}
+
+model Customer {
+  customer_id       Int            @id @default(autoincrement())
+  proportionId      Int?
+  name              String         @db.VarChar(45)
+  last_name         String         @db.VarChar(45)
+  customer_email    String?        @unique(map: "customer_email_UNIQUE") @db.VarChar(45)
+  customer_phone    String?        @unique(map: "customer_phone_UNIQUE") @db.VarChar(10)
+  address           String?        @db.VarChar(255)
+  id_card_number    String?        @unique(map: "id_card_number_UNIQUE") @db.VarChar(13)
+  card_image        Bytes?         @db.Blob
+  username          String         @unique(map: "username_UNIQUE") @db.VarChar(30)
+  password          String         @db.VarChar(255)
+  customer_datetime DateTime       @default(now()) @db.DateTime(0)
+  customer_update   DateTime       @default(now()) @updatedAt
+  rentals           Calender[]
+  cart              Cart[]
+  chats             Chat[]
+  proportion        Proportion?    @relation(fields: [proportionId], references: [proportion_id])
+  notification      Notification[]
+  orders            Orders[]
+  reviews           Review[]
+
+  @@index([proportionId], map: "Customer_proportionId_fkey")
+}
+
+model Orders {
+  order_id              Int         @id @default(autoincrement())
+  customerId            Int
+  total_price           Decimal     @db.Decimal(10, 2)
+  deposit_amount        Decimal?    @db.Decimal(10, 2)
+  promotionPromotion_id Int?
+  OrderItem             OrderItem[]
+  customer              Customer    @relation(fields: [customerId], references: [customer_id])
+  Promotion             Promotion?  @relation(fields: [promotionPromotion_id], references: [promotion_id])
+  payments              Payment[]
+  shippings             Shipping[]
+
+  @@index([customerId], map: "fk_order_customer_idx")
+  @@index([promotionPromotion_id], map: "Orders_promotionPromotion_id_fkey")
+}
+
+model Payment {
+  payment_id      Int            @id @default(autoincrement())
+  orderId         Int
+  methodId        Int
+  omise_charge_id String         @db.VarChar(100)
+  payment_date    DateTime?      @default(now()) @db.DateTime(0)
+  payment_amount  Decimal        @db.Decimal(10, 2)
+  method          Payment_method @relation(fields: [methodId], references: [payment_method_id])
+  order           Orders         @relation(fields: [orderId], references: [order_id])
+
+  @@index([orderId], map: "fk_payment_order_idx")
+  @@index([methodId], map: "fk_payment_pmt_idx")
+}
+
+model Payment_method {
+  payment_method_id   Int       @id @default(autoincrement())
+  payment_method_name String?   @db.VarChar(45)
+  payments            Payment[]
+}
+
+model Product {
+  product_id     Int                 @id @default(autoincrement())
+  storeId        Int
+  ppId           Int?
+  categoryId     String              @db.VarChar(9)
+  countyId       Int
+  product_name   String              @db.VarChar(100)
+  shipping_info  String?             @db.VarChar(255)
+  rental_period  Int
+  product_update DateTime            @updatedAt
+  rentals        Calender[]
+  CartItem       CartItem[]
+  OrderItem      OrderItem[]
+  category       Category            @relation(fields: [categoryId], references: [category_id])
+  county         County              @relation(fields: [countyId], references: [county_id])
+  size           Proportion_product? @relation(fields: [ppId], references: [proportion_product_id])
+  store          Store               @relation(fields: [storeId], references: [store_id])
+  prices         ProductPrice[]
+  reports        Report[]
+  reviews        Review[]
+
+  @@index([categoryId], map: "category_id_idx")
+  @@index([countyId], map: "county_id_idx")
+  @@index([ppId], map: "fk_product_pp_idx")
+  @@index([storeId], map: "store_id_idx")
+}
+
+model Proportion {
+  proportion_id     Int        @id @default(autoincrement())
+  chest             Decimal?   @db.Decimal(5, 1)
+  waist             Decimal?   @db.Decimal(5, 1)
+  hips              Decimal?   @db.Decimal(5, 1)
+  proportion_update DateTime   @updatedAt
+  customers         Customer[]
+}
+
+model Proportion_product {
+  proportion_product_id Int       @id @default(autoincrement())
+  chest                 Decimal?  @db.Decimal(5, 1)
+  waist                 Decimal?  @db.Decimal(5, 1)
+  hips                  Decimal?  @db.Decimal(5, 1)
+  products              Product[]
+}
+
+model Report {
+  report_id       Int       @id @default(autoincrement())
+  productId       Int
+  rentalId        Int
+  report_topics   String    @db.Text
+  report_detail   String?   @db.Text
+  report_file     Bytes?    @db.Blob
+  report_fine     Decimal?  @db.Decimal(10, 2)
+  report_datetime DateTime? @default(now()) @db.DateTime(0)
+  product         Product   @relation(fields: [productId], references: [product_id])
+  rental          Calender  @relation(fields: [rentalId], references: [rental_id])
+
+  @@index([productId], map: "fk_report_product_idx")
+  @@index([rentalId], map: "fk_report_rental_idx")
+}
+
+model Review {
+  review_id       Int       @id @default(autoincrement())
+  customerId      Int
+  productId       Int
+  review_details  String?   @db.Text
+  review_datetime DateTime? @default(now()) @db.DateTime(0)
+  review_score    Int       @db.TinyInt
+  review_file     Bytes?    @db.Blob
+  customer        Customer  @relation(fields: [customerId], references: [customer_id])
+  product         Product   @relation(fields: [productId], references: [product_id])
+
+  @@index([customerId], map: "fk_review_customer_idx")
+  @@index([productId], map: "fk_review_product_idx")
+}
+
+model Shipping {
+  shipping_id       Int                       @id @default(autoincrement())
+  orderId           Int
+  tracking          String                    @db.VarChar(13)
+  shipping_date     DateTime?                 @db.DateTime(0)
+  shipping_status   Shipping_shipping_status?
+  shipping_name     String?                   @db.VarChar(45)
+  shipping_end_date DateTime?                 @default(now()) @db.DateTime(0)
+  order             Orders                    @relation(fields: [orderId], references: [order_id])
+
+  @@index([orderId], map: "fk_shipping_order_idx")
+}
+
+model Store {
+  store_id    Int       @id @default(autoincrement())
+  store_name  String    @db.VarChar(45)
+  store_email String?   @db.VarChar(45)
+  store_phone String?   @db.VarChar(10)
+  chats       Chat[]
+  products    Product[]
+}
+
+model OrderItem {
+  orderItem_id   Int          @id @default(autoincrement())
+  orderId        Int
+  productId      Int
+  productPriceId Int
+  order          Orders       @relation(fields: [orderId], references: [order_id])
+  product        Product      @relation(fields: [productId], references: [product_id])
+  price          ProductPrice @relation(fields: [productPriceId], references: [productPrice_id])
+
+  @@index([orderId], map: "fk_orderItem_order_idx")
+  @@index([productId], map: "fk_orderItem_product_idx")
+  @@index([productPriceId], map: "fk_orderItem_price_idx")
+}
+
+model Notification {
+  notification_id Int                 @id @default(autoincrement())
+  customerId      Int
+  title           String              @db.VarChar(100)
+  description     String              @db.Text
+  type            Notification_status
+  is_read         Boolean             @default(false)
+  created_at      DateTime            @default(now())
+  user            Customer            @relation(fields: [customerId], references: [customer_id])
+
+  @@index([customerId], map: "Notification_customerId_fkey")
+}
+
+model Promotion {
+  promotion_id Int      @id @default(autoincrement())
+  code         String   @unique @db.VarChar(50)
+  description  String?  @db.Text
+  discount     Decimal  @db.Decimal(10, 2)
+  start_date   DateTime
+  end_date     DateTime
+  is_active    Boolean  @default(true)
+  created_at   DateTime @default(now())
+  orders       Orders[]
+}
+
+model Cart {
+  cart_id    Int        @id @default(autoincrement())
+  customerId Int
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  customer   Customer   @relation(fields: [customerId], references: [customer_id])
+  items      CartItem[]
+
+  @@index([customerId], map: "fk_cart_customer_idx")
+}
+
+model CartItem {
+  cartItem_id    Int           @id @default(autoincrement())
+  cartId         Int
+  productId      Int
+  productPriceId Int?
+  quantity       Int           @default(1)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  cart           Cart          @relation(fields: [cartId], references: [cart_id])
+  product        Product       @relation(fields: [productId], references: [product_id])
+  price          ProductPrice? @relation(fields: [productPriceId], references: [productPrice_id])
+
+  @@index([cartId], map: "fk_cartItem_cart_idx")
+  @@index([productId], map: "fk_cartItem_product_idx")
+  @@index([productPriceId], map: "fk_cartItem_price_idx")
+}
+
+model ProductPrice {
+  productPrice_id Int                 @id @default(autoincrement())
+  productId       Int
+  type            ProductPrice_status
+  price_pri       Decimal             @db.Decimal(10, 2)
+  price_test      Decimal             @db.Decimal(10, 2)
+  CartItem        CartItem[]
+  OrderItem       OrderItem[]
+  product         Product             @relation(fields: [productId], references: [product_id])
+
+  @@index([productId], map: "fk_Product_ProductPrice_idx")
+}
+
+enum Shipping_shipping_status {
+  IN_PROGRESS @map("กำลังจัดส่ง")
+  DELIVERED   @map("จัดส่งสำเร็จ")
+}
+
+enum Calender_rental_status {
+  PENDING_PAYMENT @map("รอชำระเงิน")
+  RENTED          @map("กำลังเช่า")
+  RETURNED        @map("คืนแล้ว")
+  CANCELLED       @map("ยกเลิก")
+}
+
+enum ProductPrice_status {
+  suit       @map("ชุด")
+  wig        @map("วิก")
+  suit_wig   @map("ชุด+วิก")
+  addon_prop @map("พร็อพเสริม")
+  addon_shoe @map("รองเท้า")
+  solo_prop  @map("พร็อพเดี่ยว")
+  solo_shoe  @map("รองเท้าเดี่ยว")
+}
+
+enum Notification_status {
+  ORDER
+  PAYMENT
+  REVIEW
+  PROMOTION
+}
