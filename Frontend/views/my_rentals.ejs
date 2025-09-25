@@ -1,0 +1,71 @@
+<%- include('includes/head') %>
+    <link rel="stylesheet" href="/styles/rental.css">
+
+    </head>
+
+    <body>
+        <%- include('includes/nav') %>
+    <main>
+            <section class="index-rentals">
+                <h2>เช่าของฉัน</h2>
+                <div class="tabs">
+                    <a href="#" class="active" onclick="openTab(event, 'all_rental', this)">ทั้งหมด</a>
+                    <a href="#" onclick="openTab(event, 'wait', this)">รอชำระ</a>
+                    <a href="#" onclick="openTab(event, 'renting', this)">กำลังเช่า</a>
+                    <a href="#" onclick="openTab(event, 'returning', this)">รอคืน / คืนแล้ว</a>
+                    <a href="#" onclick="openTab(event, 'problem', this)">มีปัญหา</a>
+                </div>
+
+                <div id="all_rental" class="tab-content" style="display:block">
+                    <div class="rental-card">
+                        <img src="https://dokidokicos.com/cdn/shop/files/1_63d6aca4-1bf0-491b-af84-9f79b1ee5e44.jpg?v=1717159871" alt="Product Image">
+                        <div class="rental-info">
+                            <h3>Emilia</h3>
+                            <p>สถานะ: กำลังเช่า</p>
+                            <p>วันที่เช่า: 01/01/2024</p>
+                            <p>วันที่คืน: 07/01/2024</p>
+                            <p>เช่า: ชุด วิก</p>
+                            <p>ราคาค่าเช่า: 300฿</p>
+                            <a href="#" class="btn">ดูรายละเอียด</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="wait" class="tab-content" style="display:none">
+                    <p>ยังไม่มีรายการรอชำระ</p>
+                </div>
+
+                <div id="renting" class="tab-content" style="display:none">
+                    <p>ยังไม่มีรายการกำลังเช่า</p>
+                </div>
+
+                <div id="returning" class="tab-content" style="display:none">
+                    <p>ยังไม่มีรายการรอคืน</p>
+                </div>
+
+                <div id="problem" class="tab-content"  style="display:none">
+                    <p>ยังไม่มีรายการมีปัญหา</p>
+                </div>
+
+            </section>
+    </main>
+            <%- include('includes/footer') %>
+                <script src="/js/script.js"></script>
+                <script>
+                    function openTab(event, tabId, el) {
+                        event.preventDefault(); // กันไม่ให้รีเฟรชหน้า
+
+                        // ซ่อนทุก content
+                        document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
+                        // ลบ active ทุกลิงก์
+                        document.querySelectorAll('.tabs a').forEach(a => a.classList.remove('active'));
+
+                        // แสดง content ที่เลือก
+                        document.getElementById(tabId).style.display = 'block';
+                        // ใส่ active ให้ลิงก์ที่กด
+                        el.classList.add('active');
+                    }
+                </script>
+    </body>
+
+    </html>

@@ -1,0 +1,83 @@
+<%- include('includes/head') %>
+    <link rel="stylesheet" href="/styles/rental.css">
+    <link rel="stylesheet" href="/styles/review.css">
+    </head>
+
+    <body>
+        <%- include('includes/nav') %>
+            <main>
+                <section class="index-rentals">
+                    <h2>รีวิวจากผู้ใช้</h2>
+                    <div id="review-container">
+                        <div class="review-item">
+                            <div class="user-profile">
+                                <img src="https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/03c8d383-c259-4476-810e-9d8e743c41d1/dfzocxl-b0dcc01c-2ced-49c7-95f6-be8cc8737685.jpg/v1/fill/w_1280,h_960,q_75,strp/marin_kitagawa_by_pokearceus_dfzocxl-fullview.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7ImhlaWdodCI6Ijw9OTYwIiwicGF0aCI6Ii9mLzAzYzhkMzgzLWMyNTktNDQ3Ni04MTBlLTlkOGU3NDNjNDFkMS9kZnpvY3hsLWIwZGNjMDFjLTJjZWQtNDljNy05NWY2LWJlOGNjODczNzY4NS5qcGciLCJ3aWR0aCI6Ijw9MTI4MCJ9XV0sImF1ZCI6WyJ1cm46c2VydmljZTppbWFnZS5vcGVyYXRpb25zIl19.8Wwy6tQLgTzH9z_ITc8QVYFTWiMz8QxKud_cvoGW2Rg"
+                                    alt="">
+                                <h5>Jane Doe</h5>
+                            </div>
+                            <div class="review-content">
+                                <span>ชุดสวยมากค่ะ คุณภาพดี ใส่สบาย แนะนำเลย!</span>
+                                <div class="rev-img-group">
+                                    <div class="rev-img-col">
+                                        <img src="https://img.alicdn.com/imgextra/i4/4611686018427387103/O1CN01XwjkUI1ND51WjIRmo_!!4611686018427387103-0-rate.jpg_960x960.jpg_.webp"
+                                            alt="" onclick="openLightbox(0)">
+                                    </div>
+                                    <div class="rev-img-col">
+                                        <img src="https://img.alicdn.com/imgextra/i1/4611686018427383391/O1CN013PDZIG1kc1lGTL9q4_!!4611686018427383391-0-rate.jpg_960x960.jpg_.webp"
+                                            alt="" onclick="openLightbox(1)">
+                                    </div>
+                                    <div class="rev-img-col">
+                                        <img src="https://img.alicdn.com/imgextra/i2/4611686018427382682/O1CN013r6YOn2I8tUaR4BKR_!!4611686018427382682-0-rate.jpg_960x960.jpg_.webp"
+                                            alt="" onclick="openLightbox(2)">
+                                    </div>
+                                    <div class="rev-img-col">
+                                        <img src="https://img.alicdn.com/imgextra/i4/4611686018427382303/O1CN01pNAGzW1a5pn5lWS3v_!!4611686018427382303-0-rate.jpg_960x960.jpg_.webp"
+                                            alt="" onclick="openLightbox(3)">
+                                    </div>
+                                    <div class="rev-img-col">
+                                        <img src="https://img.alicdn.com/imgextra/i2/4611686018427386424/O1CN01jin0mG2ND5CL64lQI_!!4611686018427386424-0-rate.jpg_960x960.jpg_.webp"
+                                            alt="" onclick="openLightbox(4)">
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="lightbox" class="lightbox">
+                        <span class="close" onclick="closeLightbox()">&times;</span>
+                        <span class="prev" onclick="changeSlide(-1)">&#10094;</span>
+                        <span class="next" onclick="changeSlide(1)">&#10095;</span>
+                        <img id="lightbox-img" src="">
+                    </div>
+                </section>
+            </main>
+            <%- include('includes/footer') %>
+                <script src="/js/script.js"></script>
+                <script>
+                    // กดรูปในรีวิวเพื่อขยาย
+                    const images = document.querySelectorAll(".rev-img-group img");
+                    const lightbox = document.getElementById("lightbox");
+                    const lightboxImg = document.getElementById("lightbox-img");
+                    let currentIndex = 0;
+
+                    function openLightbox(index) {
+                        currentIndex = index;
+                        lightbox.style.display = "flex";
+                        lightboxImg.src = images[index].src;
+                    }
+
+                    function closeLightbox() {
+                        lightbox.style.display = "none";
+                    }
+
+                    function changeSlide(step) {
+                        currentIndex += step;
+                        if (currentIndex < 0) currentIndex = images.length - 1;
+                        if (currentIndex >= images.length) currentIndex = 0;
+                        lightboxImg.src = images[currentIndex].src;
+                    }
+                </script>
+    </body>
+
+    </html>

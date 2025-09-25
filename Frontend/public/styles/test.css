@@ -1,0 +1,7 @@
+.booked-start,
+.booked-middle,
+.booked-end {
+  background: #ead8f5 !important;  /* แดงเข้ม */
+  color: #fff !important;
+  border-radius: 50% !important;   /* วงกลม */
+}
