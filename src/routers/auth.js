@@ -1,8 +1,14 @@
 const express = require('express');
 const router = express.Router();
-const { login } = require('../Controllers/authControllers');
+const authController = require('../Controllers/authController');
 
 // เรียกดูข้อมูล ผู้ใช้
-router.post('/login', login);
+router
+    .route('/auth')
+    .post(authController.login)
+
+router
+    .route('/auth/:id')
+
 
 module.exports = router;
