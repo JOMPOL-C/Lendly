@@ -1,6 +1,5 @@
 const prisma = require('../../prisma/prisma');
 const bcrypt = require("bcryptjs");
-// const jwt = require("jsonwebtoken");
 
 exports.register = async (req, res) => {
     try {

@@ -212,7 +212,7 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon server.js",
+    "start": "nodemon Backend/server.js",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "prisma:generate": "prisma generate",
