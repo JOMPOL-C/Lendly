@@ -30,3 +30,21 @@ links.forEach(link => {
     link.classList.add("active");
   }
 });
+
+document.addEventListener('DOMContentLoaded', () => {
+  const dropdown = document.querySelector('#lg-user');
+
+  if (dropdown) {
+    dropdown.querySelector('.user-icon').addEventListener('click', (e) => {
+      e.preventDefault();
+      dropdown.classList.toggle('active');
+    });
+
+    // ปิด dropdown ถ้าคลิกข้างนอก
+    document.addEventListener('click', (e) => {
+      if (!dropdown.contains(e.target)) {
+        dropdown.classList.remove('active');
+      }
+    });
+  }
+});

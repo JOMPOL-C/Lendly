@@ -1,5 +1,5 @@
 <section id="header">
-        <a href="#"><img src="/imag/LENDLY_logo.png" alt="" style="width: 50px;"></a>
+        <a href="/"><img src="/imag/LENDLY_logo.png" alt="" style="width: 50px;"></a>
             <div class="input-field">
                 <i class='bx bx-search'></i>
                 <input type="text" placeholder="ค้นหาสินค้า">
@@ -7,12 +7,28 @@
         <div>
             <ul id="navbar">
                 <li><a href="/">หน้าหลัก</a></li>
-                <li><a href="/category">หมวดหมู่</a></li>
+                <li><a href="category">หมวดหมู่</a></li>
                 <li><a href="my_rentals">เช่าของฉัน</a></li>
                 <li ><a href="all_review">รีวิวทั้งหมด</a></li>
                 <li id="lg-fav"><a href="favorites"><i class='bxr  bx-heart'></i> </a></li>
                 <li id="lg-bag"><a href="cart"><i class='bxr  bx-cart'></i> </a></li>
-                <li id="lg-user"><a href="#"><i class='bxr  bx-user'  ></i> </a></li>
+                <li id="lg-user" class="dropdown">
+                    <a href="#" class="user-icon">
+                      <i class='bx bx-user'></i>
+                    </a>
+                    <ul class="dropdown-menu">
+                      <% if (!user) { %>
+                        <!-- ยังไม่ login -->
+                        <li><a href="/login">เข้าสู่ระบบ</a></li>
+                        <li><a href="/register">สมัครบัญชี</a></li>
+                      <% } else { %>
+                        <!-- login แล้ว -->
+                        <li><a href="/profile">จัดการโปรไฟล์</a></li>
+                        <li><a href="/logout">ออกจากระบบ</a></li>
+                      <% } %>
+                    </ul>
+                  </li>
+                  
                 <a href="#" id="close"><i class="bxr bx-x"></i></a>
             </ul>
         </div>

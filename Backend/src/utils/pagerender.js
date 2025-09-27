@@ -1,29 +1,18 @@
-module.exports = {
-    renderhomePage: (req, res) => {
-        res.render('home', { title: 'Home Page' });
-    },
-
-    renderfav: (req, res) => {
-        res.render('favorites', { title: 'Favorite Page' });
-    },
-
-    rendercart: (req, res) => {
-        res.render('cart', { title: 'Cart Page' });
-    },
-
-    renderall_review: (req, res) => {
-        res.render('all_review', { title: 'All Review Page' });
-    },
-
-    rendercategory: (req, res) => {
-        res.render('category', { title: 'Category Page' });
-    },
-
-    renderDetail_Pro: (req, res) => {
-        res.render('Detail_Pro', { title: 'Detail' });
-    },
-
-    rendermy_rentals: (req, res) => {
-        res.render('my_rentals', { title: 'My Rentals Page' });
-    }
+function redderPage(view, title) {
+    return (req, res,) => res.render(view, { title });
 }
+
+module.exports = {
+    renderhomePage: redderPage('home', 'Home Page'),
+    renderfav: redderPage('favorites', 'Favorites Page'),
+    rendercart: redderPage('cart', 'Cart Page'),
+    renderall_review: redderPage('all_review', 'All Review Page'),
+    rendercategory: redderPage('category', 'Category Page'),
+    renderDetail_Pro: redderPage('Detail_Pro', 'Detail Product Page'),
+    rendermy_rentals: redderPage('my_rentals', 'My Rentals Page'),
+    renderlogin: redderPage('login', 'Login Page'),
+    renderregister: redderPage('register', 'Register Page'),
+    renderforgotpassword: redderPage('forgotpassword','forgetpassword Page'),
+    renderresetpassword: redderPage('resetpassword', 'Reset Password Page'),
+    renderotpVerify: redderPage('otpVerify', 'OTP Verify Page'),
+};

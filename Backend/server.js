@@ -31,7 +31,11 @@ app.get('/all_review',pagerender.renderall_review);
 app.get('/category',pagerender.rendercategory);
 app.get('/Detail_Pro',pagerender.renderDetail_Pro);
 app.get('/my_rentals',pagerender.rendermy_rentals);
-
+app.get('/login',pagerender.renderlogin);
+app.get('/register',pagerender.renderregister);
+app.get('/forgotpassword',pagerender.renderforgotpassword);
+app.get('/resetpassword',pagerender.renderresetpassword);
+app.get('/otpVerify',pagerender.renderotpVerify);
 
 // route
 fs.readdirSync(path.join(__dirname, "src/routers"))

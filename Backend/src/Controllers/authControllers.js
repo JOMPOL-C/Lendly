@@ -7,7 +7,7 @@ exports.login = async (req, res) => {
             where: { username: username }
         });
         if (!user) {
-            return res.status(401).json({ message: "ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง" });
+            return res.status(401).render({ message: "ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง" });
         }
         const isPasswordValid = (password === user.password);
         if (!isPasswordValid) {
