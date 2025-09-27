@@ -1,0 +1,111 @@
+.logo {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: darkslateblue;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .logo img {
+    height: auto;
+  }
+  
+
+  main {
+    display: flex;
+    justify-content: center;   /* จัดแนวนอนกลาง */
+    align-items: center;       /* จัดแนวตั้งกลาง */
+    min-height: 100vh;         /* เต็มจอ */
+    gap: 50px;                 /* ระยะห่างระหว่าง logo กับฟอร์ม */
+  }
+  
+  @media (max-width: 768px) {
+    main {
+      flex-direction: column;
+      gap: 20px;
+    }
+  }
+  
+.wrapper{
+    width: 100%;
+    max-width: 400px;
+    padding: 40px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,.08);
+}
+.input-box{
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+.input-field{
+    position: relative;
+    display: flex;
+    flex-direction: column;      /* input + error เป็นแนวตั้ง */
+    gap: 6px;                    /* ช่องไฟระหว่าง input กับ error */
+}
+.input-field input{
+    width: 100%;
+    padding: 10px 40px;          /* กันพื้นที่ไอคอนซ้าย/ขวา */
+    border: 2px solid rgba(0,0,0,.2);
+    border-radius: 10px;
+    background: transparent;
+    outline: none;
+    font-size: 1rem;
+    transition: border-color .2s ease, box-shadow .2s ease;
+}
+.input-field input:focus{
+    border-color: darkslateblue;
+    box-shadow: 0 0 0 3px rgba(72,61,139,.12);
+}
+.input-field i{
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #666;
+    line-height: 1;
+    font-size: 1.05rem;
+}
+.input-field i.left{ left: 12px; }
+.input-field i.right{ right: 12px; cursor: pointer; }
+.input-field .error-txt{
+    font-size: .875rem;
+    color: crimson;
+    display: none;
+}
+.input-field.error input{
+    border-color: crimson;
+}
+.input-field.error .error-txt{
+    display: block;
+}
+button{
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 10px;
+    background: darkslateblue;
+    color: #fff;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,.08);
+    transition: background .2s ease;
+}
+button:hover{ background: slateblue; }
+.link{
+    text-align: center;
+    margin-top: 12px;
+    font-size: .9rem;
+}
+.link a{ color: darkslateblue; text-decoration: none; }
+.link a:hover{ text-decoration: underline; }
+
+.h1 {
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: darkslateblue;
+    margin-bottom: 24px;
+}

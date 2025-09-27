@@ -5,6 +5,8 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const fs = require('fs');
 const path = require('path');
+const cookieParser = require('cookie-parser');
+const authMiddleware = require('./src/middlewares/authMiddleware');
 
 const pagerender = require('./src/utils/pagerender');
 
@@ -13,12 +15,17 @@ require('dotenv').config();
 
 
 // middlewares
+app.use(cookieParser());
+app.use(authMiddleware);
 app.use(express.static(path.join(__dirname, "../Frontend/public")));
 app.use(morgan('dev'));
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use("/", require("./src/routers/checkDuplicate"));
+
 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "../Frontend/views"));
@@ -36,6 +43,7 @@ app.get('/register',pagerender.renderregister);
 app.get('/forgotpassword',pagerender.renderforgotpassword);
 app.get('/resetpassword',pagerender.renderresetpassword);
 app.get('/otpVerify',pagerender.renderotpVerify);
+
 
 // route
 fs.readdirSync(path.join(__dirname, "src/routers"))

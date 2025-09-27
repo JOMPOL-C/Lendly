@@ -4,7 +4,7 @@ const authController = require('../Controllers/authControllers');
 
 // เรียกดูข้อมูล ผู้ใช้
 router
-    .route('/auth')
+    .route('/auth/login')
     .post(authController.login)
 
 router
