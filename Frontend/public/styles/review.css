@@ -1,4 +1,4 @@
-
+/* หน้าแสดงรีวิว */
 #review-container {
   display: flex;
   flex-direction: column;
@@ -100,4 +100,36 @@
   top: 50%; 
   right: 20px; 
   transform: translateY(-50%);
+}
+
+/* หน้าเขียนรีวิว */
+
+.review-box {
+  max-width: 700px;
+  margin: 30px auto;
+  background: #fff;
+  border-radius: 12px;
+  padding: 25px 30px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.review-box h2 {
+  margin-bottom: 20px;
+  text-align: center;
+  color: #333;
+}
+
+.form-group textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 14px;
+  resize: vertical;
+}
+
+.form-group textarea:focus {
+  border-color: #7d4dff;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(125, 77, 255, 0.2);
 }
