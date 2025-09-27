@@ -1,0 +1,78 @@
+<%- include('includes/head') %>
+    <link rel="stylesheet" href="/styles/rental.css">
+
+    </head>
+
+    <body>
+        <%- include('includes/nav') %>
+            <main>
+                <section class="index">
+                    <h2>ติดตามสถานะการเช่า</h2>
+                    <div class="rental-info">
+                        <p>ที่อยู่ในการจัดส่ง: โชยุ โชใจ 123/45 หมู่บ้านสุขสันต์ ต.สุขใจ อ.เมือง จ.เชียงใหม่ 50000
+                        </p>
+                        <p>หมายเลขการเช่า: RNT-0001</p>
+                        <p>ระยะเวลา: 01/10/2025 - 07/10/2025</p>
+                    </div>
+
+                    <div class="timeline-horizontal">
+                        <div class="step done">
+                            <div class="circle">1</div>
+                            <p>สร้างคำสั่งเช่า<br><span>2025-09-25</span></p>
+                        </div>
+                        <div class="line"></div>
+                        <div class="step done">
+                            <div class="circle">2</div>
+                            <p>ชำระเงิน<br><span>2025-09-25</span></p>
+                        </div>
+                        <div class="line"></div>
+                        <div class="step done">
+                            <div class="circle">3</div>
+                            <p>เตรียมสินค้า<br><span>2025-09-26</span></p>
+                        </div>
+                        <div class="line"></div>
+                        <div class="step done">
+                            <div class="circle">4</div>
+                            <p>จัดส่ง<br><span>2025-09-27</span></p>
+                        </div>
+                        <div class="line"></div>
+                        <div class="step">
+                            <div class="circle">5</div>
+                            <p>ใช้งานอยู่</p>
+                        </div>
+                        <div class="line"></div>
+                        <div class="step">
+                            <div class="circle">6</div>
+                            <p>คืนสินค้า</p>
+                        </div>
+                        <div class="line"></div>
+                        <div class="step">
+                            <div class="circle">7</div>
+                            <p>รีวิว</p>
+                        </div>
+                    </div>
+                    <div class="index-rental">
+                        <div>
+                            <div class="rental-card">
+                                <img src="https://dokidokicos.com/cdn/shop/files/1_63d6aca4-1bf0-491b-af84-9f79b1ee5e44.jpg?v=1717159871"
+                                    alt="Product Image">
+                                <div class="rental-info">
+                                    <h3>Emilia</h3>
+                                    <p>วันที่เช่า: 01/01/2024</p>
+                                    <p>วันที่คืน: 07/01/2024</p>
+                                    <p>สิ่งที่เช่า: ชุด วิก</p>
+                                    <p>ราคาค่าเช่า: 300฿</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <a href="/return_order" class="btn">คืนสินค้า</a>
+                    <a href="/write_review" class="btn">รีวิวสินค้า</a>
+                </section>
+            </main>
+            <%- include('includes/footer') %>
+                <script src="/js/script.js"></script>
+
+    </body>
+
+    </html>

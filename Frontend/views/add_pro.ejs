@@ -1,0 +1,105 @@
+<%- include('includes/head') %>
+    <link rel="stylesheet" href="/styles/rental.css">
+    <link rel="stylesheet" href="/styles/review.css">
+
+    </head>
+
+    <body>
+        <%- include('includes/nav') %>
+            <main>
+                <section class="index ">
+                    <h2>เพิ่มสินค้า</h2>
+                    </div>
+
+                    <form>
+                        <div class="form-group">
+                            <label>ชื่อตัวละคร</label>
+                            <input type="text" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>ชื่อเรื่อง</label>
+                            <input type="text" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>ขนาดชุด</label>
+                            <input type="text" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="reviewImages">อัปโหลดรูป</label>
+                            <input type="file" id="reviewImages" name="reviewImages" accept="image/*" multiple>
+                            <p class="note">เลือกได้หลายรูป</p>
+                        </div>
+
+                        <div class="form-group">
+                            <label>รายละเอียดสินค้า</label>
+                            <textarea rows="4" required></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label>การใช้งาน</label>
+                            <input type="checkbox" value="test" required> เทส
+                            <input type="checkbox" value="pri" required> ไพร
+                        </div>
+
+                        <div class="form-group">
+                            <label>ของให้เช่า</label>
+                            <input type="checkbox" name="rentalType[]" value="costume" required> ชุด
+                            <input type="checkbox" name="rentalType[]" value="wig" required> วิก
+                            <input type="checkbox" name="rentalType[]" value="prop" required> พร๊อบ
+                            <input type="checkbox" name="rentalType[]" value="shoe" required> รองเท้า
+                        </div>
+
+                        <div class="form-group">
+                            <label>ราคาเช่าชุด</label>
+                            <input type="number">
+                            <label>ราคาเช่าวิก</label>
+                            <input type="number">
+                        </div>
+
+                        <div class="form-group">
+                            <label>ราคาเช่าชุด+วิก</label>
+                            <input type="number">
+                        </div>
+
+                        <div class="form-group">
+                            <label>ราคาเช่าพร๊อบ</label>
+                            <input type="number">
+                            <label>ราคาเช่าพร๊อบแยก</label>
+                            <input type="number">
+                        </div>
+
+                        <div class="form-group">
+                            <label>ราคาเช่ารองเท้า</label>
+                            <input type="number">
+                            <label>ราคาเช่ารองเท้าแยก</label>
+                            <input type="number">
+                        </div>
+
+                        <div class="form-group">
+                            <label>ราคาเพิ่มเช่าไพร</label>
+                            <input type="number">
+                        </div>
+
+                        <div class="form-group">
+                            <label>สถานะสินค้า</label>
+                            <select name="status" required>
+                                <option value="active">เปิดให้เช่า</option>
+                                <option value="inactive">ปิดการเช่า</option>
+                            </select>
+                        </div>
+
+                        <button type="submit" class="submit-btn">เพิ่มสินค้า</button>
+                    </form>
+                </section>
+
+
+            </main>
+            <%- include('includes/footer') %>
+                <script src="/js/script.js"></script>
+
+    </body>
+
+    </html>
