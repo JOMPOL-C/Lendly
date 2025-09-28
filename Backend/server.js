@@ -7,10 +7,11 @@ const fs = require('fs');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const authMiddleware = require('./src/middlewares/authMiddleware');
-
+const setUser = require('./src/middlewares/setUser');
 const pagerender = require('./src/utils/pagerender');
 
 const authController = require('./src/Controllers/authControllers');
+const productController = require('./src/Controllers/productControllers');
 
 
 require('dotenv').config();
@@ -24,8 +25,10 @@ app.use(morgan('dev'));
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(setUser); // 👈 ใช้ setUser หลัง authMiddleware
 app.use("/", require("./src/routers/checkDuplicate"));
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
 
 
 
@@ -46,6 +49,11 @@ app.get('/forgotpassword',pagerender.renderforgotpassword);
 app.get('/resetpassword',pagerender.renderresetpassword);
 app.get('/otpVerify',pagerender.renderotpVerify);
 app.get('/profile', authController.getProfile);
+app.get('/detail_product',pagerender.renderdetail_product);
+
+
+// app.get('/add_product',pagerender.renderadd_product);
+app.get('/add_product', productController.renderAddProduct);
 
 
 

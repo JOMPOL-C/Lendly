@@ -1,86 +1,114 @@
 <%- include('includes/head') %>
     <link rel="stylesheet" href="/styles/rental.css">
     <link rel="stylesheet" href="/styles/review.css">
-
+    <link rel="stylesheet" href="/styles/add_product.css">
     </head>
 
     <body>
         <%- include('includes/nav') %>
             <main>
-                <section class="index ">
+                <section class="index">
                     <h2>เพิ่มสินค้า</h2>
-                    </div>
 
-                    <form>
+                    <form action="/api/products" method="POST" enctype="multipart/form-data">
                         <div class="form-group">
-                            <label>ชื่อตัวละคร</label>
-                            <input type="text" required>
+                            <label>ชื่อสินค้า</label>
+                            <input type="text" name="product_name" required>
                         </div>
 
                         <div class="form-group">
                             <label>ชื่อเรื่อง</label>
-                            <input type="text" required>
+                            <input type="text" name="story_name" required>
                         </div>
 
                         <div class="form-group">
-                            <label>ขนาดชุด</label>
-                            <input type="text" required>
+                            <label>สัดส่วน (ซม.)</label>
+                            <div style="display:flex; gap:10px;">
+                                <input type="number" name="chest" placeholder="อก" step="0.1">
+                                <input type="number" name="waist" placeholder="เอว" step="0.1">
+                                <input type="number" name="hips" placeholder="สะโพก" step="0.1">
+                            </div>
                         </div>
 
                         <div class="form-group">
-                            <label for="reviewImages">อัปโหลดรูป</label>
-                            <input type="file" id="reviewImages" name="reviewImages" accept="image/*" multiple>
+                            <label for="product_image">อัปโหลดรูป</label>
+                            <input type="file" id="product_image" name="product_image" accept="image/*">
                             <p class="note">เลือกได้หลายรูป</p>
                         </div>
 
                         <div class="form-group">
                             <label>รายละเอียดสินค้า</label>
-                            <textarea rows="4" required></textarea>
+                            <textarea name="shipping_info" rows="4" required></textarea>
                         </div>
 
                         <div class="form-group">
                             <label>การใช้งาน</label>
-                            <input type="checkbox" value="test" required> เทส
-                            <input type="checkbox" value="pri" required> ไพร
+                            <div class="checkbox-group">
+                                <label><input type="checkbox" id="useTest" name="usage" value="test"> เทส</label>
+                                <label><input type="checkbox" id="usePry" name="usage" value="pri"> ไพร</label>
+                            </div>
+                        </div>
+
+                        <!-- ช่องวันเช่า (ซ่อนก่อน) -->
+                        <div id="daysTestField" class="hidden">
+                            <label>จำนวนวัน (Test)</label>
+                            <input type="number" name="days_suit_test" min="1">
+                        </div>
+
+                        <div id="daysPriField" class="hidden">
+                            <label>จำนวนวัน (Pri)</label>
+                            <input type="number" name="days_suit_pri" min="1">
+                        </div>
+
+                        <div class="form-group">
+                            <label>หมวดหมู่สินค้า</label>
+                            <select name="categoryId" required>
+                                <% categories.forEach(c=> { %>
+                                    <option value="<%= c.category_id %>">
+                                        <%= c.category_name %>
+                                    </option>
+                                    <% }) %>
+                            </select>
                         </div>
 
                         <div class="form-group">
                             <label>ของให้เช่า</label>
-                            <input type="checkbox" name="rentalType[]" value="costume" required> ชุด
-                            <input type="checkbox" name="rentalType[]" value="wig" required> วิก
-                            <input type="checkbox" name="rentalType[]" value="prop" required> พร๊อบ
-                            <input type="checkbox" name="rentalType[]" value="shoe" required> รองเท้า
+                            <div class="checkbox-group">
+                                <label><input type="checkbox" id="rentCostume" name="rentalType[]" value="costume">
+                                    ชุด</label>
+                                <label><input type="checkbox" id="rentWig" name="rentalType[]" value="wig"> วิก</label>
+                                <label><input type="checkbox" id="rentProp" name="rentalType[]" value="prop">
+                                    พร๊อบ</label>
+                                <label><input type="checkbox" id="rentShoe" name="rentalType[]" value="shoe">
+                                    รองเท้า</label>
+                            </div>
                         </div>
 
-                        <div class="form-group">
+                        <!-- ช่องราคาซ่อน/โชว์ตาม checkbox -->
+                        <div id="priceCostume" class="price-field hidden">
                             <label>ราคาเช่าชุด</label>
-                            <input type="number">
+                            <input type="number" name="price_costume">
+                        </div>
+
+                        <div id="priceWig" class="price-field hidden">
                             <label>ราคาเช่าวิก</label>
-                            <input type="number">
+                            <input type="number" name="price_wig">
                         </div>
 
-                        <div class="form-group">
-                            <label>ราคาเช่าชุด+วิก</label>
-                            <input type="number">
-                        </div>
-
-                        <div class="form-group">
+                        <div id="priceProp" class="price-field hidden">
                             <label>ราคาเช่าพร๊อบ</label>
-                            <input type="number">
-                            <label>ราคาเช่าพร๊อบแยก</label>
-                            <input type="number">
+                            <input type="number" name="price_prop">
                         </div>
 
-                        <div class="form-group">
+                        <div id="priceShoe" class="price-field hidden">
                             <label>ราคาเช่ารองเท้า</label>
-                            <input type="number">
-                            <label>ราคาเช่ารองเท้าแยก</label>
-                            <input type="number">
+                            <input type="number" name="price_shoe">
                         </div>
 
-                        <div class="form-group">
-                            <label>ราคาเพิ่มเช่าไพร</label>
-                            <input type="number">
+                        <!-- ช่องสำหรับราคาเพิ่มเมื่อเลือก "ไพร" -->
+                        <div id="pricePryExtra" class="price-field hidden">
+                            <label>ราคาเพิ่มสำหรับไพร</label>
+                            <input type="number" name="price_pry_extra">
                         </div>
 
                         <div class="form-group">
@@ -94,12 +122,11 @@
                         <button type="submit" class="submit-btn">เพิ่มสินค้า</button>
                     </form>
                 </section>
-
-
             </main>
+
             <%- include('includes/footer') %>
                 <script src="/js/script.js"></script>
-
+                <script src="/js/add_product.js"></script>
     </body>
 
     </html>
