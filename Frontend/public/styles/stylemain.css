@@ -450,6 +450,16 @@ footer .copyright {
     height: 2px;
     background: #7d4dff;
 }
+/* เฉพาะโปรไฟล์ใน navbar */
+.nav-profile-pic {
+  display: inline-block;
+  width: 35px !important;
+  height: 35px !important;
+  border-radius: 50% !important;
+  object-fit: cover !important;
+  border: 2px solid #fff;
+  vertical-align: middle;
+}
 
 
 
@@ -603,4 +613,5 @@ footer .copyright {
         display: block;
       }
       
+
 }

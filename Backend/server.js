@@ -10,6 +10,8 @@ const authMiddleware = require('./src/middlewares/authMiddleware');
 
 const pagerender = require('./src/utils/pagerender');
 
+const authController = require('./src/Controllers/authControllers');
+
 
 require('dotenv').config();
 
@@ -23,6 +25,8 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use("/", require("./src/routers/checkDuplicate"));
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
 
 
 app.set("view engine", "ejs");
@@ -41,6 +45,8 @@ app.get('/register',pagerender.renderregister);
 app.get('/forgotpassword',pagerender.renderforgotpassword);
 app.get('/resetpassword',pagerender.renderresetpassword);
 app.get('/otpVerify',pagerender.renderotpVerify);
+app.get('/profile', authController.getProfile);
+
 
 
 // route

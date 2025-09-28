@@ -15,4 +15,5 @@ module.exports = {
     renderforgotpassword: redderPage('forgotpassword','forgetpassword Page'),
     renderresetpassword: redderPage('resetpassword', 'Reset Password Page'),
     renderotpVerify: redderPage('otpVerify', 'OTP Verify Page'),
+    renderPorfile: redderPage('Profile', 'Profile Page'),
 };

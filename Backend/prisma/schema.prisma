@@ -51,6 +51,7 @@ model County {
   products    Product[]
 }
 
+// ลูกค้า 1 - สัดส่วน 1  1 of 1
 model Customer {
   customer_id       Int            @id @default(autoincrement())
   proportionId      Int?
@@ -60,15 +61,18 @@ model Customer {
   customer_phone    String?        @unique(map: "customer_phone_UNIQUE") @db.VarChar(10)
   address           String?        @db.VarChar(255)
   id_card_number    String?        @unique(map: "id_card_number_UNIQUE") @db.VarChar(13)
-  card_image        Bytes?         @db.Blob
+  card_image        Bytes?
+  profile_image     Bytes?
   username          String         @unique(map: "username_UNIQUE") @db.VarChar(30)
   password          String         @db.VarChar(255)
   customer_datetime DateTime       @default(now()) @db.DateTime(0)
   customer_update   DateTime       @default(now()) @updatedAt
+  id_card_mime      String?
+  profile_mime      String?
   rentals           Calender[]
   cart              Cart[]
   chats             Chat[]
-  proportion        Proportion?    @relation(fields: [proportionId], references: [proportion_id])
+  proportion        Proportion? 
   notification      Notification[]
   orders            Orders[]
   reviews           Review[]
@@ -145,7 +149,10 @@ model Proportion {
   waist             Decimal?   @db.Decimal(5, 1)
   hips              Decimal?   @db.Decimal(5, 1)
   proportion_update DateTime   @updatedAt
-  customers         Customer[]
+
+  // 👇 FK เชื่อมกับ Customer
+  customerId        Int   @unique
+  customer          Customer @relation(fields: [customerId], references: [customer_id])
 }
 
 model Proportion_product {
