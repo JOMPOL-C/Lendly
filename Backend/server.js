@@ -36,7 +36,7 @@ app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "../Frontend/views"));
 
 // render page
-app.get('/',pagerender.renderhomePage);
+app.get('/', productController.getProducts);
 app.get('/favorites',pagerender.renderfav);
 app.get('/cart',pagerender.rendercart);
 app.get('/all_review',pagerender.renderall_review);
@@ -48,7 +48,9 @@ app.get('/register',pagerender.renderregister);
 app.get('/forgotpassword',pagerender.renderforgotpassword);
 app.get('/resetpassword',pagerender.renderresetpassword);
 app.get('/otpVerify',pagerender.renderotpVerify);
+
 app.get('/profile', authController.getProfile);
+
 app.get('/detail_product',pagerender.renderdetail_product);
 
 

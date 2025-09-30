@@ -118,8 +118,6 @@ model Product {
   product_name   String              @db.VarChar(100)
   shipping_info  String?             @db.VarChar(255)
   product_update DateTime            @updatedAt
-  image_mime     String?
-  product_image  Bytes?
   product_status Boolean             @default(true)
   story_name     String?             @db.VarChar(100)
 
@@ -131,9 +129,20 @@ model Product {
   prices         ProductPrice[]
   reports        Report[]
   reviews        Review[]
+  images         ProductImage[]
 
   @@index([categoryId], map: "category_id_idx")
   @@index([ppId], map: "fk_product_pp_idx")
+}
+
+model ProductImage {
+  image_id   Int     @id @default(autoincrement())
+  image_data Bytes
+  image_mime String
+  image_path  String? @db.VarChar(255)
+  productId  Int
+
+  product    Product @relation(fields: [productId], references: [product_id])
 }
 
 model Proportion {

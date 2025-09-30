@@ -7,15 +7,12 @@ const path = require('path');
 
 const fs = require("fs");
 
-
-
 // กำหนดที่เก็บไฟล์และชื่อไฟล์
 const storage = multer.diskStorage({
     destination: (req, file, cb) => cb(null, path.join(__dirname, "../../uploads")),
     filename: (req, file, cb) =>
         cb(null, Date.now() + path.extname(file.originalname))
 });
-
 
 exports.upload = multer({ storage });
 
@@ -59,6 +56,7 @@ exports.logout = (req, res) => {
     res.redirect("/");
 }
 
+// โหลดโปรไฟล์
 exports.getProfile = async (req, res) => {
     try {
       if (!req.user) {
@@ -230,3 +228,4 @@ exports.resetPassword = async (req, res) => {
         return res.status(500).render("resetPassword", { error: "เกิดข้อผิดพลาดในเซิร์ฟเวอร์" });
     }
 };
+

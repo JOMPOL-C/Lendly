@@ -17,5 +17,6 @@ module.exports = {
     renderotpVerify: redderPage('otpVerify', 'OTP Verify Page'),
     renderPorfile: redderPage('Profile', 'Profile Page'),
     renderadd_product: redderPage('add_pro', 'Add Product Page'),
-    renderdetail_product: redderPage('Detail_Pro', 'Detail Product Page')
+    renderdetail_product: redderPage('Detail_Pro', 'Detail Product Page'),
+    renderedit_product: redderPage('edit_pro', 'Edit Product Page'),
 };

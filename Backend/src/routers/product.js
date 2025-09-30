@@ -8,11 +8,25 @@ router.get("/add-product", productController.renderAddProduct);
 // เพิ่มสินค้า
 router.post(
   "/products",
-  productController.upload.single("product_image"),
+  productController.upload,
   productController.createProduct
 );
 
-// แสดงสินค้าทั้งหมด
+// อัปเดตสินค้า
+router.post(
+  "/products/:id/update",
+  productController.upload,
+  productController.updateProduct
+);
+
+router.get("/products/:id/edit", productController.renderEditProduct);
+
+
+// แสดงรายละเอียดสินค้า (ทีละตัว)
+router.get("/products/:id", productController.getProductById);
+
+// แสดงสินค้าทั้งหมดที่หน้า home
 router.get("/", productController.getProducts);
+
 
 module.exports = router;

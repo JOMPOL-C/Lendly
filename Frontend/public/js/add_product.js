@@ -36,3 +36,42 @@ if (pryCheckbox && pryExtraField) {
         pryExtraField.classList.toggle("hidden", !pryCheckbox.checked);
     });
 }
+
+const input = document.getElementById("product_images");
+const previewContainer = document.getElementById("preview-container");
+
+if (input && previewContainer) {
+  input.addEventListener("change", () => {
+    previewContainer.innerHTML = ""; // ล้าง preview เดิม
+
+    Array.from(input.files).forEach((file, index) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const div = document.createElement("div");
+        div.classList.add("preview-item");
+
+        div.innerHTML = `
+          <img src="${e.target.result}" alt="preview-${index}">
+          <button type="button" data-index="${index}">✕</button>
+        `;
+
+        // ลบรูปออกจาก input.files
+        div.querySelector("button").addEventListener("click", () => {
+          removeFile(index);
+          div.remove();
+        });
+
+        previewContainer.appendChild(div);
+      };
+      reader.readAsDataURL(file);
+    });
+  });
+
+  function removeFile(removeIndex) {
+    const dt = new DataTransfer();
+    Array.from(input.files).forEach((file, idx) => {
+      if (idx !== removeIndex) dt.items.add(file);
+    });
+    input.files = dt.files;
+  }
+}

@@ -52,3 +52,24 @@ exports.register = async (req, res) => {
     return res.status(500).json({ error: "Server error" });
   }
 };
+
+// ลบ account
+exports.deleteAccount = async (req, res) => {
+  try {
+    const userId = req.user.id; // สมมติว่าคุณมี middleware ที่ตั้งค่า req.user
+
+    await prisma.Customer.delete({
+      where: { customer_id: userId }
+    });
+
+    // ทำการลบ session หรือ token ถ้ามี
+    req.logout(); // ถ้าใช้ passport
+    req.session.destroy(); // ถ้าใช้ express-session
+
+    return res.status(200).json({ message: "ลบบัญชีผู้ใช้สำเร็จ" });
+
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: "Server error" });
+  }
+};
