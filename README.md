@@ -1,9 +1,9 @@
 ![Logo](LENDLY_logo.png)
-
-
 # LENDLY
 
-เว็บสำหรับ **ซื้อขายและเช่าชุดออนไลน์**  
+เว็บสำหรับ **เช่าชุดออนไลน์ + ระบบบริหารจัดการร้านค้า**
+
+---
 
 ## Features
 
@@ -24,60 +24,64 @@
 - แชทบอท
 - ชำระเงินผ่าน Omise
 
-## Tech Stack  
+---
 
-### Backend
-[![Express.js](https://img.shields.io/badge/Express.js-9C9C9C?style=for-the-badge&logo=express&logoColor=white)](https://expressjs.com/)
-[![Router](https://img.shields.io/badge/Router-000000?style=for-the-badge&logo=node.js&logoColor=white)](https://expressjs.com/en/guide/routing.html)
-[![CORS](https://img.shields.io/badge/CORS-000000?style=for-the-badge&logo=node.js&logoColor=white)](https://developer.mozilla.org/docs/Web/HTTP/CORS)
-[![express-session](https://img.shields.io/badge/express--session-000000?style=for-the-badge&logo=node.js&logoColor=white)](https://www.npmjs.com/package/express-session)
-[![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org/)
+## 🛠 Tech Stack (ที่ใช้งานจริงในโปรเจกต์นี้)
 
-[![java_script](https://img.shields.io/badge/java_script-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
+### 🔙 Backend
 
+[![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge\&logo=node.js\&logoColor=white)](https://nodejs.org/)
+[![Express.js](https://img.shields.io/badge/Express.js-9C9C9C?style=for-the-badge\&logo=express\&logoColor=white)](https://expressjs.com/)
+[![EJS](https://img.shields.io/badge/EJS-000000?style=for-the-badge\&logo=javascript\&logoColor=white)](https://ejs.co/)
+[![Socket.IO](https://img.shields.io/badge/Socket.io-010101?style=for-the-badge\&logo=socketdotio\&logoColor=white)](https://socket.io/)
 
-### Database & ORM
-[![Prisma](https://img.shields.io/badge/Prisma-2D3748?style=for-the-badge&logo=prisma&logoColor=white)](https://www.prisma.io/)
-[![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white)](https://www.mysql.com/)
-[![MySQL2](https://img.shields.io/badge/MySQL2-4479A1?style=for-the-badge&logo=mysql&logoColor=white)](https://www.npmjs.com/package/mysql2)
+### 🗃 Database & ORM
 
-### Authentication & Security
-[![bcrypt](https://img.shields.io/badge/bcrypt-336791?style=for-the-badge&logo=lock&logoColor=white)](https://www.npmjs.com/package/bcrypt)
-[![bcryptjs](https://img.shields.io/badge/bcryptjs-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)](https://www.npmjs.com/package/bcryptjs)
-[![jsonwebtoken](https://img.shields.io/badge/JSONWebToken-000000?style=for-the-badge&logo=jsonwebtokens&logoColor=white)](https://jwt.io/)
-[![cookie-parser](https://img.shields.io/badge/cookie--parser-000000?style=for-the-badge&logo=node.js&logoColor=white)](https://www.npmjs.com/package/cookie-parser)
+[![Prisma](https://img.shields.io/badge/Prisma-2D3748?style=for-the-badge\&logo=prisma\&logoColor=white)](https://www.prisma.io/)
+[![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge\&logo=mysql\&logoColor=white)](https://www.mysql.com/)
 
-### Utilities & Dev Tools
-[![dotenv](https://img.shields.io/badge/dotenv-ECD53F?style=for-the-badge&logo=dotenv&logoColor=black)](https://www.npmjs.com/package/dotenv)
-[![Nodemon](https://img.shields.io/badge/Nodemon-76D04B?style=for-the-badge&logo=nodemon&logoColor=black)](https://www.npmjs.com/package/nodemon)
-[![Morgan](https://img.shields.io/badge/Morgan-000000?style=for-the-badge&logo=node.js&logoColor=white)](https://www.npmjs.com/package/morgan)
-[![Chalk](https://img.shields.io/badge/Chalk-3DDC84?style=for-the-badge&logo=javascript&logoColor=black)](https://www.npmjs.com/package/chalk)
-[![Consola](https://img.shields.io/badge/Consola-2E86C1?style=for-the-badge&logo=javascript&logoColor=white)](https://github.com/unjs/consola)
-[![MySQL Workbench](https://img.shields.io/badge/MySQL_Workbench-4479A1?style=for-the-badge&logo=mysql&logoColor=white)](https://www.mysql.com/products/workbench/)
+### 🔐 Auth & Security
 
-### Frontend
-[![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)](https://developer.mozilla.org/docs/Web/HTML)
-[![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)](https://developer.mozilla.org/docs/Web/CSS)
-[![Tailwind CSS](https://img.shields.io/badge/TailwindCSS-38B2AC?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
-[![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://react.dev/)
-[![Next.js](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)
+[![bcrypt](https://img.shields.io/badge/bcrypt-336791?style=for-the-badge\&logo=lock\&logoColor=white)](https://www.npmjs.com/package/bcrypt)
+[![JWT](https://img.shields.io/badge/JWT-000000?style=for-the-badge\&logo=jsonwebtokens\&logoColor=white)](https://jwt.io/)
+[![cookie-parser](https://img.shields.io/badge/Cookie--Parser-000000?style=for-the-badge\&logo=node.js\&logoColor=white)](https://www.npmjs.com/package/cookie-parser)
 
-### Testing & Quality
-[![ESLint](https://img.shields.io/badge/ESLint-4B32C3?style=for-the-badge&logo=eslint&logoColor=white)](https://eslint.org/)
-[![fast-check](https://img.shields.io/badge/fast--check-000000?style=for-the-badge&logo=testinglibrary&logoColor=white)](https://dubzzz.github.io/fast-check/)
+### 🧰 Dev Tools & Utilities
 
-### Deployment
-[![Vercel](https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://vercel.com/)
+[![dotenv](https://img.shields.io/badge/Dotenv-ECD53F?style=for-the-badge\&logo=dotenv\&logoColor=black)](https://www.npmjs.com/package/dotenv)
+[![Nodemon](https://img.shields.io/badge/Nodemon-76D04B?style=for-the-badge\&logo=nodemon\&logoColor=black)](https://www.npmjs.com/package/nodemon)
+[![Morgan](https://img.shields.io/badge/Morgan-000000?style=for-the-badge\&logo=node.js\&logoColor=white)](https://www.npmjs.com/package/morgan)
 
-### 💳 Payment
-[![Omise](https://img.shields.io/badge/Omise-1A6AFF?style=for-the-badge&logo=omise&logoColor=white)](https://www.omise.co/)
+### 🎨 Frontend
 
+[![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge\&logo=html5\&logoColor=white)](https://developer.mozilla.org/docs/Web/HTML)
+[![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge\&logo=css3\&logoColor=white)](https://developer.mozilla.org/docs/Web/CSS)
+[![Tailwind CSS](https://img.shields.io/badge/TailwindCSS-38B2AC?style=for-the-badge\&logo=tailwindcss\&logoColor=white)](https://tailwindcss.com/)
+[![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge\&logo=javascript\&logoColor=black)](https://developer.mozilla.org/docs/Web/JavaScript)
 
-## Links
+### 💳 Payment Integration
 
+[![Omise](https://img.shields.io/badge/Omise-1A6AFF?style=for-the-badge\&logo=omise\&logoColor=white)](https://www.omise.co/)
 
-[![facebook Jompol](https://img.shields.io/badge/Jompol_Chuenarrom-1877F2?style=for-the-badge&logo=facebook&logoColor=white)](https://www.facebook.com/jompol.chuenrarom.9)    [![github JOMPOL‐C](https://img.shields.io/badge/JOMPOL--C-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/JOMPOL-C)
+### 📦 Upload / File
 
-[![facebook Pimpakarn](https://img.shields.io/badge/Pimpakarn_Wuthiweroj-1877F2?style=for-the-badge&logo=facebook&logoColor=white)](https://www.facebook.com/pimpakarn.wuthiweroj.96?locale=th_TH)
+[![Multer](https://img.shields.io/badge/Multer-000000?style=for-the-badge\&logo=npm\&logoColor=white)](https://www.npmjs.com/package/multer)
+[![Cloudinary](https://img.shields.io/badge/Cloudinary-3448C5?style=for-the-badge\&logo=cloudinary\&logoColor=white)](https://cloudinary.com/)
 
-[![github Chom‐rose](https://img.shields.io/badge/Chom--rose-ff69b4?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Chom-rose)
+### 🧪 Code Quality
+
+[![ESLint](https://img.shields.io/badge/ESLint-4B32C3?style=for-the-badge\&logo=eslint\&logoColor=white)](https://eslint.org/)
+
+---
+
+## 👨‍💻 Team
+
+[![facebook Jompol](https://img.shields.io/badge/Jompol_Chuenarrom-1877F2?style=for-the-badge\&logo=facebook\&logoColor=white)](https://www.facebook.com/jompol.chuenrarom.9)
+[![github JOMPOL‐C](https://img.shields.io/badge/JOMPOL--C-181717?style=for-the-badge\&logo=github\&logoColor=white)](https://github.com/JOMPOL-C)
+
+[![facebook Pimpakarn](https://img.shields.io/badge/Pimpakarn_Wuthiweroj-1877F2?style=for-the-badge\&logo=facebook\&logoColor=white)](https://www.facebook.com/pimpakarn.wuthiweroj.96?locale=th_TH)
+[![github Chom‐rose](https://img.shields.io/badge/Chom--rose-ff69b4?style=for-the-badge\&logo=github\&logoColor=white)](https://github.com/Chom-rose)
+
+---
+
+> สร้างเพื่อเป็นโปรเจกต์แสดงความสามารถสำหรับฝึกงาน และต่อยอดเป็นแพลตฟอร์มเช่าชุดที่ใช้งานได้จริงในอนาคต 🎯
