@@ -1,4 +1,7 @@
-![Logo](LENDLY_logo.png)
+<p align="center">
+  <img src="LENDLY_logo.png" alt="LENDLY Logo" width="120" />
+</p>
+
 # LENDLY
 
 เว็บสำหรับ **เช่าชุดออนไลน์ + ระบบบริหารจัดการร้านค้า**
