@@ -29,7 +29,7 @@
 
 ---
 
-## 🛠 Tech Stack (ที่ใช้งานจริงในโปรเจกต์นี้)
+## 🛠 Tech Stack
 
 ### 🔙 Backend
 
