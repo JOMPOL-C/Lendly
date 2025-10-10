@@ -26,7 +26,8 @@ router.get("/products/:id/edit", productController.renderEditProduct);
 router.get("/products/:id", productController.getProductById);
 
 // แสดงสินค้าทั้งหมดที่หน้า home
-router.get("/", productController.getProducts);
+router.get('/home', (req, res) => productController.renderProductsPage(req, res, 'home'));
+router.get('/category', (req, res) => productController.renderProductsPage(req, res, 'category'));
 
 
 module.exports = router;

@@ -172,6 +172,8 @@ main {
     flex-direction: column;
     align-items: center;
     justify-content: center;
+
+
 }
 
 .index {
@@ -186,6 +188,7 @@ main {
     font-weight: bold;
     text-align: center;
 }
+
 /* Product */
 
 .product1 {
@@ -198,6 +201,7 @@ main {
     gap: 15px;
 }
 
+/* ===== การ์ดสินค้าเอฟเฟกต์ลอยขึ้นเมื่อ hover ===== */
 .product1 .pro {
     width: 23%;
     min-width: 250px;
@@ -205,19 +209,29 @@ main {
     border: 1px solid #eee;
     border-radius: 25px;
     cursor: pointer;
-    box-shadow: 20px 20px 30px rgba(0, 0, 0, 0.2);
+    background: #fff;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
     margin: 15px 0;
-    transition: 0.2s ease;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .product1 .pro:hover {
-    box-shadow: 20px 20px 30px rgba(0, 0, 0, 0.3);
+    transform: translateY(-10px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.25);
 }
 
+/* เพิ่มความนุ่มให้รูปภาพ */
 .product1 .pro img {
     width: 100%;
     border-radius: 20px;
+    transition: transform 0.3s ease;
 }
+
+/* เวลา hover แล้วรูปขยายเล็กน้อย */
+.product1 .pro:hover img {
+    transform: scale(1.03);
+}
+
 
 .product1 .pro .des {
     text-align: start;
@@ -248,6 +262,10 @@ main {
 .product1 .pro .btn-pro {
     display: flex;
     justify-content: space-between;
+}
+
+.product1 .pro .btn-pro :hover {
+    transform: scale(1.1);
 }
 
 .product1 .pro .btn {
@@ -450,16 +468,6 @@ footer .copyright {
     height: 2px;
     background: #7d4dff;
 }
-/* เฉพาะโปรไฟล์ใน navbar */
-.nav-profile-pic {
-  display: inline-block;
-  width: 35px !important;
-  height: 35px !important;
-  border-radius: 50% !important;
-  object-fit: cover !important;
-  border: 2px solid #fff;
-  vertical-align: middle;
-}
 
 
 
@@ -578,40 +586,4 @@ footer .copyright {
         width: 50px;
         height: 50px;
     }
-
-    #navbar .dropdown {
-        position: relative;
-      }
-      
-      #navbar .dropdown-menu {
-        display: none;
-        position: absolute;
-        top: 120%;
-        right: 0;
-        background: #fff;
-        list-style: none;
-        padding: 0;
-        margin: 0;
-        border: 1px solid #ddd;
-        border-radius: 6px;
-        min-width: 160px;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-      }
-      
-      #navbar .dropdown-menu li a {
-        display: block;
-        padding: 10px 15px;
-        text-decoration: none;
-        color: #333;
-      }
-      
-      #navbar .dropdown-menu li a:hover {
-        background-color: #f5f5f5;
-      }
-      
-      #navbar .dropdown.active .dropdown-menu {
-        display: block;
-      }
-      
-
 }

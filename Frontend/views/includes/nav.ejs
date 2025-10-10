@@ -14,24 +14,24 @@
       <li id="lg-bag"><a href="cart"><i class='bxr  bx-cart'></i> </a></li>
       <li id="lg-user" class="dropdown">
         <a href="#" class="user-icon">
-          <% if (user && user.profile_image) { %>
-            <img src="data:<%= user.profile_mime %>;base64,<%= user.profile_image %>"
-                 alt="Profile" class="nav-profile-pic">
-          <% } else { %>
-            <i class='bx bx-user'></i>
-          <% } %>
+          <% if (user && user.profile_image_url) { %>
+            <img src="<%= user.profile_image_url %>" alt="Profile" class="nav-profile-pic"
+              style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;">
+            <% } else { %>
+              <i class='bx bx-user'></i>
+              <% } %>
         </a>
         <ul class="dropdown-menu">
           <% if (!user) { %>
             <li><a href="/login">เข้าสู่ระบบ</a></li>
             <li><a href="/register">สมัครบัญชี</a></li>
-          <% } else { %>
-            <li><a href="/profile">จัดการโปรไฟล์</a></li>
-            <li><a href="/api/auth/logout">ออกจากระบบ</a></li>
-          <% } %>
+            <% } else { %>
+              <li><a href="/profile">จัดการโปรไฟล์</a></li>
+              <li><a href="/api/auth/logout">ออกจากระบบ</a></li>
+              <% } %>
         </ul>
       </li>
-      
+
 
 
 
@@ -43,5 +43,7 @@
     <i class='bxr  bx-cart'></i>
     <i class='bxr  bx-user'></i>
     <i id="bar" class="fas fa-outdent"></i>
+    <script src="/Frontend/public/js/script.js"></script>
   </div>
+
 </section>

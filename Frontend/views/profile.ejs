@@ -1,6 +1,6 @@
 <%- include('includes/head') %>
   <link rel="stylesheet" href="/styles/profile.css">
-  
+
   </head>
 
   <body>
@@ -19,20 +19,21 @@
 
               <!-- วงกลมโปรไฟล์ -->
               <label for="profile_image" class="profile-pic-label">
-                <% if (user.profile_image) { %>
-                  <img id="profilePreview"
-                    src="data:<%= user.profile_mime %>;base64,<%= user.profile_image.toString('base64') %>"
-                    alt="Profile" class="profile-pic">
+                <% if (user && user.profile_image_url) { %>
+                  <img id="profilePreview" src="<%= user.profile_image_url %>" alt="Profile" class="profile-pic"
+                    style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover;">
                   <% } else { %>
                     <i id="profilePreviewIcon" class='bx bxs-user-circle profile-icon'></i>
                     <% } %>
+              </label>
 
 
 
-                      <!-- icon กล้อง overlay -->
-                      <div class="camera-icon">
-                        <i class='bx bxs-camera'></i>
-                      </div>
+
+              <!-- icon กล้อง overlay -->
+              <div class="camera-icon">
+                <i class='bx bxs-camera'></i>
+              </div>
               </label>
             </div>
 
@@ -72,7 +73,7 @@
             <div class="form-group">
               <label>สัดส่วน (ซม.)</label>
               <div style="display:flex; gap:10px;">
-                <input type="number" name="bust" placeholder="อก" value="<%= user.proportion?.bust || "" %>">
+                <input type="number" name="chest" placeholder="อก" value="<%= user.proportion?.chest || "" %>">
                 <input type="number" name="waist" placeholder="เอว" value="<%= user.proportion?.waist || "" %>">
                 <input type="number" name="hips" placeholder="สะโพก" value="<%= user.proportion?.hips || "" %>">
               </div>

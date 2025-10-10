@@ -12,13 +12,13 @@
                 <section id="new_product" class="section-p1 product1">
                     <h2>ชุดที่มี</h2>
                     <p>สามารถดูแต่ละหมวดหมู่ได้ที่หมวดหมู่</p>
+
                     <div class="pro-container">
                         <% products.slice(0,4).forEach(p=> { %>
                             <div class="pro">
                                 <a href="/api/products/<%= p.product_id %>">
                                     <% if (p.images.length> 0) { %>
-                                        <img src="data:<%= p.images[0].image_mime %>;base64,<%= Buffer.from(p.images[0].image_data).toString('base64') %>"
-                                            alt="<%= p.product_name %>">
+                                        <img src="<%= p.images[0].image_url %>" alt="<%= p.product_name %>">
                                         <% } else { %>
                                             <img src="/images/no-image.png" alt="no image">
                                             <% } %>
@@ -37,21 +37,21 @@
                                         </h4>
                                         <% } %>
                                 </div>
-                            </div>
 
-
-                            <div class="btn-pro">
-                                <a href="#"><i class='bx bx-heart btn'></i></a>
-                                <a href="#"><i class="bx bx-cart btn"></i></a>
+                                <!-- ✅ ปุ่มหัวใจ + รถเข็นอยู่ข้างในกล่องสินค้า -->
+                                <div class="btn-pro">
+                                    <a href="#"><i class='bx bx-heart btn'></i></a>
+                                    <a href="#"><i class="bx bx-cart btn"></i></a>
+                                </div>
                             </div>
+                            <% }) %>
                     </div>
-                    <% }) %>
-                        </div>
                 </section>
 
 
-               
-                    </div>
+
+
+                </div>
                 </section>
             </main>
             <%- include('includes/footer') %>

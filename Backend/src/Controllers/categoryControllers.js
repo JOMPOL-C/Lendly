@@ -19,10 +19,14 @@ exports.createCategory = async (req, res) => {
 };
 
 //แสดงหมวดหมู่ 
-/*
-exports.listCategory = async (req, res) => {
-    const listCategory = await prisma.category.findMany();
-
-    res.send(listCategory);
-};
-*/
+exports.getCategories = async (req, res) => {
+    try {
+      const categories = await prisma.category.findMany({
+        orderBy: { category_name: 'asc' },
+      });
+      res.render('category', { categories });
+    } catch (err) {
+      console.error('Error fetching categories:', err);
+      res.status(500).send('Server Error');
+    }
+  };

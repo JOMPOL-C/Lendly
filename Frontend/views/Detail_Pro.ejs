@@ -1,75 +1,79 @@
 <%- include('includes/head') %>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-<link rel="stylesheet" href="/styles/review.css">
-</head>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <link rel="stylesheet" href="/styles/review.css">
+  </head>
 
-<body>
-  <%- include('includes/nav') %>
-  <main>
-    <section id="prodetails" class="section-p1">
-      <div class="single-pro-image">
-        <% if (product.images && product.images.length > 0) {
-          const mainImg = Buffer.from(product.images[0].image_data).toString('base64'); %>
-          <img src="data:<%= product.images[0].image_mime %>;base64,<%= mainImg %>" 
-               width="100%" id="MainImg" alt="<%= product.product_name %>">
-        <% } else { %>
-          <img src="/images/no-image.png" width="100%" id="MainImg" alt="no image">
-        <% } %>
+  <body>
+    <%- include('includes/nav') %>
+      <main>
+        <section id="prodetails" class="section-p1">
+          <div class="single-pro-image">
+            <% if (product.images && product.images.length> 0) { %>
+              <!-- ✅ ใช้ URL จาก Cloudinary -->
+              <img src="<%= product.images[0].image_url %>" width="100%" id="MainImg" alt="<%= product.product_name %>">
+              <% } else { %>
+                <img src="/images/no-image.png" width="100%" id="MainImg" alt="no image">
+                <% } %>
 
-        <div class="small-img-group ">
-          <% if (product.images && product.images.length > 0) { 
-            product.images.forEach((img, idx) => {
-              const base64 = Buffer.from(img.image_data).toString('base64'); %>
-              <div class="small-img-col">
-                <img src="data:<%= img.image_mime %>;base64,<%= base64 %>" 
-                     width="100%" class="small-img" alt="<%= product.product_name %>">
-              </div>
-          <% }) } %>
-        </div>
-      </div>
+                  <!-- ✅ แสดงภาพย่อย -->
+                  <div class="small-img-group">
+                    <% if (product.images && product.images.length> 1) { %>
+                      <% product.images.forEach((img, index)=> { %>
+                        <div class="small-img-col">
+                          <img src="<%= img.image_url %>" width="100%" class="small-img" alt="image <%= index %>">
+                        </div>
+                        <% }) %>
+                          <% } %>
+                  </div>
+          </div>
 
-      <div class="single-pro-details">
-        <h6><%= product.category ? product.category.category_name : 'ไม่ระบุหมวดหมู่' %></h6>
-        <h4><%= product.product_name %></h4>
-        <h2>Price</h2>
+          <div class="single-pro-details">
+            <h6>
+              <%= product.category ? product.category.category_name : 'ไม่ระบุหมวดหมู่' %>
+            </h6>
+            <h4>
+              <%= product.product_name %>
+            </h4>
+            <h2>Price</h2>
 
-        <label><input type="radio" name="mode" value="test" checked> เทส (2 วัน)</label>
-        <label><input type="radio" name="mode" value="pri"> ไพร (3 วัน)</label>
+            <label><input type="radio" name="mode" value="test" checked> เทส (2 วัน)</label>
+            <label><input type="radio" name="mode" value="pri"> ไพร (3 วัน)</label>
 
-        <select name="components" id="">
-          <option value="" disabled selected>เลือกของเช่า</option>
-          <option value="set-wig">ชุด วิก</option>
-          <option value="set-wig-prop">ชุด วิก พร๊อบ</option>
-          <option value="set-wig-shoe">ชุด วิก รองเท้า</option>
-          <option value="set-wig-prop-shoe">ชุด วิก พร๊อบ รองเท้า</option>
-          <option value="prop">พร๊อบ</option>
-          <option value="shoe">รองเท้า</option>
-        </select>
+            <select name="components" id="">
+              <option value="" disabled selected>เลือกของเช่า</option>
+              <option value="set-wig">ชุด วิก</option>
+              <option value="set-wig-prop">ชุด วิก พร๊อบ</option>
+              <option value="set-wig-shoe">ชุด วิก รองเท้า</option>
+              <option value="set-wig-prop-shoe">ชุด วิก พร๊อบ รองเท้า</option>
+              <option value="prop">พร๊อบ</option>
+              <option value="shoe">รองเท้า</option>
+            </select>
 
-        <div id="calendar"></div>
+            <div id="calendar"></div>
 
-        <button class="">Add to cart</button>
-      </div>
-    </section>
+            <button class="">Add to cart</button>
+          </div>
+        </section>
 
-    <!-- ส่วน tabdetail ไม่แก้ -->
-    <section id="tabdetail" class="section-p1">
-      ...
-    </section>
-  </main>
+        <!-- ส่วน tabdetail ไม่แก้ -->
+        <section id="tabdetail" class="section-p1">
+          ...
+        </section>
+      </main>
 
-  <%- include('includes/footer') %>
-  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-  <script src="/js/script.js"></script>
-  <script src="/js/booking.js"></script>
-  <script>
-    var MainImg = document.getElementById("MainImg");
-    var smallimg = document.getElementsByClassName("small-img");
-    for (let i = 0; i < smallimg.length; i++) {
-      smallimg[i].onclick = function () {
-        MainImg.src = smallimg[i].src;
-      };
-    }
-  </script>
-</body>
-</html>
+      <%- include('includes/footer') %>
+        <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+        <script src="/js/script.js"></script>
+        <script src="/js/booking.js"></script>
+        <script>
+          var MainImg = document.getElementById("MainImg");
+          var smallimg = document.getElementsByClassName("small-img");
+          for (let i = 0; i < smallimg.length; i++) {
+            smallimg[i].onclick = function () {
+              MainImg.src = smallimg[i].src;
+            };
+          }
+        </script>
+  </body>
+
+  </html>

@@ -1,16 +1,14 @@
 const prisma = require('../../prisma/prisma');
 const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
+const cloudinary = require('cloudinary').v2;
 
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => cb(null, path.join(__dirname, "../../uploads")),
-    filename: (req, file, cb) => cb(null, Date.now() + path.extname(file.originalname))
-});
+// memory storage (ไม่ต้องเขียนไฟล์ลง disk)
+const storage = multer.memoryStorage();
+exports.upload = multer({ storage }).array("product_images", 10); // อัปได้สูงสุด 10 รูป
 
-exports.upload = multer({ storage }).array("product_images", 10);
-// 10 = จำกัดอัปโหลดได้สูงสุด 10 รูป
-
+// ฟังก์ชันแปลง buffer → data URI
+const bufferToDataUri = (file) =>
+    `data:${file.mimetype};base64,${file.buffer.toString('base64')}`;
 
 // POST /api/products → เพิ่มสินค้า
 exports.createProduct = async (req, res) => {
@@ -37,7 +35,15 @@ exports.createProduct = async (req, res) => {
 
         console.log("📦 req.body:", req.body);
 
-        // 1) สร้างสัดส่วนก่อน
+        // ✅ 1) อัปโหลดรูปทั้งหมดขึ้น Cloudinary (โฟลเดอร์ lendly_products)
+        const uploadPromises = files.map(file =>
+            cloudinary.uploader.upload(bufferToDataUri(file), {
+                folder: "lendly_products",
+            })
+        );
+        const uploadResults = await Promise.all(uploadPromises);
+
+        // ✅ 2) สร้างสัดส่วน
         const proportion = await prisma.Proportion_product.create({
             data: {
                 chest: chest ? parseFloat(chest) : null,
@@ -46,10 +52,9 @@ exports.createProduct = async (req, res) => {
             }
         });
 
-        // 2) เตรียมราคาสินค้า
+        // ✅ 3) เตรียมราคาสินค้า
         const priceData = [];
 
-        // ราคาชุด
         if (price_costume) {
             priceData.push({
                 type: "suit",
@@ -60,15 +65,12 @@ exports.createProduct = async (req, res) => {
             });
         }
 
-        // ราคาวิก
         if (price_wig) {
             priceData.push({
                 type: "wig",
                 price_test: parseFloat(price_wig),
                 price_pri: parseFloat(price_wig)
             });
-
-            // ✅ ถ้ามีทั้งชุด + วิก ให้เพิ่มราคาพิเศษ suit_wig
             if (price_costume) {
                 priceData.push({
                     type: "suit_wig",
@@ -78,7 +80,6 @@ exports.createProduct = async (req, res) => {
             }
         }
 
-        // ราคาพร็อพเดี่ยว
         if (price_prop) {
             priceData.push({
                 type: "solo_prop",
@@ -87,7 +88,6 @@ exports.createProduct = async (req, res) => {
             });
         }
 
-        // ราคารองเท้าเดี่ยว
         if (price_shoe) {
             priceData.push({
                 type: "solo_shoe",
@@ -96,7 +96,6 @@ exports.createProduct = async (req, res) => {
             });
         }
 
-        // ✅ ราคา addon พิเศษ (พร็อพ)
         if (price_pry_extra) {
             priceData.push({
                 type: "addon_prop",
@@ -105,7 +104,6 @@ exports.createProduct = async (req, res) => {
             });
         }
 
-        // ✅ ราคา addon พิเศษ (รองเท้า)
         if (price_shoe_extra) {
             priceData.push({
                 type: "addon_shoe",
@@ -114,23 +112,27 @@ exports.createProduct = async (req, res) => {
             });
         }
 
-        // 3) สร้างสินค้า + ผูกกับสัดส่วน
+        // ✅ 4) สร้างสินค้า + ผูกกับสัดส่วน + เก็บรูปจาก Cloudinary
         await prisma.Product.create({
             data: {
                 product_name,
                 story_name,
                 shipping_info,
-                categoryId,
-                ppId: proportion.proportion_product_id,
+                category: { connect: { category_id: categoryId } },
+                // ✅ ใช้ relation แทนการอ้าง FK โดยตรง
+                size: {
+                    connect: { proportion_product_id: proportion.proportion_product_id }
+                },
                 prices: { create: priceData },
                 images: {
-                    create: files.map(f => ({
-                        image_data: fs.readFileSync(f.path),
-                        image_mime: f.mimetype
+                    create: uploadResults.map(r => ({
+                        image_url: r.secure_url,
+                        cloudinary_id: r.public_id
                     }))
                 }
             }
         });
+
 
         res.redirect("/");
     } catch (err) {
@@ -139,6 +141,7 @@ exports.createProduct = async (req, res) => {
     }
 };
 
+// PUT /api/products/:id/update → แก้ไขสินค้า
 exports.updateProduct = async (req, res) => {
     try {
         const { id } = req.params;
@@ -162,13 +165,27 @@ exports.updateProduct = async (req, res) => {
 
         const files = req.files || [];
 
-        // 1) อัปเดตสัดส่วน
         const product = await prisma.Product.findUnique({
-            where: { product_id: id }
+            where: { product_id: parseInt(id) },
+            include: { images: true }
         });
 
         if (!product) return res.status(404).send("ไม่พบสินค้า");
 
+        // ✅ ลบรูปเก่าออกจาก Cloudinary
+        for (const img of product.images) {
+            await cloudinary.uploader.destroy(img.cloudinary_id);
+        }
+
+        // ✅ อัปโหลดรูปใหม่ขึ้น Cloudinary
+        const uploadPromises = files.map(file =>
+            cloudinary.uploader.upload(bufferToDataUri(file), {
+                folder: "lendly_products",
+            })
+        );
+        const uploadResults = await Promise.all(uploadPromises);
+
+        // ✅ อัปเดตสัดส่วน
         await prisma.Proportion_product.update({
             where: { proportion_product_id: product.ppId },
             data: {
@@ -178,7 +195,7 @@ exports.updateProduct = async (req, res) => {
             }
         });
 
-        // 2) เตรียมราคาสินค้าใหม่ (เหมือน create)
+        // ✅ สร้างชุดข้อมูลราคาใหม่
         const priceData = [];
         if (price_costume) {
             priceData.push({
@@ -232,24 +249,23 @@ exports.updateProduct = async (req, res) => {
             });
         }
 
-        // 3) ลบ price เก่า + ใส่ใหม่ (วิธีง่ายสุด)
-        await prisma.ProductImage.deleteMany({ where: { productId: parseInt(id, 10) } });
+        // ✅ ลบข้อมูลราคาเก่า + รูปเก่าใน DB
+        await prisma.Price.deleteMany({ where: { productId: parseInt(id) } });
+        await prisma.ProductImage.deleteMany({ where: { productId: parseInt(id) } });
 
-        // 4) อัปเดต Product
+        // ✅ อัปเดตข้อมูลสินค้า
         await prisma.Product.update({
-            where: { product_id: parseInt(id, 10) },
+            where: { product_id: parseInt(id) },
             data: {
                 product_name,
                 story_name,
                 shipping_info,
-                categoryId,
-                prices: {
-                    create: priceData
-                },
+                categoryId: parseInt(categoryId),
+                prices: { create: priceData },
                 images: {
-                    create: files.map(f => ({
-                        image_data: fs.readFileSync(f.path),
-                        image_mime: f.mimetype
+                    create: uploadResults.map(r => ({
+                        image_url: r.secure_url,
+                        cloudinary_id: r.public_id
                     }))
                 }
             }
@@ -261,6 +277,7 @@ exports.updateProduct = async (req, res) => {
         res.status(500).send("อัปเดตสินค้าไม่สำเร็จ");
     }
 };
+
 
 // GET /products/add → โหลดฟอร์มเพิ่มสินค้า
 exports.renderAddProduct = async (req, res) => {
@@ -277,27 +294,27 @@ exports.renderAddProduct = async (req, res) => {
 // GET /products/:id → รายละเอียดสินค้า
 exports.getProductById = async (req, res) => {
     try {
-      const { id } = req.params;
-      const product = await prisma.Product.findUnique({
-        where: { product_id: parseInt(id) },
-        include: {
-          images: true,
-          prices: true,
-          category: true
+        const { id } = req.params;
+        const product = await prisma.Product.findUnique({
+            where: { product_id: parseInt(id) },
+            include: {
+                images: true,
+                prices: true,
+                category: true
+            }
+        });
+
+        if (!product) {
+            return res.status(404).send("ไม่พบสินค้า");
         }
-      });
-  
-      if (!product) {
-        return res.status(404).send("ไม่พบสินค้า");
-      }
-  
-      res.render("Detail_Pro", { product });
+
+        res.render("Detail_Pro", { product });
     } catch (err) {
-      console.error("Error getProductById:", err);
-      res.status(500).send("โหลดรายละเอียดสินค้าไม่สำเร็จ");
+        console.error("Error getProductById:", err);
+        res.status(500).send("โหลดรายละเอียดสินค้าไม่สำเร็จ");
     }
-  };
-  
+};
+
 
 // GET /products/:id/edit → render หน้าแก้ไขสินค้า
 exports.renderEditProduct = async (req, res) => {
@@ -326,18 +343,35 @@ exports.renderEditProduct = async (req, res) => {
 // GET / → หน้า home พร้อมสินค้า
 exports.getProducts = async (req, res) => {
     try {
-      const products = await prisma.Product.findMany({
-        include: {
-          images: true,
-          prices: true
-        },
-        orderBy: { product_id: "desc" }
-      });
-  
-      res.render("home", { products });
+        const products = await prisma.Product.findMany({
+            include: {
+                images: true,
+                prices: true
+            },
+            orderBy: { product_id: "desc" }
+        });
+
+        res.render("home", { products });
     } catch (err) {
-      console.error("Error getProducts:", err);
-      res.status(500).send("โหลดสินค้าล้มเหลว");
+        console.error("Error getProducts:", err);
+        res.status(500).send("โหลดสินค้าล้มเหลว");
     }
-  };
-  
+};
+
+// GET ทุกหน้าที่มีสินค้า
+exports.renderProductsPage = async (req, res, page) => {
+    try {
+        const products = await prisma.Product.findMany({
+            include: {
+                images: true,
+                prices: true
+            },
+            orderBy: { product_id: "desc" }
+        });
+
+        res.render(page, { products });
+    } catch (err) {
+        console.error(`Error render${page}:`, err);
+        res.status(500).send("โหลดสินค้าล้มเหลว");
+    }
+};

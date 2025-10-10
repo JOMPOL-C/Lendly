@@ -8,13 +8,23 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const authMiddleware = require('./src/middlewares/authMiddleware');
 const setUser = require('./src/middlewares/setUser');
-const pagerender = require('./src/utils/pagerender');
+const cloudinary = require('cloudinary').v2;
 
+const pagerender = require('./src/utils/pagerender');
 const authController = require('./src/Controllers/authControllers');
 const productController = require('./src/Controllers/productControllers');
 
 
 require('dotenv').config();
+
+
+// cloudinary config
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+  secure: true,
+});
 
 
 // middlewares
@@ -37,21 +47,21 @@ app.set("views", path.join(__dirname, "../Frontend/views"));
 
 // render page
 app.get('/', productController.getProducts);
-app.get('/favorites',pagerender.renderfav);
-app.get('/cart',pagerender.rendercart);
-app.get('/all_review',pagerender.renderall_review);
-app.get('/category',pagerender.rendercategory);
-app.get('/Detail_Pro',pagerender.renderDetail_Pro);
-app.get('/my_rentals',pagerender.rendermy_rentals);
-app.get('/login',pagerender.renderlogin);
-app.get('/register',pagerender.renderregister);
-app.get('/forgotpassword',pagerender.renderforgotpassword);
-app.get('/resetpassword',pagerender.renderresetpassword);
-app.get('/otpVerify',pagerender.renderotpVerify);
+app.get('/favorites', pagerender.renderfav);
+app.get('/cart', pagerender.rendercart);
+app.get('/all_review', pagerender.renderall_review);
+app.get('/category', (req, res) => productController.renderProductsPage(req, res, 'category'));
+app.get('/Detail_Pro', pagerender.renderDetail_Pro);
+app.get('/my_rentals', pagerender.rendermy_rentals);
+app.get('/login', pagerender.renderlogin);
+app.get('/register', pagerender.renderregister);
+app.get('/forgotpassword', pagerender.renderforgotpassword);
+app.get('/resetpassword', pagerender.renderresetpassword);
+app.get('/otpVerify', pagerender.renderotpVerify);
 
 app.get('/profile', authController.getProfile);
 
-app.get('/detail_product',pagerender.renderdetail_product);
+app.get('/detail_product', pagerender.renderdetail_product);
 
 
 // app.get('/add_product',pagerender.renderadd_product);
@@ -68,7 +78,10 @@ fs.readdirSync(path.join(__dirname, "src/routers"))
     app.use("/api", route);
   });
 
+cloudinary.api.ping()
+  .then(res => console.log("✅ Cloudinary OK:", res))
+  .catch(err => console.error("❌ Cloudinary error:", err));
 
 app.listen(8000, () => {
-    console.log('Server is running on port 8000');
+  console.log('Server is running on http://localhost:8000');
 });

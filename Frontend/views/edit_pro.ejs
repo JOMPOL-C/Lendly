@@ -39,8 +39,9 @@
                             <input type="file" id="product_image" name="product_image" accept="image/*">
                             <% if (product.product_image) { %>
                                 <p>รูปเดิม:</p>
-                                <img src="data:<%= product.image_mime %>;base64,<%= product.product_image.toString('base64') %>"
-                                    alt="Product Image" style="max-width:150px;">
+                                <img src="<%= product.images?.[0]?.image_url %>" alt="Product Image"
+                                    style="max-width:150px;">
+                                alt="Product Image" style="max-width:150px;">
                                 <% } %>
                         </div>
 

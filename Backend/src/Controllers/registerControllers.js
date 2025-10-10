@@ -3,17 +3,18 @@ const bcrypt = require("bcryptjs");
 
 exports.register = async (req, res) => {
   try {
-    const { 
-      name, 
-      last_name, 
-      customer_email, 
-      customer_phone, 
-      username, 
-      password, 
-      confirm_password 
+    const {
+      name,
+      last_name,
+      customer_email,
+      customer_phone,
+      username,
+      password,
+      confirm_password,
+      birthday
     } = req.body;
 
-    if (!name || !last_name || !customer_email || !customer_phone || !username || !password || !confirm_password) {
+    if (!name || !last_name || !customer_email || !customer_phone || !username || !password || !confirm_password || !birthday) {
       return res.status(400).json({ error: "กรุณากรอกข้อมูลให้ครบทุกช่อง" });
     }
 
@@ -25,6 +26,12 @@ exports.register = async (req, res) => {
       return res.status(400).json({ error: "รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร" });
     }
 
+    // ✅ คำนวณอายุ
+    const birthDate = new Date(birthday);
+    const ageDiffMs = Date.now() - birthDate.getTime();
+    const ageDate = new Date(ageDiffMs);
+    const age = Math.abs(ageDate.getUTCFullYear() - 1970);
+
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = await prisma.Customer.create({
@@ -35,23 +42,25 @@ exports.register = async (req, res) => {
         customer_phone,
         username,
         password: hashedPassword,
+        birthday: new Date(birthday),
+        age,
         address: "",
         id_card_number: null,
-        card_image: null
+        role: "USER"
       }
     });
 
     return res.status(201).json({ message: "สมัครสมาชิกสำเร็จ", user });
 
   } catch (err) {
-    // ✅ จัดการ Prisma unique error
     if (err.code === "P2002") {
-      return res.status(400).json({ error: `${err.meta.target} ซ้ำ ` });
+      return res.status(400).json({ error: `${err.meta.target} ซ้ำ` });
     }
     console.error(err);
     return res.status(500).json({ error: "Server error" });
   }
 };
+
 
 // ลบ account
 exports.deleteAccount = async (req, res) => {
