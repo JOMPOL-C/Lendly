@@ -358,20 +358,22 @@ exports.getProducts = async (req, res) => {
     }
 };
 
-// GET ทุกหน้าที่มีสินค้า
-exports.renderProductsPage = async (req, res, page) => {
+// GET โชว์สินค้าในหน้า category
+exports.renderProductsPage = async (req, res) => {
     try {
-        const products = await prisma.Product.findMany({
-            include: {
-                images: true,
-                prices: true
-            },
-            orderBy: { product_id: "desc" }
-        });
-
-        res.render(page, { products });
+      const categories = await prisma.category.findMany({
+        orderBy: { category_name: 'asc' }
+      });
+  
+      const products = await prisma.product.findMany({
+        include: { images: true, prices: true, category: true },
+        orderBy: { product_id: 'desc' }
+      });
+  
+      res.render("category", { categories, products }); // ✅ ส่งทั้งคู่
     } catch (err) {
-        console.error(`Error render${page}:`, err);
-        res.status(500).send("โหลดสินค้าล้มเหลว");
+      console.error("Error renderProductsPage:", err);
+      res.status(500).send("โหลดสินค้าล้มเหลว");
     }
-};
+  };
+  

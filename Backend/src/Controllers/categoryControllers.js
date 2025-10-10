@@ -30,3 +30,23 @@ exports.getCategories = async (req, res) => {
       res.status(500).send('Server Error');
     }
   };
+
+//แสดงหมวดหมู่ กับ สินค้าตามหมวดหมู่
+exports.getCategoryWithProducts = async (req, res) => {
+    try {
+        const categoryId = req.params.id;
+        const categories = await prisma.category.findMany({
+            orderBy: { category_name: 'asc' }
+        });
+        const products = await prisma.product.findMany({
+            where: { categoryId },
+            include: { images: true, prices: true },
+            orderBy: { product_id: 'desc' }
+        });
+        res.render('category', { categories, products });
+    } catch (err) {
+        console.error('Error fetching category and products:', err);
+        res.status(500).send('Server Error');
+    }
+};
+
