@@ -132,3 +132,4 @@ toggleConfirmPassword.addEventListener("click", () => {
   toggleConfirmPassword.classList.toggle("bx-show");
   toggleConfirmPassword.classList.toggle("bx-hide");
 });
+

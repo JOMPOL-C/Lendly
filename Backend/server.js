@@ -58,6 +58,7 @@ app.get('/register', pagerender.renderregister);
 app.get('/forgotpassword', pagerender.renderforgotpassword);
 app.get('/resetpassword', pagerender.renderresetpassword);
 app.get('/otpVerify', pagerender.renderotpVerify);
+app.get('/Detail_Ren', pagerender.renderDetail_Rnd);
 
 app.get('/profile', authController.getProfile);
 
