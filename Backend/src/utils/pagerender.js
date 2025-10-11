@@ -19,6 +19,8 @@ module.exports = {
     renderadd_product: redderPage('add_pro', 'Add Product Page'),
     renderdetail_product: redderPage('Detail_Pro', 'Detail Product Page'),
     renderedit_product: redderPage('edit_pro', 'Edit Product Page'),
-    // Detail_Ren
     renderDetail_Rnd: redderPage('Detail_Ren', 'Detail Rental Page'),
+    renderWrite_review: redderPage('write_review', 'Write Review Page'),
+    renderReturn_order: redderPage('return_order', 'Return Order Page'),
+    renderEdit_product: redderPage('edit_pro', 'Edit Product Page'),
 };

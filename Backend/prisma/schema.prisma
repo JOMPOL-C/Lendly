@@ -334,7 +334,7 @@ enum Shipping_shipping_status {
 }
 
 enum Calender_rental_status {
-  PENDING_PAYMENT @map("รอชำระเงิน")
+  WAITING_CONFIRM  @map("รอยืนยันจากร้าน")
   RENTED          @map("กำลังเช่า")
   RETURNED        @map("คืนแล้ว")
   CANCELLED       @map("ยกเลิก")

@@ -5,11 +5,13 @@ module.exports = (req, res, next) => {
   const token = req.cookies.token;
   if (!token) {
     res.locals.user = null; // ถ้าไม่มี token ให้ตั้งค่า user เป็น null
+    req.user = null;
     return next();
   }
 
   // ตรวจสอบและถอดรหัส token
   try {
+    console.log("Auth middleware triggered:", req.path);
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     res.locals.user = decoded; // ตั้งค่า user จากข้อมูลที่ถอดรหัสได้
     req.user = decoded; // ตั้งค่า req.user เพื่อให้ controllers ใช้งานได้

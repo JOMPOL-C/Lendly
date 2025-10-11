@@ -29,24 +29,22 @@ cloudinary.config({
 
 // middlewares
 app.use(cookieParser());
-app.use(authMiddleware);
 app.use(express.static(path.join(__dirname, "../Frontend/public")));
 app.use(morgan('dev'));
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(setUser); // 👈 ใช้ setUser หลัง authMiddleware
+
+app.use(require("./src/middlewares/authMiddleware"));
+app.use(require("./src/middlewares/setUser"));
+
 app.use("/", require("./src/routers/checkDuplicate"));
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
-
-
-
 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "../Frontend/views"));
 
 // render page
-app.get('/', productController.getProducts);
 app.get('/favorites', pagerender.renderfav);
 app.get('/cart', pagerender.rendercart);
 app.get('/all_review', pagerender.renderall_review);
@@ -59,18 +57,11 @@ app.get('/forgotpassword', pagerender.renderforgotpassword);
 app.get('/resetpassword', pagerender.renderresetpassword);
 app.get('/otpVerify', pagerender.renderotpVerify);
 app.get('/Detail_Ren', pagerender.renderDetail_Rnd);
-
-app.get('/profile', authController.getProfile);
-
+app.get('/write_review', pagerender.renderWrite_review);
+app.get('/return_order', pagerender.renderReturn_order);
 app.get('/detail_product', pagerender.renderdetail_product);
+app.get('/edit_product', pagerender.renderedit_product);
 
-
-// app.get('/add_product',pagerender.renderadd_product);
-app.get('/add_product', productController.renderAddProduct);
-
-
-
-// route
 fs.readdirSync(path.join(__dirname, "src/routers"))
   .filter(file => file.endsWith(".js"))
   .forEach((file) => {
@@ -78,6 +69,13 @@ fs.readdirSync(path.join(__dirname, "src/routers"))
     console.log("👉 Loaded file:", file);
     app.use("/api", route);
   });
+
+app.get('/', productController.getProducts); // หน้า Home แสดงสินค้าทั้งหมด
+app.get('/profile', authController.getProfile); // profile ต้อง login ก่อน
+app.get('/add_product', productController.renderAddProduct);
+
+app.use(authMiddleware); // ตรวจสอบ JWT และตั้งค่า res.locals.user
+app.use(setUser); // ตั้งค่า req.user สำหรับ controllers
 
 cloudinary.api.ping()
   .then(res => console.log("✅ Cloudinary OK:", res))
