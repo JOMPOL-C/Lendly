@@ -3,7 +3,7 @@ const prisma = require('../../prisma/prisma');
 // ✅ ดึงข้อมูลการเช่าทั้งหมด
 exports.getRentals = async (req, res) => {
     try {
-        const rentals = await prisma.calender.findMany({
+        const rentals = await prisma.Rentals.findMany({
             include: {
                 customer: true,
                 product: true,
@@ -34,7 +34,7 @@ exports.createRental = async (req, res) => {
       }
   
       // เช็กวันชน
-      const overlap = await prisma.calender.findFirst({
+      const overlap = await prisma.Rentals.findFirst({
         where: {
           productId: Number(productId),
           rental_status: { notIn: ['CANCELLED', 'RETURNED'] },
@@ -50,7 +50,7 @@ exports.createRental = async (req, res) => {
       }
   
       // ✅ สร้างการเช่าใหม่ (รอยืนยันจากร้าน)
-      const rental = await prisma.calender.create({
+      const rental = await prisma.Rentals.create({
         data: {
           customerId: Number(customerId),
           productId: Number(productId),
@@ -82,7 +82,7 @@ exports.updateRental = async (req, res) => {
         if (rental_end_date) updateData.rental_end_date = new Date(rental_end_date);
         if (rental_status) updateData.rental_status = rental_status;
 
-        const rental = await prisma.calender.update({
+        const rental = await prisma.Rentals.update({
             where: { rental_id: Number(id) },
             data: updateData,
         });
@@ -99,7 +99,7 @@ exports.deleteRental = async (req, res) => {
     try {
         const { id } = req.params;
 
-        await prisma.calender.delete({
+        await prisma.Rentals.delete({
             where: { rental_id: Number(id) },
         });
 
