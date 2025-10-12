@@ -2,6 +2,7 @@
     <link rel="stylesheet" href="/styles/rental.css">
     <link rel="stylesheet" href="/styles/review.css">
     <link rel="stylesheet" href="/styles/add_product.css">
+    <link rel="stylesheet" href="/styles/edit_product.css">
     </head>
 
     <body>
@@ -25,25 +26,37 @@
                         <div class="form-group">
                             <label>สัดส่วน (ซม.)</label>
                             <div style="display:flex; gap:10px;">
-                                <input type="number" name="chest" value="<%= product.proportion?.chest %>"
-                                    placeholder="อก" step="0.1">
-                                <input type="number" name="waist" value="<%= product.proportion?.waist %>"
-                                    placeholder="เอว" step="0.1">
-                                <input type="number" name="hips" value="<%= product.proportion?.hips %>"
-                                    placeholder="สะโพก" step="0.1">
+                                <input type="number" name="chest" value="<%= product.size?.chest %>" placeholder="อก"
+                                    step="0.1">
+                                <input type="number" name="waist" value="<%= product.size?.waist %>" placeholder="เอว"
+                                    step="0.1">
+                                <input type="number" name="hips" value="<%= product.size?.hips %>" placeholder="สะโพก"
+                                    step="0.1">
                             </div>
                         </div>
 
                         <div class="form-group">
-                            <label for="product_image">อัปโหลดรูป</label>
-                            <input type="file" id="product_image" name="product_image" accept="image/*">
-                            <% if (product.product_image) { %>
-                                <p>รูปเดิม:</p>
-                                <img src="<%= product.images?.[0]?.image_url %>" alt="Product Image"
-                                    style="max-width:150px;">
-                                alt="Product Image" style="max-width:150px;">
+                            <label for="product_images">อัปโหลดรูปใหม่ (สูงสุด 10 รูป)</label>
+                            <input type="file" id="product_images" name="product_images" accept="image/*" multiple>
+
+                            <% if (product.images && product.images.length> 0) { %>
+                                <p style="margin-top:10px;">รูปเดิม:</p>
+                                <div id="old-images" style="display:flex; gap:10px; flex-wrap:wrap;">
+                                    <% product.images.forEach(img=> { %>
+                                        <div class="image-box" data-id="<%= img.image_id %>"
+                                            style="position:relative; display:inline-block;">
+                                            <img src="<%= img.image_url %>" alt="Product Image"
+                                                style="max-width:150px; border-radius:10px;">
+                                            <button type="button" class="remove-btn" >×</button>
+                                        </div>
+                                        <% }) %>
+                                </div>
                                 <% } %>
                         </div>
+
+                        <!-- 👇 จะถูกเติม input hidden ตอนคลิกลบ -->
+                        <div id="removed-container"></div>
+
 
                         <div class="form-group">
                             <label>รายละเอียดสินค้า</label>
@@ -89,14 +102,14 @@
                         <div class="form-group">
                             <label>ของให้เช่า</label>
                             <div class="checkbox-group">
-                                <label><input type="checkbox" name="rentalType[]" value="costume"
+                                <label><input type="checkbox" name="rentalType[]" id="rentCostume" value="costume"
                                         <%=product.prices.some(p=> p.type === 'suit') ? 'checked' : '' %>> ชุด</label>
-                                <label><input type="checkbox" name="rentalType[]" value="wig" <%=product.prices.some(p=>
-                                    p.type === 'wig') ? 'checked' : '' %>> วิก</label>
-                                <label><input type="checkbox" name="rentalType[]" value="prop"
+                                <label><input type="checkbox" name="rentalType[]" id="rentWig" value="wig"
+                                        <%=product.prices.some(p=> p.type === 'wig') ? 'checked' : '' %>> วิก</label>
+                                <label><input type="checkbox" name="rentalType[]" id="rentProp" value="prop"
                                         <%=product.prices.some(p=> p.type === 'solo_prop') ? 'checked' : '' %>>
                                     พร็อพ</label>
-                                <label><input type="checkbox" name="rentalType[]" value="shoe"
+                                <label><input type="checkbox" name="rentalType[]" id="rentShoe" value="shoe"
                                         <%=product.prices.some(p=> p.type === 'solo_shoe') ? 'checked' : '' %>>
                                     รองเท้า</label>
                             </div>
@@ -115,7 +128,7 @@
                         </div>
 
                         <div id="priceProp" class="price-field">
-                            <label>ราคาเช่าพร๊อบ</label>
+                            <label>ราคาเช่าพร็อพ</label>
                             <input type="number" name="price_prop"
                                 value="<%= product.prices.find(p => p.type === 'solo_prop')?.price_test || '' %>">
                         </div>
@@ -135,9 +148,9 @@
                         <div class="form-group">
                             <label>สถานะสินค้า</label>
                             <select name="status" required>
-                                <option value="active" <%=product.status==="active" ? "selected" : "" %>>เปิดให้เช่า
+                                <option value="active" <%=product.product_status ? "selected" : "" %>>เปิดให้เช่า
                                 </option>
-                                <option value="inactive" <%=product.status==="inactive" ? "selected" : "" %>>ปิดการเช่า
+                                <option value="inactive" <%=!product.product_status ? "selected" : "" %>>ปิดการเช่า
                                 </option>
                             </select>
                         </div>
@@ -148,10 +161,31 @@
             </main>
 
             <%- include('includes/footer') %>
-            <script src="/js/script.js"></script>
-            <script src="/js/register.js"></script>
-            <script src="/js/add_product.js"></script>
-            
+                <script src="/js/script.js"></script>
+                <script src="/js/add_product.js"></script>
+                <script>
+                    document.addEventListener("DOMContentLoaded", () => {
+                        const oldImages = document.querySelectorAll(".image-box");
+                        const removedContainer = document.getElementById("removed-container");
+
+                        oldImages.forEach(box => {
+                            const btn = box.querySelector(".remove-btn");
+                            btn.addEventListener("click", () => {
+                                const imageId = box.getAttribute("data-id");
+
+                                // สร้าง hidden input เพื่อส่ง id ของรูปที่จะลบ
+                                const input = document.createElement("input");
+                                input.type = "hidden";
+                                input.name = "removeImages";
+                                input.value = imageId;
+                                removedContainer.appendChild(input);
+
+                                // ลบรูปออกจากหน้า (ไม่ reload)
+                                box.remove();
+                            });
+                        });
+                    });
+                </script>
 
     </body>
 

@@ -13,6 +13,7 @@ const cloudinary = require('cloudinary').v2;
 const pagerender = require('./src/utils/pagerender');
 const authController = require('./src/Controllers/authControllers');
 const productController = require('./src/Controllers/productControllers');
+const productControllersPage = require('./src/Controllers/productControllersPage');
 
 
 require('dotenv').config();
@@ -49,7 +50,7 @@ app.set("views", path.join(__dirname, "../Frontend/views"));
 app.get('/favorites', pagerender.renderfav);
 app.get('/cart', pagerender.rendercart);
 app.get('/all_review', pagerender.renderall_review);
-app.get('/category', (req, res) => productController.renderProductsPage(req, res, 'category'));
+app.get('/category', (req, res) => productControllersPage.renderProductsPage(req, res, 'category'));
 app.get('/Detail_Pro', pagerender.renderDetail_Pro);
 app.get('/my_rentals', pagerender.rendermy_rentals);
 app.get('/login', pagerender.renderlogin);
@@ -71,10 +72,10 @@ fs.readdirSync(path.join(__dirname, "src/routers"))
     app.use("/api", route);
   });
 
-app.get('/', productController.getProducts); // หน้า Home แสดงสินค้าทั้งหมด
+app.get('/', productControllersPage.getProducts); // หน้า Home แสดงสินค้าทั้งหมด
 app.get('/profile', authController.getProfile); // profile ต้อง login ก่อน
 app.get('/add_product', productController.renderAddProduct);
-
+app.get('/admin/products', productController.renderAdminAllProducts);
 
 app.use(authMiddleware); // ตรวจสอบ JWT และตั้งค่า res.locals.user
 app.use(setUser); // ตั้งค่า req.user สำหรับ controllers

@@ -1,0 +1,79 @@
+<%- include('includes/head') %>
+    <link rel="stylesheet" href="/styles/all_product.css">
+    </head>
+
+    <body>
+        <%- include('includes/nav') %>
+
+            <main class="section-p1">
+                <h2>จัดการสินค้า</h2>
+
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>ภาพสินค้า</th>
+                            <th>ชื่อสินค้า</th>
+                            <th>หมวดหมู่</th>
+                            <th>ราคาเริ่มต้น</th>
+                            <th>จัดการ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% products.forEach(p=> { %>
+                            <tr>
+                                <td>
+                                    <%= p.product_id %>
+                                </td>
+                                <td>
+                                    <% if (p.images && p.images.length> 0) { %>
+                                        <img src="<%= p.images[0].image_url %>" alt="img" class="thumb">
+                                        <% } else { %>
+                                            <span>ไม่มีภาพ</span>
+                                            <% } %>
+                                </td>
+                                <td>
+                                    <%= p.product_name %>
+                                </td>
+                                <td>
+                                    <%= p.category?.category_name || '-' %>
+                                </td>
+                                <td>
+                                    <% if (p.prices && p.prices.length> 0) { %>
+                                        ฿<%= p.prices[0].price_test %>
+                                            <% } else { %>
+                                                -
+                                                <% } %>
+                                </td>
+                                <td>
+                                    <a href="/api/products/<%= p.product_id %>/edit" class="btn-edit">แก้ไข</a>
+                                    <button class="btn-delete" data-id="<%= p.product_id %>">ลบ</button>
+                                </td>
+                            </tr>
+                            <% }) %>
+                    </tbody>
+                </table>
+            </main>
+
+            <%- include('includes/footer') %>
+
+                <script>
+                    // ลบสินค้า
+                    document.querySelectorAll('.btn-delete').forEach(btn => {
+                        btn.addEventListener('click', async () => {
+                            if (!confirm('คุณแน่ใจหรือไม่ที่จะลบสินค้านี้?')) return;
+
+                            const id = btn.dataset.id;
+                            const res = await fetch(`/api/products/${id}/delete`, { method: 'DELETE' });
+                            if (res.ok) {
+                                alert('ลบสินค้าสำเร็จ');
+                                location.reload();
+                            } else {
+                                alert('ลบสินค้าไม่สำเร็จ');
+                            }
+                        });
+                    });
+                </script>
+    </body>
+
+    </html>
