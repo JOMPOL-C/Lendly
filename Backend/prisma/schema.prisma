@@ -32,13 +32,16 @@ enum Calender_rental_status {
 
 // ประเภทของราคาสินค้า
 enum ProductPrice_status {
-  suit       @map("ชุด")
-  wig        @map("วิก")
-  suit_wig   @map("ชุด+วิก")
-  addon_prop @map("พร็อพเสริม")
-  addon_shoe @map("รองเท้า")
-  solo_prop  @map("พร็อพเดี่ยว")
-  solo_shoe  @map("รองเท้าเดี่ยว")
+  suit               @map("ชุด")
+  wig                @map("วิก")
+  suit_wig           @map("ชุด+วิก")
+  suit_wig_prop      @map("ชุด+วิก+พร็อพ")
+  suit_wig_shoe      @map("ชุด+วิก+รองเท้า")
+  suit_wig_prop_shoe @map("ชุด+วิก+พร็อพ+รองเท้า")
+  addon_prop         @map("พร็อพเสริม")
+  addon_shoe         @map("รองเท้า")
+  solo_prop          @map("พร็อพเดี่ยว")
+  solo_shoe          @map("รองเท้าเดี่ยว")
 }
 
 // ประเภทของการแจ้งเตือน
@@ -160,7 +163,7 @@ model ProductPrice {
   days_test       Int?
   days_pri        Int?
   createdAt       DateTime            @default(now())
-  Deposit         Decimal?            @db.Decimal(10, 2)
+  Deposit         Decimal?            @db.Decimal(10, 2) //ราคามัดจำ
   CartItem        CartItem[]
   OrderItem       OrderItem[]
   product         Product             @relation(fields: [productId], references: [product_id])
@@ -284,20 +287,20 @@ model Shipping {
   image_slip      String?                   @db.VarChar(255)
   shipping_update DateTime                  @updatedAt
 
-  boxes            ShippingBox[]            // กล่องย่อยในรอบนี้
-  order            Orders                    @relation(fields: [orderId], references: [order_id])
-  ShippingHistory  ShippingHistory[]
+  boxes           ShippingBox[] // กล่องย่อยในรอบนี้
+  order           Orders            @relation(fields: [orderId], references: [order_id])
+  ShippingHistory ShippingHistory[]
 
   @@index([orderId], map: "fk_shipping_order_idx")
 }
 
 // กล่องแต่ละใบในรอบการจัดส่ง (tracking code คนละอัน)
 model ShippingBox {
-  box_id        Int     @id @default(autoincrement())
+  box_id        Int               @id @default(autoincrement())
   shippingId    Int
-  tracking_code String  @unique @db.VarChar(20)
-  note          String? @db.VarChar(255)
-  shipping      Shipping @relation(fields: [shippingId], references: [shipping_id])
+  tracking_code String            @unique @db.VarChar(20)
+  note          String?           @db.VarChar(255)
+  shipping      Shipping          @relation(fields: [shippingId], references: [shipping_id])
   items         ShippingBoxItem[]
 
   @@index([shippingId], map: "fk_box_shipping_idx")
@@ -305,12 +308,12 @@ model ShippingBox {
 
 // รายการสินค้าที่อยู่ในกล่องแต่ละใบ
 model ShippingBoxItem {
-  shippingBoxItem_id Int @id @default(autoincrement())
+  shippingBoxItem_id Int         @id @default(autoincrement())
   boxId              Int
   orderItemId        Int
-  quantity           Int @default(1)
-  box       ShippingBox @relation(fields: [boxId], references: [box_id])
-  orderItem OrderItem   @relation(fields: [orderItemId], references: [orderItem_id])
+  quantity           Int         @default(1)
+  box                ShippingBox @relation(fields: [boxId], references: [box_id])
+  orderItem          OrderItem   @relation(fields: [orderItemId], references: [orderItem_id])
 
   @@index([boxId], map: "fk_shippingboxitem_box_idx")
   @@index([orderItemId], map: "fk_shippingboxitem_orderitem_idx")

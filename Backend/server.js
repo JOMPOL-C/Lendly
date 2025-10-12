@@ -39,6 +39,7 @@ app.use(require("./src/middlewares/authMiddleware"));
 app.use(require("./src/middlewares/setUser"));
 
 app.use("/", require("./src/routers/checkDuplicate"));
+app.use("/api", require("./src/routers/cart"));
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.set("view engine", "ejs");
@@ -73,6 +74,7 @@ fs.readdirSync(path.join(__dirname, "src/routers"))
 app.get('/', productController.getProducts); // หน้า Home แสดงสินค้าทั้งหมด
 app.get('/profile', authController.getProfile); // profile ต้อง login ก่อน
 app.get('/add_product', productController.renderAddProduct);
+
 
 app.use(authMiddleware); // ตรวจสอบ JWT และตั้งค่า res.locals.user
 app.use(setUser); // ตั้งค่า req.user สำหรับ controllers

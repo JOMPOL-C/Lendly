@@ -11,6 +11,7 @@
                     <h2>เพิ่มสินค้า</h2>
 
                     <form action="/api/products" method="POST" enctype="multipart/form-data">
+                        <!-- ชื่อและรายละเอียดพื้นฐาน -->
                         <div class="form-group">
                             <label>ชื่อสินค้า</label>
                             <input type="text" name="product_name" required>
@@ -30,21 +31,20 @@
                             </div>
                         </div>
 
+                        <!-- อัปโหลดรูป -->
                         <div class="form-group">
-                            <label for="product_images">อัปโหลดรูป</label>
+                            <label for="product_images">อัปโหลดรูปสินค้า</label>
                             <input type="file" name="product_images" id="product_images" multiple accept="image/*">
                             <p class="note">เลือกได้หลายรูป</p>
-
-                            <!-- 🖼 preview -->
                             <div id="preview-container" class="preview-grid"></div>
                         </div>
-
 
                         <div class="form-group">
                             <label>รายละเอียดสินค้า</label>
                             <textarea name="shipping_info" rows="4" required></textarea>
                         </div>
 
+                        <!-- โหมดใช้งาน -->
                         <div class="form-group">
                             <label>การใช้งาน</label>
                             <div class="checkbox-group">
@@ -53,7 +53,7 @@
                             </div>
                         </div>
 
-                        <!-- ช่องวันเช่า (ซ่อนก่อน) -->
+                        <!-- จำนวนวันเช่า -->
                         <div id="daysTestField" class="hidden">
                             <label>จำนวนวัน (Test)</label>
                             <input type="number" name="days_suit_test" min="1">
@@ -64,6 +64,7 @@
                             <input type="number" name="days_suit_pri" min="1">
                         </div>
 
+                        <!-- หมวดหมู่ -->
                         <div class="form-group">
                             <label>หมวดหมู่สินค้า</label>
                             <select name="categoryId" required>
@@ -75,6 +76,7 @@
                             </select>
                         </div>
 
+                        <!-- ประเภทของให้เช่า -->
                         <div class="form-group">
                             <label>ของให้เช่า</label>
                             <div class="checkbox-group">
@@ -82,13 +84,13 @@
                                     ชุด</label>
                                 <label><input type="checkbox" id="rentWig" name="rentalType[]" value="wig"> วิก</label>
                                 <label><input type="checkbox" id="rentProp" name="rentalType[]" value="prop">
-                                    พร๊อบ</label>
+                                    พร็อพ</label>
                                 <label><input type="checkbox" id="rentShoe" name="rentalType[]" value="shoe">
                                     รองเท้า</label>
                             </div>
                         </div>
 
-                        <!-- ช่องราคาซ่อน/โชว์ตาม checkbox -->
+                        <!-- ราคาของแต่ละส่วน -->
                         <div id="priceCostume" class="price-field hidden">
                             <label>ราคาเช่าชุด</label>
                             <input type="number" name="price_costume">
@@ -99,9 +101,19 @@
                             <input type="number" name="price_wig">
                         </div>
 
+                        <div id="priceSuitWig" class="price-field hidden">
+                            <label>ราคาเช่าชุด + วิก (ราคาพิเศษ)</label>
+                            <input type="number" name="price_suit_wig">
+                        </div>
+
                         <div id="priceProp" class="price-field hidden">
-                            <label>ราคาเช่าพร๊อบ</label>
+                            <label>ราคาเช่าพร็อพ</label>
                             <input type="number" name="price_prop">
+                        </div>
+
+                        <div id="priceAddonProp" class="price-field hidden">
+                            <label>ราคาเช่าพร็อพเสริม (ราคาพิเศษ)</label>
+                            <input type="number" name="price_prop_addon">
                         </div>
 
                         <div id="priceShoe" class="price-field hidden">
@@ -109,12 +121,18 @@
                             <input type="number" name="price_shoe">
                         </div>
 
-                        <!-- ช่องสำหรับราคาเพิ่มเมื่อเลือก "ไพร" -->
+                        <div id="priceAddonShoe" class="price-field hidden">
+                            <label>ราคาเช่ารองเท้าเสริม (ราคาพิเศษ)</label>
+                            <input type="number" name="price_shoe_addon">
+                        </div>
+
+                        <!-- ราคาเพิ่มสำหรับโหมดไพร -->
                         <div id="pricePryExtra" class="price-field hidden">
                             <label>ราคาเพิ่มสำหรับไพร</label>
                             <input type="number" name="price_pry_extra">
                         </div>
 
+                        <!-- สถานะสินค้า -->
                         <div class="form-group">
                             <label>สถานะสินค้า</label>
                             <select name="status" required>
