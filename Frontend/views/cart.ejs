@@ -1,6 +1,6 @@
 <%- include('includes/head') %>
     <link rel="stylesheet" href="/styles/cart.css">
-</head>
+    </head>
 
     <body>
         <%- include('includes/nav') %>
@@ -8,23 +8,46 @@
                 <section class="index">
                     <h2>ตะกร้าสินค้า</h2>
                     <div id="cart">
-                        <div class="rental-card">
-                            <img src="https://dokidokicos.com/cdn/shop/files/1_63d6aca4-1bf0-491b-af84-9f79b1ee5e44.jpg?v=1717159871"
-                                alt="Product Image">
-                            <div class="rental-info">
-                                <a href="">Emilia</a>
-                                <p>วันที่เช่า: 01/01/2024</p>
-                                <p>วันที่คืน: 07/01/2024</p>
-                                <p>สิ่งที่เช่า: ชุด วิก</p>
-                                <p>ราคาค่าเช่า: 300฿</p>
-                            </div>
-                            <a href="#"><i class='bxr  bx-trash'  ></i></a>
-                        </div>
+
+                        <% if (cart && cart.items.length> 0) { %>
+                            <% cart.items.forEach(item=> { %>
+                                <div class="rental-card">
+                                    <img src="<%= item.product.images[0]?.image_url %>" alt="Product Image"
+                                        style="width:150px; border-radius:10px;">
+                                    <div class="rental-info">
+                                        <a href="/detail_product?id=<%= item.product.product_id %>">
+                                            <%= item.product.product_name %>
+                                        </a>
+                                        <p>จำนวน: <%= item.quantity %>
+                                        </p>
+                                        <p>ราคาค่าเช่า: <%= item.price?.price ?? 'N/A' %>฿</p>
+                                    </div>
+                                    <button class="remove-btn" data-id="<%= item.cartItem_id %>">
+                                        <i class='bx bx-trash'></i>
+                                    </button>
+                                </div>
+                                <% }) %>
+                                    <% } else { %>
+                                        <p>ไม่มีสินค้าในตะกร้า</p>
+                                        <% } %>
+
                     </div>
                 </section>
             </main>
             <%- include('includes/footer') %>
-                <script src="/js/script.js"></script>
+
+                <script>
+                    // ✅ ลบสินค้าออกจากตะกร้า
+                    document.querySelectorAll('.remove-btn').forEach(btn => {
+                        btn.addEventListener('click', async e => {
+                            const id = e.currentTarget.dataset.id;
+                            const res = await fetch(`/api/cart/${id}`, { method: 'DELETE' });
+                            const data = await res.json();
+                            alert(data.message);
+                            location.reload();
+                        });
+                    });
+                </script>
     </body>
 
     </html>

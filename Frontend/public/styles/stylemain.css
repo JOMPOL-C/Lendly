@@ -603,6 +603,7 @@ footer .copyright {
         left: 10px;
     }
 }
+
 /* ปิด scroll bar ออก */
 ::-webkit-scrollbar {
     display: none;
@@ -611,53 +612,73 @@ footer .copyright {
 /* ตั้งค่า dropdown-menu ให้ซ่อนก่อน */
 .dropdown-menu {
     position: absolute;
-    top: 60px;              /* ระยะห่างจาก icon */
+    top: 60px;
+    /* ระยะห่างจาก icon */
     right: 0;
     background: #fff;
     border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(0,0,0,.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, .1);
     opacity: 0;
     visibility: hidden;
-    transform: translateY(-10px);   /* ซ่อนขึ้นไปเล็กน้อย */
-    transition: all 0.3s ease;      /* smooth */
+    transform: translateY(-10px);
+    /* ซ่อนขึ้นไปเล็กน้อย */
+    transition: all 0.3s ease;
+    /* smooth */
     z-index: 1000;
-    max-height: 0;                  /* ความสูงเริ่มต้นเป็น 0 */
-    overflow: hidden;               /* ซ่อนส่วนที่เกิน */
-    width: 200px;                   /* กำหนดความกว้าง */
+    max-height: 0;
+    /* ความสูงเริ่มต้นเป็น 0 */
+    overflow: hidden;
+    /* ซ่อนส่วนที่เกิน */
+    width: 200px;
+    /* กำหนดความกว้าง */
     font-size: 14px;
     font-weight: 500;
     color: #222;
     border: 1px solid #eee;
     padding: 10px 0;
     /* เพิ่ม padding ด้านบนและล่าง */
-  }
-  
-  /* โชว์ตอน active */
-  .dropdown-menu.show {
+}
+
+/* โชว์ตอน active */
+.dropdown-menu.show {
     opacity: 1;
     visibility: visible;
     transform: translateY(0);
-  }
-  
-  .dropdown-menu li {
+}
+
+.dropdown-menu li {
     list-style: none;
-  }
-  
-  .dropdown-menu li a {
+}
+
+.dropdown-menu li a {
     display: block;
     padding: 10px 20px;
     color: #222;
     font-weight: 500;
     text-decoration: none;
-  }
-  
-  .dropdown-menu li a:hover {
+}
+
+.dropdown-menu li a:hover {
     background: #f4f4f4;
     color: #7d4dff;
-  }
-  
-  #lg-user.active .dropdown-menu {
-    max-height: 300px;   /* ความสูงพอที่จะครอบทุกเมนู */
+}
+
+#lg-user.active .dropdown-menu {
+    max-height: 300px;
+    /* ความสูงพอที่จะครอบทุกเมนู */
     opacity: 1;
     visibility: visible;
-  }
+}
+
+.bxs-heart {
+    color: crimson;
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.bxs-heart:hover {
+    transform: scale(1.2);
+}
+
+.bxs-heart.active {
+    color: #7d4dff;
+}

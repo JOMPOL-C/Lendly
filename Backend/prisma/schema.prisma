@@ -75,6 +75,7 @@ model Customer {
   id_card_public_id String?        @db.VarChar(255)
   role              Role           @default(USER)
   birthday          DateTime?      @db.Date
+
   age               Int?
   rentals           Rentals[]
   cart              Cart[]
@@ -83,6 +84,7 @@ model Customer {
   orders            Orders[]
   proportion        Proportion?
   reviews           Review[]
+  favorites         Favorite[]
 }
 
 // เก็บสัดส่วนร่างกายของลูกค้าเพื่อคำนวณขนาดชุด
@@ -124,10 +126,12 @@ model Product {
   OrderItem      OrderItem[]
   category       Category            @relation(fields: [categoryId], references: [category_id])
   size           Proportion_product? @relation(fields: [ppId], references: [proportion_product_id])
+
   images         ProductImage[]
   prices         ProductPrice[]
   reports        Report[]
   reviews        Review[]
+  favorites      Favorite[]
 
   @@index([categoryId], map: "category_id_idx")
   @@index([ppId], map: "fk_product_pp_idx")
@@ -237,6 +241,19 @@ model OrderItem {
   @@index([productId], map: "fk_orderItem_product_idx")
   @@index([productPriceId], map: "fk_orderItem_price_idx")
 }
+
+model Favorite {
+  favorite_id Int      @id @default(autoincrement())
+  customerId  Int
+  productId   Int
+  created_at  DateTime @default(now())
+
+  customer Customer @relation(fields: [customerId], references: [customer_id])
+  product  Product  @relation(fields: [productId], references: [product_id])
+
+  @@unique([customerId, productId])
+}
+
 
 // การชำระเงินของคำสั่งซื้อ
 model Payment {

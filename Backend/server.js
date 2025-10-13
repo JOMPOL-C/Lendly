@@ -14,6 +14,8 @@ const pagerender = require('./src/utils/pagerender');
 const authController = require('./src/Controllers/authControllers');
 const productController = require('./src/Controllers/productControllers');
 const productControllersPage = require('./src/Controllers/productControllersPage');
+const cartController = require('./src/Controllers/cartController');
+
 
 
 require('dotenv').config();
@@ -41,6 +43,7 @@ app.use(require("./src/middlewares/setUser"));
 
 app.use("/", require("./src/routers/checkDuplicate"));
 app.use("/api", require("./src/routers/cart"));
+app.use("/api", require("./src/routers/favorite"));
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.set("view engine", "ejs");
@@ -48,7 +51,7 @@ app.set("views", path.join(__dirname, "../Frontend/views"));
 
 // render page
 app.get('/favorites', pagerender.renderfav);
-app.get('/cart', pagerender.rendercart);
+app.get('/cart', cartController.getCart);
 app.get('/all_review', pagerender.renderall_review);
 app.get('/category', (req, res) => productControllersPage.renderProductsPage(req, res, 'category'));
 app.get('/Detail_Pro', pagerender.renderDetail_Pro);

@@ -1,31 +1,24 @@
 <%- include('includes/head') %>
-    <link rel="stylesheet" href="/styles/review.css">
-    </head>
+<link rel="stylesheet" href="/styles/review.css">
+<link rel="stylesheet" href="/styles/favorites.css">
+</head>
 
-    <body>
-        <%- include('includes/nav') %>
-            <main>
-                <section class="index product1">
-                    <h2>ชุดที่ถูกใจ</h2>
-                    <div class="pro-container">
-                        <div class="pro">
-                            <img src="https://dokidokicos.com/cdn/shop/files/1_63d6aca4-1bf0-491b-af84-9f79b1ee5e44.jpg?v=1717159871"
-                                alt="">
-                            <div class="des">
-                                <span>Re:Zero</span>
-                                <h5>Emilia</h5>
-                                <h4>300฿/400฿</h4>
-                            </div>
-                            <div class="btn-pro">
-                                <a href="#"><i class='bx bx-heart btn'></i></a>
-                                <a href="#"><i class="bxr  bx-cart btn"></i></a>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-            </main>
-            <%- include('includes/footer') %>
-                <script src="/js/script.js"></script>
-    </body>
+<body>
+  <%- include('includes/nav') %>
 
-    </html>
+  <main>
+    <section class="index product1">
+      <h2>ชุดที่ถูกใจ</h2>
+
+      <!-- 🧺 container สำหรับสินค้าที่โหลดจาก API -->
+      <div id="favorites-container" class="pro-container">
+
+      </div>
+    </section>
+  </main>
+
+  <%- include('includes/footer') %>
+  <script src="/js/script.js"></script>
+  <script src="/js/favorites.js"></script>
+</body>
+</html>
