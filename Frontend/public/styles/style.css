@@ -1,5 +1,7 @@
 /* ========== Base ========== */
-* { box-sizing: border-box; }
+* {
+  box-sizing: border-box;
+}
 
 body {
   display: flex;
@@ -10,7 +12,11 @@ body {
   padding: 40px;
 }
 
-a { color: darkslateblue; font-weight: 600; text-decoration: none; }
+a {
+  color: darkslateblue;
+  font-weight: 600;
+  text-decoration: none;
+}
 
 /* ========== Card / Wrapper ========== */
 .wrapper {
@@ -19,24 +25,31 @@ a { color: darkslateblue; font-weight: 600; text-decoration: none; }
   padding: 40px;
   background: #fff;
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,.08);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, .08);
 }
 
 /* ========== Form Layout ========== */
-.input-box { display: flex; flex-direction: column; gap: 16px; }
+.input-box {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
 
 .input-field {
   position: relative;
   display: flex;
-  flex-direction: column;      /* input + error เป็นแนวตั้ง */
-  gap: 6px;                    /* ช่องไฟระหว่าง input กับ error */
+  flex-direction: column;
+  /* input + error เป็นแนวตั้ง */
+  gap: 6px;
+  /* ช่องไฟระหว่าง input กับ error */
 }
 
 /* ช่องกรอก */
 .input-field input {
   width: 100%;
-  padding: 10px 40px;          /* กันพื้นที่ไอคอนซ้าย/ขวา */
-  border: 2px solid rgba(0,0,0,.2);
+  padding: 10px 40px;
+  /* กันพื้นที่ไอคอนซ้าย/ขวา */
+  border: 2px solid rgba(0, 0, 0, .2);
   border-radius: 10px;
   background: transparent;
   outline: none;
@@ -47,7 +60,7 @@ a { color: darkslateblue; font-weight: 600; text-decoration: none; }
 /* โฟกัสสวย ๆ */
 .input-field input:focus {
   border-color: darkslateblue;
-  box-shadow: 0 0 0 3px rgba(72,61,139,.12);
+  box-shadow: 0 0 0 3px rgba(72, 61, 139, .12);
 }
 
 /* ========== Icons ========== */
@@ -61,7 +74,9 @@ a { color: darkslateblue; font-weight: 600; text-decoration: none; }
 }
 
 /* ไอคอนซ้าย (user, phone, mail, lock) */
-.input-field i:not(.toggle-icon) { left: 12px; }
+.input-field i:not(.toggle-icon) {
+  left: 12px;
+}
 
 /* ไอคอนลูกตา (toggle password) — ขวาสุด, hitbox เล็ก ไม่บัง input */
 .input-field .toggle-icon {
@@ -73,7 +88,10 @@ a { color: darkslateblue; font-weight: 600; text-decoration: none; }
   justify-content: center;
   cursor: pointer;
 }
-.input-field .toggle-icon:hover { color: darkslateblue; }
+
+.input-field .toggle-icon:hover {
+  color: darkslateblue;
+}
 
 /* ========== Error Texts ========== */
 .error-text {
@@ -85,11 +103,19 @@ a { color: darkslateblue; font-weight: 600; text-decoration: none; }
 }
 
 /* ถ้าอยากเปลี่ยนกรอบ/ไอคอนตอน error ก็ใส่ .error ที่ input-field ได้ */
-.input-field.error input { border-color: #e74c3c; }
-.input-field.error i     { color: #e74c3c; }
+.input-field.error input {
+  border-color: #e74c3c;
+}
+
+.input-field.error i {
+  color: #e74c3c;
+}
 
 /* error รวมใต้ฟอร์ม */
-#form-error { color: #e74c3c; margin-top: 10px; }
+#form-error {
+  color: #e74c3c;
+  margin-top: 10px;
+}
 
 /* ========== Button ========== */
 .btn {
@@ -104,15 +130,50 @@ a { color: darkslateblue; font-weight: 600; text-decoration: none; }
   cursor: pointer;
   transition: background-color .2s ease, transform .02s ease;
 }
-.btn:hover   { background: #5a4fcf; }
-.btn:active  { background: #4b3eb8; transform: translateY(1px); }
-.btn:disabled{ background: #ccc; cursor: not-allowed; }
 
-/* ========== Small bits ========== */
-.wrapper .otp-icon{
-  height:65px;width:65px;background:darkslateblue;color:#fff;
-  font-size:2.5rem;border-radius:50%;display:flex;align-items:center;justify-content:center;
+.btn:hover {
+  background: #5a4fcf;
 }
 
-@media (max-width: 960px){ .logo{ display:none; } }
+.btn:active {
+  background: #4b3eb8;
+  transform: translateY(1px);
+}
 
+.btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+/* ========== Small bits ========== */
+.wrapper .otp-icon {
+  height: 65px;
+  width: 65px;
+  background: darkslateblue;
+  color: #fff;
+  font-size: 2.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.toggle-icon {
+  cursor: pointer;
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+}
+
+.input-field {
+  position: relative;
+}
+
+
+@media (max-width: 960px) {
+  .logo {
+    display: none;
+  }
+}

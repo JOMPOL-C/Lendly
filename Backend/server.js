@@ -10,7 +10,7 @@ const authMiddleware = require('./src/middlewares/authMiddleware');
 const setUser = require('./src/middlewares/setUser');
 const cloudinary = require('cloudinary').v2;
 
-const pagerender = require('./src/utils/pagerender');
+const PageRender = require('./src/utils/pagerender');
 const authController = require('./src/Controllers/authControllers');
 const productController = require('./src/Controllers/productControllers');
 const productControllersPage = require('./src/Controllers/productControllersPage');
@@ -50,22 +50,23 @@ app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "../Frontend/views"));
 
 // render page
-app.get('/favorites', pagerender.renderfav);
+app.get('/favorites', PageRender.renderFav);
 app.get('/cart', cartController.getCart);
-app.get('/all_review', pagerender.renderall_review);
+app.get('/all_review', PageRender.renderAll_review);
 app.get('/category', (req, res) => productControllersPage.renderProductsPage(req, res, 'category'));
-app.get('/Detail_Pro', pagerender.renderDetail_Pro);
-app.get('/my_rentals', pagerender.rendermy_rentals);
-app.get('/login', pagerender.renderlogin);
-app.get('/register', pagerender.renderregister);
-app.get('/forgotpassword', pagerender.renderforgotpassword);
-app.get('/resetpassword', pagerender.renderresetpassword);
-app.get('/otpVerify', pagerender.renderotpVerify);
-app.get('/Detail_Ren', pagerender.renderDetail_Rnd);
-app.get('/write_review', pagerender.renderWrite_review);
-app.get('/return_order', pagerender.renderReturn_order);
-app.get('/detail_product', pagerender.renderdetail_product);
-app.get('/edit_product', pagerender.renderedit_product);
+app.get('/Detail_Pro', PageRender.renderDetail_Pro);
+app.get('/my_rentals', PageRender.renderMy_rentals);
+app.get('/login', PageRender.renderLogin);
+app.get('/register', PageRender.renderRegister);
+app.get('/forgotpassword', PageRender.renderForgotpassword);
+app.get('/resetpassword', PageRender.renderResetpassword);
+app.get('/otpVerify', PageRender.renderOtpVerify);
+app.get('/Detail_Ren', PageRender.renderDetail_Rnd);
+app.get('/write_review', PageRender.renderWrite_review);
+app.get('/return_order', PageRender.renderReturn_order);
+app.get('/detail_product', PageRender.renderDetail_product);
+app.get('/edit_product', PageRender.renderEdit_product);
+app.get('/admin/rentals', PageRender.renderAdmin_rentals);
 
 fs.readdirSync(path.join(__dirname, "src/routers"))
   .filter(file => file.endsWith(".js"))

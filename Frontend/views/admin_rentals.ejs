@@ -1,0 +1,88 @@
+<%- include('includes/head') %>
+  <link rel="stylesheet" href="/styles/admin.css">
+  </head>
+
+  <body>
+    <%- include('includes/nav') %>
+
+      <main class="section-p1">
+        <h2>คำสั่งเช่าที่รอยืนยัน</h2>
+
+        <div class="table-container">
+          <table class="rental-table">
+            <thead>
+              <tr>
+                <th><input type="checkbox" id="selectAll"></th>
+                <th>รหัส</th>
+                <th>ลูกค้า</th>
+                <th>สินค้า</th>
+                <th>วันเช่า</th>
+                <th>วันคืน</th>
+                <th>สถานะ</th>
+              </tr>
+            </thead>
+            <tbody id="rentalBody"></tbody>
+          </table>
+        </div>
+
+        <div class="actions">
+          <button id="confirmSelectedBtn" class="btn-confirm">ยืนยันการจองที่เลือก</button>
+        </div>
+      </main>
+
+      <%- include('includes/footer') %>
+
+        <script>
+          document.addEventListener("DOMContentLoaded", async () => {
+            const res = await fetch("/api/rentals");
+            const rentals = await res.json();
+            const tbody = document.getElementById("rentalBody");
+            console.log("📦 rentals data:", rentals);
+
+            rentals
+              .filter(r => r.rental_status === "WAITING_CONFIRM")
+              .forEach(r => {
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+            <td><input type="checkbox" name="selected" value="${r.rental_id}"></td>
+            <td>${r.rental_id}</td>
+            <td>${r.customer ? `${r.customer.name} ${r.customer.last_name}` : "ไม่ระบุ"}</td>
+            <td>${r.product?.product_name}</td>
+            <td>${new Date(r.rental_date).toLocaleDateString()}</td>
+            <td>${new Date(r.rental_end_date).toLocaleDateString()}</td>
+            <td>${r.rental_status}</td>
+          `;
+                tbody.appendChild(tr);
+              });
+
+            // ✅ ติ๊กเลือกทั้งหมด
+            const selectAll = document.getElementById("selectAll");
+            selectAll?.addEventListener("change", e => {
+              document.querySelectorAll("input[name=selected]").forEach(chk => {
+                chk.checked = e.target.checked;
+              });
+            });
+
+            // ✅ ปุ่มยืนยันการจองที่เลือก
+            document.getElementById("confirmSelectedBtn").addEventListener("click", async () => {
+              const selected = Array.from(document.querySelectorAll("input[name=selected]:checked"))
+                .map(chk => parseInt(chk.value));
+
+              if (!selected.length) return alert("กรุณาเลือกรายการที่จะยืนยัน");
+
+              const res = await fetch("/api/rentals/confirm-batch", {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ rentalIds: selected })
+              });
+
+              const data = await res.json();
+              alert(data.message);
+              location.reload();
+            });
+          });
+        </script>
+
+  </body>
+
+  </html>

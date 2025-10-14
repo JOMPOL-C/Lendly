@@ -1,53 +1,88 @@
 <%- include('includes/head') %>
-    <link rel="stylesheet" href="/styles/cart.css">
-    </head>
+  <link rel="stylesheet" href="/styles/cart.css">
+  </head>
 
-    <body>
-        <%- include('includes/nav') %>
-            <main>
-                <section class="index">
-                    <h2>ตะกร้าสินค้า</h2>
-                    <div id="cart">
-
-                        <% if (cart && cart.items.length> 0) { %>
-                            <% cart.items.forEach(item=> { %>
-                                <div class="rental-card">
-                                    <img src="<%= item.product.images[0]?.image_url %>" alt="Product Image"
-                                        style="width:150px; border-radius:10px;">
-                                    <div class="rental-info">
-                                        <a href="/detail_product?id=<%= item.product.product_id %>">
-                                            <%= item.product.product_name %>
-                                        </a>
-                                        <p>จำนวน: <%= item.quantity %>
-                                        </p>
-                                        <p>ราคาค่าเช่า: <%= item.price?.price ?? 'N/A' %>฿</p>
-                                    </div>
-                                    <button class="remove-btn" data-id="<%= item.cartItem_id %>">
-                                        <i class='bx bx-trash'></i>
-                                    </button>
-                                </div>
-                                <% }) %>
-                                    <% } else { %>
-                                        <p>ไม่มีสินค้าในตะกร้า</p>
-                                        <% } %>
-
+  <body>
+    <%- include('includes/nav') %>
+      <main>
+        <section class="index">
+          <h2>ตะกร้าสินค้า</h2>
+          <div id="cart">
+            <% if (cart && cart.items.length> 0) { %>
+              <form id="rentalForm">
+                <% cart.items.forEach(item=> { %>
+                  <div class="rental-card">
+                    <input type="checkbox" name="selected" value="<%= item.cartItem_id %>" />
+                    <img src="<%= item.product.images[0]?.image_url %>" alt="Product Image"
+                      style="width:150px; border-radius:10px;">
+                    <div class="rental-info">
+                      <a href="/api/products/<%= item.product.product_id %>">
+                        <%= item.product.product_name %>
+                      </a>
+                      <p>ราคาค่าเช่า: <%= item.displayPrice %>
+                      </p>
+                      <p>วันที่เช่า: <%= item.startDate ? item.startDate.toISOString().split('T')[0] : '-' %>
+                      </p>
+                      <p>วันที่คืน: <%= item.endDate ? item.endDate.toISOString().split('T')[0] : '-' %>
+                      </p>
                     </div>
-                </section>
-            </main>
-            <%- include('includes/footer') %>
+                    <button class="remove-btn" data-id="<%= item.cartItem_id %>">
+                      <i class='bx bx-trash'></i>
+                    </button>
+                  </div>
+                  <% }) %>
 
-                <script>
-                    // ✅ ลบสินค้าออกจากตะกร้า
-                    document.querySelectorAll('.remove-btn').forEach(btn => {
-                        btn.addEventListener('click', async e => {
-                            const id = e.currentTarget.dataset.id;
-                            const res = await fetch(`/api/cart/${id}`, { method: 'DELETE' });
-                            const data = await res.json();
-                            alert(data.message);
-                            location.reload();
-                        });
-                    });
-                </script>
-    </body>
+                    <!-- ✅ ปุ่มเช่าสินค้าที่เลือก -->
+                    <div class="cart-actions">
+                      <button type="button" id="rentSelectedBtn" class="btn-rent">เช่าสินค้าที่เลือก</button>
+                    </div>
+              </form>
+              <% } else { %>
+                <p>ไม่มีสินค้าในตะกร้า</p>
+                <% } %>
+          </div>
+        </section>
+      </main>
 
-    </html>
+      <%- include('includes/footer') %>
+
+        <script>
+          // ✅ ลบสินค้าออกจากตะกร้า
+          document.querySelectorAll('.remove-btn').forEach(btn => {
+            btn.addEventListener('click', async e => {
+              const id = e.currentTarget.dataset.id;
+              const res = await fetch(`/api/cart/${id}`, { method: 'DELETE' });
+              const data = await res.json();
+              alert(data.message);
+              location.reload();
+            });
+          });
+
+          // ✅ ปุ่มเช่าสินค้าที่เลือก
+          document.getElementById("rentSelectedBtn")?.addEventListener("click", async () => {
+            const selected = Array.from(document.querySelectorAll("input[name=selected]:checked"))
+              .map(chk => parseInt(chk.value));
+
+            if (!selected.length) return alert("กรุณาเลือกสินค้าที่ต้องการเช่า");
+
+            const res = await fetch("/api/orders", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ selectedItems: selected })
+            });
+
+            const data = await res.json();
+            if (res.ok) {
+              alert("สร้างคำสั่งเช่าสำเร็จ! รอร้านยืนยัน");
+              window.location.href = `/my_rentals`;
+            } else {
+              alert(data.message || "เกิดข้อผิดพลาด");
+            }
+          });
+
+          
+        </script>
+
+  </body>
+
+  </html>

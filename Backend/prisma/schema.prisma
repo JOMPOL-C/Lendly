@@ -30,6 +30,11 @@ enum Calender_rental_status {
   CANCELLED       @map("ยกเลิก")
 }
 
+enum RentalMode {
+  TEST
+  PRI
+}
+
 // ประเภทของราคาสินค้า
 enum ProductPrice_status {
   suit               @map("ชุด")
@@ -58,33 +63,33 @@ enum Notification_status {
 
 // เก็บข้อมูลลูกค้า (ผู้ใช้ระบบหลัก)
 model Customer {
-  customer_id       Int            @id @default(autoincrement())
-  name              String         @db.VarChar(45)
-  last_name         String         @db.VarChar(45)
-  customer_email    String?        @unique(map: "customer_email_UNIQUE") @db.VarChar(45)
-  customer_phone    String?        @unique(map: "customer_phone_UNIQUE") @db.VarChar(10)
-  address           String?        @db.VarChar(255)
-  id_card_number    String?        @unique(map: "id_card_number_UNIQUE") @db.VarChar(13)
-  username          String         @unique(map: "username_UNIQUE") @db.VarChar(30)
-  password          String         @db.VarChar(255)
-  customer_datetime DateTime       @default(now()) @db.DateTime(0)
-  customer_update   DateTime       @default(now()) @updatedAt
-  profile_image_url String?        @db.VarChar(255)
-  profile_public_id String?        @db.VarChar(255)
-  id_card_image_url String?        @db.VarChar(255)
-  id_card_public_id String?        @db.VarChar(255)
-  role              Role           @default(USER)
-  birthday          DateTime?      @db.Date
+  customer_id       Int       @id @default(autoincrement())
+  name              String    @db.VarChar(45)
+  last_name         String    @db.VarChar(45)
+  customer_email    String?   @unique(map: "customer_email_UNIQUE") @db.VarChar(45)
+  customer_phone    String?   @unique(map: "customer_phone_UNIQUE") @db.VarChar(10)
+  address           String?   @db.VarChar(255)
+  id_card_number    String?   @unique(map: "id_card_number_UNIQUE") @db.VarChar(13)
+  username          String    @unique(map: "username_UNIQUE") @db.VarChar(30)
+  password          String    @db.VarChar(255)
+  customer_datetime DateTime  @default(now()) @db.DateTime(0)
+  customer_update   DateTime  @default(now()) @updatedAt
+  profile_image_url String?   @db.VarChar(255)
+  profile_public_id String?   @db.VarChar(255)
+  id_card_image_url String?   @db.VarChar(255)
+  id_card_public_id String?   @db.VarChar(255)
+  role              Role      @default(USER)
+  birthday          DateTime? @db.Date
 
-  age               Int?
-  rentals           Rentals[]
-  cart              Cart[]
-  chats             Chat[]
-  notification      Notification[]
-  orders            Orders[]
-  proportion        Proportion?
-  reviews           Review[]
-  favorites         Favorite[]
+  age          Int?
+  rentals      Rentals[]
+  cart         Cart[]
+  chats        Chat[]
+  notification Notification[]
+  orders       Orders[]
+  proportion   Proportion?
+  reviews      Review[]
+  favorites    Favorite[]
 }
 
 // เก็บสัดส่วนร่างกายของลูกค้าเพื่อคำนวณขนาดชุด
@@ -127,11 +132,11 @@ model Product {
   category       Category            @relation(fields: [categoryId], references: [category_id])
   size           Proportion_product? @relation(fields: [ppId], references: [proportion_product_id])
 
-  images         ProductImage[]
-  prices         ProductPrice[]
-  reports        Report[]
-  reviews        Review[]
-  favorites      Favorite[]
+  images    ProductImage[]
+  prices    ProductPrice[]
+  reports   Report[]
+  reviews   Review[]
+  favorites Favorite[]
 
   @@index([categoryId], map: "category_id_idx")
   @@index([ppId], map: "fk_product_pp_idx")
@@ -193,16 +198,19 @@ model Cart {
 
 // สินค้าแต่ละชิ้นในตะกร้า
 model CartItem {
-  cartItem_id    Int           @id @default(autoincrement())
+  cartItem_id    Int       @id @default(autoincrement())
   cartId         Int
   productId      Int
   productPriceId Int?
-  quantity       Int           @default(1)
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @updatedAt
-  cart           Cart          @relation(fields: [cartId], references: [cart_id])
-  product        Product       @relation(fields: [productId], references: [product_id])
-  price          ProductPrice? @relation(fields: [productPriceId], references: [productPrice_id])
+  mode           String?   @db.VarChar(10) // "test" หรือ "pri"
+  startDate      DateTime? @db.DateTime(0) // ✅ วันที่เริ่มเช่า
+  endDate        DateTime? @db.DateTime(0) // ✅ วันที่คืน
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  cart    Cart          @relation(fields: [cartId], references: [cart_id])
+  product Product       @relation(fields: [productId], references: [product_id])
+  price   ProductPrice? @relation(fields: [productPriceId], references: [productPrice_id])
 
   @@index([cartId], map: "fk_cartItem_cart_idx")
   @@index([productId], map: "fk_cartItem_product_idx")
@@ -221,6 +229,7 @@ model Orders {
   Promotion             Promotion?  @relation(fields: [promotionPromotion_id], references: [promotion_id])
   payments              Payment[]
   shippings             Shipping[]
+  Rentals               Rentals[]
 
   @@index([customerId], map: "fk_order_customer_idx")
   @@index([promotionPromotion_id], map: "Orders_promotionPromotion_id_fkey")
@@ -253,7 +262,6 @@ model Favorite {
 
   @@unique([customerId, productId])
 }
-
 
 // การชำระเงินของคำสั่งซื้อ
 model Payment {
@@ -354,16 +362,21 @@ model ShippingHistory {
 
 // ข้อมูลการเช่าสินค้าของลูกค้าแต่ละคน
 model Rentals {
-  rental_id       Int                     @id @default(autoincrement())
+  rental_id       Int       @id @default(autoincrement())
   customerId      Int
   productId       Int
-  rental_date     DateTime?               @default(now()) @db.DateTime(0)
-  rental_end_date DateTime?               @default(now()) @db.DateTime(0)
+  orderId         Int?
+  rental_date     DateTime? @default(now()) @db.DateTime(0)
+  rental_end_date DateTime? @default(now()) @db.DateTime(0)
+  total_price     Decimal?  @db.Decimal(10, 2)
+
   rental_status   Calender_rental_status?
+  mode            RentalMode?             @default(TEST)
   rental_datetime DateTime?               @default(now()) @db.DateTime(0)
   rental_update   DateTime?               @updatedAt
   customer        Customer                @relation(fields: [customerId], references: [customer_id])
   product         Product                 @relation(fields: [productId], references: [product_id])
+  order           Orders?                 @relation(fields: [orderId], references: [order_id])
   reports         Report[]
 
   @@index([customerId], map: "FK_customer_id_idx")

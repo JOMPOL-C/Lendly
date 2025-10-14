@@ -1,7 +1,6 @@
 <%- include('includes/head') %>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
   <link rel="stylesheet" type="text/css" href="https://npmcdn.com/flatpickr/dist/themes/dark.css">
-
   <link rel="stylesheet" href="/styles/review.css">
   </head>
 
@@ -54,7 +53,9 @@
               <option value="shoe">รองเท้าเดี่ยว</option>
             </select>
 
-            <div id="calendar"></div>
+            <!-- ปฏิทิน -->
+            <div id="calendar" data-product-id="<%= product.product_id %>"></div>
+
             <button id="addToCartBtn" class="btn-cart">เพิ่มลงตะกร้า</button>
           </div>
         </section>
@@ -66,8 +67,9 @@
         <script src="/js/booking.js"></script>
 
         <script>
-          // ✅ ราคาจากฐานข้อมูล (ฝั่งเซิร์ฟเวอร์)
+          // ✅ ราคาจากฐานข้อมูล
           const productPrices = <%- JSON.stringify(product.prices || []) %>;
+          console.log("💰 productPrices:", productPrices);
 
           const priceDisplay = document.getElementById("priceDisplay");
           const componentSelect = document.querySelector("select[name=components]");
@@ -85,6 +87,9 @@
             "shoe": "solo_shoe"
           };
 
+          // ✅ เก็บ productPriceId ที่เลือกไว้ใช้ตอนเพิ่มตะกร้า
+          let selectedPriceId = null;
+
           // ✅ อัปเดตราคาเมื่อเลือกโหมดหรือของเช่า
           function updatePrice() {
             const selectedMode = document.querySelector("input[name=mode]:checked")?.value;
@@ -92,6 +97,7 @@
 
             if (!selectedMode || !selectedComponent) {
               priceDisplay.textContent = "กรุณาเลือกของเช่าและโหมดก่อน";
+              selectedPriceId = null;
               return;
             }
 
@@ -100,9 +106,11 @@
 
             if (!priceObj) {
               priceDisplay.textContent = "ไม่มีราคาสำหรับตัวเลือกนี้ในระบบ";
+              selectedPriceId = null;
               return;
             }
 
+            selectedPriceId = priceObj.productPrice_id; // 👈 เก็บ id จริง
             const price = selectedMode === "test" ? priceObj.price_test : priceObj.price_pri;
             const label = selectedMode === "test" ? "เทส (2 วัน)" : "ไพร (3 วัน)";
             priceDisplay.textContent = `ราคาเช่า: ${price} บาท (${label})`;
@@ -110,10 +118,8 @@
 
           componentSelect.addEventListener("change", updatePrice);
           modeRadios.forEach(r => r.addEventListener("change", updatePrice));
-        </script>
 
-        <script>
-          // สลับภาพหลัก
+          // ✅ สลับภาพหลัก
           const MainImg = document.getElementById("MainImg");
           const smallimg = document.getElementsByClassName("small-img");
           for (let i = 0; i < smallimg.length; i++) {
@@ -122,7 +128,7 @@
             };
           }
 
-          // เพิ่มลงตะกร้า
+          // ✅ เพิ่มลงตะกร้า
           document.getElementById("addToCartBtn").addEventListener("click", async () => {
             const mode = document.querySelector("input[name=mode]:checked")?.value;
             const component = document.querySelector("select[name=components]")?.value;
@@ -131,7 +137,9 @@
             if (!mode) return alert("กรุณาเลือกโหมด เทส หรือ ไพร");
             if (!component) return alert("กรุณาเลือกของเช่า");
             if (!range || range.length < 2) return alert("กรุณาเลือกวันที่เช่าให้ครบ");
+            if (!selectedPriceId) return alert("กรุณาเลือกของเช่าให้มีราคาก่อน");
 
+            // 🗓️ ดึงวันที่จากปฏิทิน
             const start = range[0].toISOString().split("T")[0];
             const end = range[1].toISOString().split("T")[0];
 
@@ -140,7 +148,13 @@
             const res = await fetch("/api/cart/add", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ productId, mode, component, start, end })
+              body: JSON.stringify({
+                productId,
+                productPriceId: selectedPriceId,
+                mode,
+                start,
+                end,  // ✅ ส่งวันเริ่ม-คืนไปกับ body
+              }),
             });
 
             const data = await res.json();
