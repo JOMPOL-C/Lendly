@@ -1,56 +1,245 @@
 /* rental.css */
 .rental-card {
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    padding: 20px;
-    margin-bottom: 20px;
-    display: flex;
-    align-items: center;
-    gap: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
 }
+
 .rental-card img {
-    width: 200px;
-    height: 200px;
-    object-fit: cover;
-    border-radius: 8px;
+  width: 200px;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 8px;
 }
+
 .rental-info {
-    flex: 1;
+  flex: 1;
 }
 
 .rental-info h3 {
-    margin: 0 0 10px 0;
-    font-size: 22px;
+  margin: 0 0 10px 0;
+  font-size: 22px;
 }
+
 .rental-info p {
-    margin: 5px 0;
-    font-size: 16px;
+  margin: 5px 0;
+  font-size: 16px;
 }
-.rental-info .btn {
-    display: inline-block;
-    margin-top: 10px;
-    padding: 10px 15px;
-    background-color: #bf8bfe;
-    color: white;
-    text-decoration: none;
-    border-radius: 5px;
+
+.btn {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 10px 15px;
+  background-color: #bf8bfe;
+  color: white;
+  text-decoration: none;
+  border-radius: 5px;
 }
+
 .rental-info .btn:hover {
-    background-color: rgb(159, 20, 252);
+  background-color: rgb(159, 20, 252);
 }
+
 .tab-content {
-    display: none;
+  display: none;
+}
+
+.tracking-status {
+  margin-top: 20px;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+#tracking-steps {
+  list-style: none;
+  display: flex;
+  justify-content: space-between;
+  padding: 0;
+  margin: 0;
+}
+
+#tracking-steps li {
+  position: relative;
+  flex: 1;
+  text-align: center;
+  font-size: 14px;
+}
+
+#tracking-steps li.done {
+  color: green;
+}
+
+#tracking-steps li::before {
+  content: "✔";
+  display: block;
+  margin: 0 auto 5px;
+  border: 2px solid #ccc;
+  border-radius: 50%;
+  width: 25px;
+  height: 25px;
+  line-height: 23px;
+  background: #fff;
+}
+
+#tracking-steps li.done::before {
+  border-color: green;
+  color: green;
+}
+
+/* สถานะ line */
+.rental-box {
+  max-width: 900px;
+  margin: auto;
+  padding: 20px;
+  font-family: sans-serif;
+}
+
+.timeline-horizontal {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 30px;
+  position: relative;
+}
+
+.step {
+  text-align: center;
+  flex: 1;
+}
+
+.circle {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 2px solid #ccc;
+  margin: 0 auto 10px;
+  line-height: 28px;
+  background: #fff;
+  color: #666;
+}
+
+.step.done .circle {
+  background: #28a745;
+  color: #fff;
+  border-color: #28a745;
+}
+
+.line {
+  flex: 1;
+  height: 2px;
+  background: #ccc;
+  margin: 0 5px;
+}
+
+.step.done~.line {
+  background: #28a745;
+}
+
+.step p {
+  font-size: 12px;
+}
+
+.step span {
+  display: block;
+  font-size: 11px;
+  color: gray;
+}
+
+/* ช่องคืนสินค้า */
+.return-box {
+  max-width: 500px;
+  margin: auto;
+  background: #fff;
+  border-radius: 12px;
+  padding: 25px 30px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.return-box h2 {
+  margin-bottom: 20px;
+  text-align: center;
+  color: #333;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 8px;
+  color: #444;
+}
+
+.form-group input[type="text"],
+.form-group input[type="file"] {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: 0.2s;
+}
+
+.form-group input[type="text"]:focus,
+.form-group input[type="file"]:focus {
+  border-color: #7d4dff;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(125, 77, 255, 0.2);
+}
+
+.submit-btn {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  background: #7d4dff;
+  color: #fff;
+  font-size: 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.submit-btn:hover {
+  background: #5e33cc;
+}
+
+.note {
+  font-size: 12px;
+  color: gray;
+  margin-top: 8px;
+}
+
+.form-group select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: 0.2s;
+}
+
+.form-group select:focus {
+  border-color: #7d4dff;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(125, 77, 255, 0.2);
 }
 
 @media (max-width: 477px) {
-    .rental-card {
-        flex-direction: column;
-        align-items: flex-start;
-    }
+  .rental-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 
-    .rental-card img {
-        width: 100%;
-        height: auto;
-    }
-    
+  .rental-card img {
+    width: 100%;
+    height: auto;
+  }
+
 }

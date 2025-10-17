@@ -1,0 +1,141 @@
+<%- include('includes/head') %>
+  <link rel="stylesheet" href="/styles/profile.css">
+
+  </head>
+
+  <body>
+    <%- include('includes/nav') %>
+
+      <main class="container">
+        <h1>แก้ไขโปรไฟล์</h1>
+
+        <% if (user) { %>
+          <form class="profile-card" method="POST" action="/api/profile/update/<%= user.customer_id %>"
+            enctype="multipart/form-data">
+            <div class="profile-pic-wrapper">
+              <!-- input file ซ่อน -->
+              <input type="file" id="profile_image" name="profile_image" accept="image/*" style="display:none;"
+                onchange="previewProfile(event)">
+
+              <!-- วงกลมโปรไฟล์ -->
+              <label for="profile_image" class="profile-pic-label">
+                <% if (user && user.profile_image_url) { %>
+                  <img id="profilePreview" src="<%= user.profile_image_url %>" alt="Profile" class="profile-pic"
+                    style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover;">
+                  <% } else { %>
+                    <i id="profilePreviewIcon" class='bx bxs-user-circle profile-icon'></i>
+                    <% } %>
+              </label>
+
+
+
+
+              <!-- icon กล้อง overlay -->
+              <div class="camera-icon">
+                <i class='bx bxs-camera'></i>
+              </div>
+              </label>
+            </div>
+
+
+            <!-- username -->
+            <div class="form-group">
+              <h4>ชื่อผู้ใช้</h4>
+              <%= user.username %>
+            </div>
+
+            <!-- email -->
+            <div class="form-group">
+              <label for="email">อีเมล</label>
+              <input type="email" id="email" name="customer_email" value="<%= user.customer_email || "" %>">
+            </div>
+
+            <!-- phone -->
+            <div class="form-group">
+              <label for="phone">เบอร์โทรศัพท์</label>
+              <input type="text" id="phone" name="customer_phone" value="<%= user.customer_phone || "" %>">
+            </div>
+
+            <!-- name -->
+            <div class="form-group">
+              <label for="name">ชื่อ</label>
+              <input type="text" id="name" name="name" value="<%= user.name || "" %>">
+            </div>
+
+            <!-- last name -->
+            <div class="form-group">
+              <label for="last_name">นามสกุล</label>
+              <input type="text" id="last_name" name="last_name" value="<%= user.last_name || "" %>">
+            </div>
+
+
+            <!-- proportions -->
+            <div class="form-group">
+              <label>สัดส่วน (ซม.)</label>
+              <div style="display:flex; gap:10px;">
+                <input type="number" name="chest" placeholder="อก" value="<%= user.proportion?.chest || "" %>">
+                <input type="number" name="waist" placeholder="เอว" value="<%= user.proportion?.waist || "" %>">
+                <input type="number" name="hips" placeholder="สะโพก" value="<%= user.proportion?.hips || "" %>">
+              </div>
+            </div>
+
+            <!-- address -->
+            <div class="form-group">
+              <label for="address">ที่อยู่</label>
+              <textarea id="address" name="address"><%= user.address || "" %></textarea>
+            </div>
+
+            <!-- ID card image -->
+            <div class="form-group">
+              <label for="id_card_image">รูปบัตรประชาชน</label>
+              <input type="file" id="id_card_image" name="id_card_image" accept="image/*">
+            </div>
+
+            <!-- ID card number -->
+            <div class="form-group">
+              <label for="id_card_number">รหัสบัตรประชาชน</label>
+              <input type="text" id="id_card_number" name="id_card_number" value="<%= user.id_card_number || "" %>">
+            </div>
+
+            <div class="profile-actions">
+              <button type="submit" class="btn btn-primary">บันทึกการเปลี่ยนแปลง</button>
+              <a href="/changePassword" class="btn">เปลี่ยนรหัสผ่าน</a>
+              <a href="/logout" class="btn btn-danger">ออกจากระบบ</a>
+            </div>
+          </form>
+
+          <% } else { %>
+            <p>คุณยังไม่ได้เข้าสู่ระบบ <a href="/login">เข้าสู่ระบบที่นี่</a></p>
+            <% } %>
+      </main>
+
+      <%- include('includes/footer') %>
+        <script src="/js/script.js"></script>
+        <script>
+          function previewProfile(event) {
+            const file = event.target.files[0];
+            if (file) {
+              const reader = new FileReader();
+              reader.onload = function (e) {
+                let img = document.getElementById("profilePreview");
+                let icon = document.getElementById("profilePreviewIcon");
+
+                if (img) {
+                  img.src = e.target.result;
+                } else if (icon) {
+                  // ถ้ายังไม่มี img ให้แทนที่ icon ด้วย img
+                  const newImg = document.createElement("img");
+                  newImg.id = "profilePreview";
+                  newImg.src = e.target.result;
+                  newImg.className = "profile-pic";
+                  icon.replaceWith(newImg);
+                }
+              };
+              reader.readAsDataURL(file);
+            }
+          }
+        </script>
+
+  </body>
+
+  </html>

@@ -1,139 +1,70 @@
 <%- include('includes/head') %>
+    <link rel="stylesheet" href="/styles/favorites.css">
     </head>
 
     <body>
         <%- include('includes/nav') %>
-    <main>
-            <section id="banner" class="section-p1">
-                <h4>ใส่อะไรอ่ะ</h4>
-            </section>
+            <main>
+                <section id="banner" class="section-p1">
+                    <h4>banner</h4>
+                </section>
 
-            <section id="new_product" class="section-p1 product1">
-                <h2>ชุดมาใหม่</h2>
-                <p>สามารถดูแต่ละหมวดหมู่ได้ที่หมวดหมู่</p>
-                <div class="pro-container">
-                    <div class="pro">
-                        <img src="https://dokidokicos.com/cdn/shop/files/1_63d6aca4-1bf0-491b-af84-9f79b1ee5e44.jpg?v=1717159871"
-                            alt="">
-                        <div class="des">
-                            <span>Re:Zero</span>
-                            <h5>Emilia</h5>
-                            <h4>300฿/400฿</h4>
-                        </div>
-                        <div class="btn-pro">
-                            <a href="#"><i class='bx bx-heart btn'></i></a>
-                            <a href="#"><i class="bxr  bx-cart btn"></i></a>
-                        </div>
+                <!-- ชุดมาใหม่ (โชว์ 4 ชิ้นล่าสุด) -->
+                <section id="new_product" class="section-p1 product1">
+                    <h2>ชุดที่มี</h2>
+                    <p>สามารถดูแต่ละหมวดหมู่ได้ที่หมวดหมู่</p>
+
+                    <div class="pro-container">
+                        <% products.slice(0,4).forEach(product=> { %>
+                            <div class="pro">
+                                <a href="/api/products/<%= product.product_id %>">
+                                    <% if (product.images.length> 0) { %>
+                                        <img src="<%= product.images[0].image_url %>" alt="<%= product.product_name %>">
+                                        <% } else { %>
+                                            <img src="/images/no-image.png" alt="no image">
+                                            <% } %>
+                                </a>
+
+                                <div class="des">
+                                    <span>
+                                        <%= product.story_name %>
+                                    </span>
+                                    <h5>
+                                        <%= product.product_name %>
+                                    </h5>
+                                    <% if (product.prices.length> 0) { %>
+                                        <h4>
+                                            <%= product.prices[0].price_test %>฿ / <%= product.prices[0].price_pri %>฿
+                                        </h4>
+                                        <% } %>
+                                </div>
+
+                                <!-- ✅ ปุ่มหัวใจ + รถเข็นอยู่ข้างในกล่องสินค้า -->
+                                <div class="btn-pro">
+                                    <a href="#">
+                                        <i class='bx bx-heart btn' data-id="<%= product.product_id %>"></i>
+
+                                    </a>
+
+                                    <a href="#" class="btn-add-cart" data-id="<%= product.product_id %>">
+                                        <i class="bx bx-cart btn"></i>
+                                    </a>
+                                </div>
+
+                            </div>
+                            <% }) %>
                     </div>
+                </section>
+
+
+
+
                 </div>
-            </section>
-
-            <section id="all_product" class="section-p1 product1">
-                <h2>ชุดทั้งหมด</h2>
-                <p>สามารถดูแต่ละหมวดหมู่ได้ที่หมวดหมู่</p>
-                <div class="pro-container">
-                    <div class="pro">
-                        <img src="https://dokidokicos.com/cdn/shop/files/1_63d6aca4-1bf0-491b-af84-9f79b1ee5e44.jpg?v=1717159871"
-                            alt="">
-                        <div class="des">
-                            <span>Re:Zero</span>
-                            <h5>Emilia</h5>
-                            <h4>300฿/400฿</h4>
-                        </div>
-                        <div class="btn-pro">
-                            <a href="#"><i class='bx bx-heart btn'></i></a>
-                            <a href="#"><i class="bxr  bx-cart btn"></i></a>
-                        </div>
-                    </div>
-
-                    <div class="pro">
-                        <img src="https://dokidokicos.com/cdn/shop/files/1_63d6aca4-1bf0-491b-af84-9f79b1ee5e44.jpg?v=1717159871"
-                            alt="">
-                        <div class="des">
-                            <span>Re:Zero</span>
-                            <h5>Emilia</h5>
-                            <h4>300฿/400฿</h4>
-                        </div>
-                        <div class="btn-pro">
-                            <a href="#"><i class='bx bx-heart btn'></i></a>
-                            <a href="#"><i class="bxr  bx-cart btn"></i></a>
-                        </div>
-                    </div>
-
-                    <div class="pro">
-                        <img src="https://dokidokicos.com/cdn/shop/files/1_63d6aca4-1bf0-491b-af84-9f79b1ee5e44.jpg?v=1717159871"
-                            alt="">
-                        <div class="des">
-                            <span>Re:Zero</span>
-                            <h5>Emilia</h5>
-                            <h4>300฿/400฿</h4>
-                        </div>
-                        <div class="btn-pro">
-                            <a href="#"><i class='bx bx-heart btn'></i></a>
-                            <a href="#"><i class="bxr  bx-cart btn"></i></a>
-                        </div>
-                    </div>
-
-                    <div class="pro">
-                        <img src="https://dokidokicos.com/cdn/shop/files/1_63d6aca4-1bf0-491b-af84-9f79b1ee5e44.jpg?v=1717159871"
-                            alt="">
-                        <div class="des">
-                            <span>Re:Zero</span>
-                            <h5>Emilia</h5>
-                            <h4>300฿/400฿</h4>
-                        </div>
-                        <div class="btn-pro">
-                            <a href="#"><i class='bx bx-heart btn'></i></a>
-                            <a href="#"><i class="bxr  bx-cart btn"></i></a>
-                        </div>
-                    </div>
-
-                    <div class="pro">
-                        <img src="https://dokidokicos.com/cdn/shop/files/1_63d6aca4-1bf0-491b-af84-9f79b1ee5e44.jpg?v=1717159871"
-                            alt="">
-                        <div class="des">
-                            <span>Re:Zero</span>
-                            <h5>Emilia</h5>
-                            <h4>300฿/400฿</h4>
-                        </div>
-                        <div class="btn-pro">
-                            <a href="#"><i class='bx bx-heart btn'></i></a>
-                            <a href="#"><i class="bxr  bx-cart btn"></i></a>
-                        </div>
-                    </div>
-
-                    <div class="pro">
-                        <img src="https://dokidokicos.com/cdn/shop/files/1_63d6aca4-1bf0-491b-af84-9f79b1ee5e44.jpg?v=1717159871"
-                            alt="">
-                        <div class="des">
-                            <span>Re:Zero</span>
-                            <h5>Emilia</h5>
-                            <h4>300฿/400฿</h4>
-                        </div>
-                        <div class="btn-pro">
-                            <a href="#"><i class='bx bx-heart btn'></i></a>
-                            <a href="#"><i class="bxr  bx-cart btn"></i></a>
-                        </div>
-                    </div>
-
-                    <div class="pro">
-                        <img src="https://dokidokicos.com/cdn/shop/files/1_63d6aca4-1bf0-491b-af84-9f79b1ee5e44.jpg?v=1717159871"
-                            alt="">
-                        <div class="des">
-                            <span>Re:Zero</span>
-                            <h5>Emilia</h5>
-                            <h4>300฿/400฿</h4>
-                        </div>
-                        <div class="btn-pro">
-                            <a href="#"><i class='bx bx-heart btn'></i></a>
-                            <a href="#"><i class="bxr  bx-cart btn"></i></a>
-                        </div>
-                    </div>
-                </div>
-            </section>
-    </main>
-        <%- include('includes/footer') %>
-        <script src="/js/script.js"></script>
+                </section>
+            </main>
+            <%- include('includes/footer') %>
+                <script src="/js/script.js"></script>
+                <script src="/js/heart-toggle.js"></script>
     </body>
 
-</html>
+    </html>

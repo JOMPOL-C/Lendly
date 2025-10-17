@@ -1,0 +1,158 @@
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.admin-table th,
+.admin-table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: center;
+}
+
+.admin-table th {
+    background: #f5f5f5;
+    font-weight: bold;
+}
+
+.thumb {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 5px;
+}
+
+.btn-edit {
+    background: #3498db;
+    color: #fff;
+    padding: 6px 12px;
+    border-radius: 4px;
+    text-decoration: none;
+}
+
+.btn-delete {
+    background: #e74c3c;
+    color: #fff;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.btn-add {
+    display: inline-block;
+    background: #2ecc71;
+    color: #fff;
+    padding: 8px 14px;
+    border-radius: 4px;
+    text-decoration: none;
+    margin-bottom: 10px;
+}
+
+.btn-add:hover {
+    background: #27ae60;
+}
+
+.thumb {
+    width: 70px;
+    height: 70px;
+    object-fit: cover;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+}
+
+.img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+}
+
+.tbody {
+    text-align: center;
+}
+
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.admin-table th,
+.admin-table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: center;
+}
+
+.admin-table th {
+    background: #f5f5f5;
+    font-weight: bold;
+}
+
+/* ✅ รูปสินค้าในตาราง */
+.thumb {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.thumb:hover {
+    transform: scale(1.2);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* ✅ ปุ่มจัดการ */
+.btn-edit {
+    background: #3498db;
+    color: #fff;
+    padding: 6px 12px;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: background 0.2s;
+}
+
+.btn-edit:hover {
+    background: #2c80b4;
+}
+
+.btn-delete {
+    background: #e74c3c;
+    color: #fff;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-delete:hover {
+    background: #c0392b;
+}
+
+/* ✅ ปุ่มเพิ่มสินค้า */
+.btn-add {
+    display: inline-block;
+    background: #2ecc71;
+    color: #fff;
+    padding: 8px 14px;
+    border-radius: 4px;
+    text-decoration: none;
+    margin-bottom: 10px;
+    transition: background 0.2s;
+}
+
+.btn-add:hover {
+    background: #27ae60;
+}
+
+/* ✅ ทำให้ทุกอย่างในแถวตรงกลางสวยงาม */
+.admin-table td img {
+    display: block;
+    margin: 0 auto;
+}

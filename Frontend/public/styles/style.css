@@ -1,103 +1,179 @@
-body{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    background-color: #f4f4f4;
-    padding: 40px;
+/* ========== Base ========== */
+* {
+  box-sizing: border-box;
 }
 
-.wrapper{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 40px;
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, .1);
-    width: 100%;
-    max-width: 400px;
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: #f4f4f4;
+  padding: 40px;
 }
 
-.wrapper .otp-icon{
-    height: 65px;
-    width: 65px;
-    background-color: darkslateblue;
-    color: white;
-    font-size: 2.5rem;
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-a{
-    color: darkslateblue;
-    font-weight: bold;  
-}
-.input-box{
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-}
-.input-field{
-    display: flex;
-    position: relative;
-    width: 100%;
-    height: 40px;
-    margin: 13px;
-}
-.input-box .input-field i{
-    position: absolute;
-    top: 50%;
-    left: 15px;
-}
-.input-box .input-field input{
-    width: 100%;
-    height: 100%;
-    border-radius: 10px;
-    border: 2px solid rgba(0, 0, 0, .2);
-    background-color: transparent;
-    outline: none;
-    padding: 5px 5px 5px 40px;
-}
-#error {
-            color: red; 
-            margin-top: 10px;
-        }
-
-@media (max-width:960px) {
-    .logo{
-        display: none;
-    }
+a {
+  color: darkslateblue;
+  font-weight: 600;
+  text-decoration: none;
 }
 
-.btn{
-    background-color: darkslateblue;
-    color: #fff;
-    width: 100%;
-    height: 100%;
-    border-radius: 10px;
-    border: 2px solid rgba(0, 0, 0, .2);
+/* ========== Card / Wrapper ========== */
+.wrapper {
+  width: 100%;
+  max-width: 400px;
+  padding: 40px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, .08);
 }
 
-form .input-forget {
-    flex-direction: row;
-    column-gap: 10px;
-    justify-content: space-between;
+/* ========== Form Layout ========== */
+.input-box {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
-.input-forget input{
-    height: 45px;
-    width: 43px;
-    outline: none;
-    text-align: center;
-    font-size: 1.125rem;
-    border-radius: 10px;
-    border: 2px solid rgba(0, 0, 0, 0.2);
-    background-color: transparent;
+.input-field {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  /* input + error เป็นแนวตั้ง */
+  gap: 6px;
+  /* ช่องไฟระหว่าง input กับ error */
 }
 
-.input-forget input::-webkit-inner-spin-button,
-.input-forget input::-webkit-outer-spin-button{
+/* ช่องกรอก */
+.input-field input {
+  width: 100%;
+  padding: 10px 40px;
+  /* กันพื้นที่ไอคอนซ้าย/ขวา */
+  border: 2px solid rgba(0, 0, 0, .2);
+  border-radius: 10px;
+  background: transparent;
+  outline: none;
+  font-size: 1rem;
+  transition: border-color .2s ease, box-shadow .2s ease;
+}
+
+/* โฟกัสสวย ๆ */
+.input-field input:focus {
+  border-color: darkslateblue;
+  box-shadow: 0 0 0 3px rgba(72, 61, 139, .12);
+}
+
+/* ========== Icons ========== */
+.input-field i {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #666;
+  line-height: 1;
+  font-size: 1.05rem;
+}
+
+/* ไอคอนซ้าย (user, phone, mail, lock) */
+.input-field i:not(.toggle-icon) {
+  left: 12px;
+}
+
+/* ไอคอนลูกตา (toggle password) — ขวาสุด, hitbox เล็ก ไม่บัง input */
+.input-field .toggle-icon {
+  right: 12px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.input-field .toggle-icon:hover {
+  color: darkslateblue;
+}
+
+/* ========== Error Texts ========== */
+.error-text {
+  display: block;
+  color: #e74c3c;
+  font-size: .8rem;
+  line-height: 1.4;
+  margin-top: 2px;
+}
+
+/* ถ้าอยากเปลี่ยนกรอบ/ไอคอนตอน error ก็ใส่ .error ที่ input-field ได้ */
+.input-field.error input {
+  border-color: #e74c3c;
+}
+
+.input-field.error i {
+  color: #e74c3c;
+}
+
+/* error รวมใต้ฟอร์ม */
+#form-error {
+  color: #e74c3c;
+  margin-top: 10px;
+}
+
+/* ========== Button ========== */
+.btn {
+  background: darkslateblue;
+  color: #fff;
+  width: 100%;
+  height: 45px;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color .2s ease, transform .02s ease;
+}
+
+.btn:hover {
+  background: #5a4fcf;
+}
+
+.btn:active {
+  background: #4b3eb8;
+  transform: translateY(1px);
+}
+
+.btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+/* ========== Small bits ========== */
+.wrapper .otp-icon {
+  height: 65px;
+  width: 65px;
+  background: darkslateblue;
+  color: #fff;
+  font-size: 2.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.toggle-icon {
+  cursor: pointer;
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+}
+
+.input-field {
+  position: relative;
+}
+
+
+@media (max-width: 960px) {
+  .logo {
     display: none;
+  }
 }

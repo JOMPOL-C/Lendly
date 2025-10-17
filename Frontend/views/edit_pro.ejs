@@ -1,0 +1,192 @@
+<%- include('includes/head') %>
+    <link rel="stylesheet" href="/styles/rental.css">
+    <link rel="stylesheet" href="/styles/review.css">
+    <link rel="stylesheet" href="/styles/add_product.css">
+    <link rel="stylesheet" href="/styles/edit_product.css">
+    </head>
+
+    <body>
+        <%- include('includes/nav') %>
+            <main>
+                <section class="index">
+                    <h2>แก้ไขสินค้า</h2>
+
+                    <form action="/api/products/<%= product.product_id %>/update" method="POST"
+                        enctype="multipart/form-data">
+                        <div class="form-group">
+                            <label>ชื่อสินค้า</label>
+                            <input type="text" name="product_name" value="<%= product.product_name %>" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>ชื่อเรื่อง</label>
+                            <input type="text" name="story_name" value="<%= product.story_name %>" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>สัดส่วน (ซม.)</label>
+                            <div style="display:flex; gap:10px;">
+                                <input type="number" name="chest" value="<%= product.size?.chest %>" placeholder="อก"
+                                    step="0.1">
+                                <input type="number" name="waist" value="<%= product.size?.waist %>" placeholder="เอว"
+                                    step="0.1">
+                                <input type="number" name="hips" value="<%= product.size?.hips %>" placeholder="สะโพก"
+                                    step="0.1">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="product_images">อัปโหลดรูปใหม่ (สูงสุด 10 รูป)</label>
+                            <input type="file" id="product_images" name="product_images" accept="image/*" multiple>
+
+                            <% if (product.images && product.images.length> 0) { %>
+                                <p style="margin-top:10px;">รูปเดิม:</p>
+                                <div id="old-images" style="display:flex; gap:10px; flex-wrap:wrap;">
+                                    <% product.images.forEach(img=> { %>
+                                        <div class="image-box" data-id="<%= img.image_id %>"
+                                            style="position:relative; display:inline-block;">
+                                            <img src="<%= img.image_url %>" alt="Product Image"
+                                                style="max-width:150px; border-radius:10px;">
+                                            <button type="button" class="remove-btn" >×</button>
+                                        </div>
+                                        <% }) %>
+                                </div>
+                                <% } %>
+                        </div>
+
+                        <!-- 👇 จะถูกเติม input hidden ตอนคลิกลบ -->
+                        <div id="removed-container"></div>
+
+
+                        <div class="form-group">
+                            <label>รายละเอียดสินค้า</label>
+                            <textarea name="shipping_info" rows="4" required><%= product.shipping_info %></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label>การใช้งาน</label>
+                            <div class="checkbox-group">
+                                <label><input type="checkbox" id="useTest" name="usage" value="test"
+                                        <%=product.prices.some(p=> p.type === 'suit' && p.days_test) ? 'checked' : ''
+                                    %>> เทส</label>
+                                <label><input type="checkbox" id="usePry" name="usage" value="pri"
+                                        <%=product.prices.some(p=> p.type === 'suit' && p.days_pri) ? 'checked' : '' %>>
+                                    ไพร</label>
+                            </div>
+                        </div>
+
+                        <div id="daysTestField">
+                            <label>จำนวนวัน (Test)</label>
+                            <input type="number" name="days_suit_test"
+                                value="<%= product.prices.find(p => p.type === 'suit')?.days_test || '' %>">
+                        </div>
+
+                        <div id="daysPriField">
+                            <label>จำนวนวัน (Pri)</label>
+                            <input type="number" name="days_suit_pri"
+                                value="<%= product.prices.find(p => p.type === 'suit')?.days_pri || '' %>">
+                        </div>
+
+                        <div class="form-group">
+                            <label>หมวดหมู่สินค้า</label>
+                            <select name="categoryId" required>
+                                <% categories.forEach(c=> { %>
+                                    <option value="<%= c.category_id %>" <%=c.category_id===product.categoryId
+                                        ? 'selected' : '' %>>
+                                        <%= c.category_name %>
+                                    </option>
+                                    <% }) %>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>ของให้เช่า</label>
+                            <div class="checkbox-group">
+                                <label><input type="checkbox" name="rentalType[]" id="rentCostume" value="costume"
+                                        <%=product.prices.some(p=> p.type === 'suit') ? 'checked' : '' %>> ชุด</label>
+                                <label><input type="checkbox" name="rentalType[]" id="rentWig" value="wig"
+                                        <%=product.prices.some(p=> p.type === 'wig') ? 'checked' : '' %>> วิก</label>
+                                <label><input type="checkbox" name="rentalType[]" id="rentProp" value="prop"
+                                        <%=product.prices.some(p=> p.type === 'solo_prop') ? 'checked' : '' %>>
+                                    พร็อพ</label>
+                                <label><input type="checkbox" name="rentalType[]" id="rentShoe" value="shoe"
+                                        <%=product.prices.some(p=> p.type === 'solo_shoe') ? 'checked' : '' %>>
+                                    รองเท้า</label>
+                            </div>
+                        </div>
+
+                        <div id="priceCostume" class="price-field">
+                            <label>ราคาเช่าชุด</label>
+                            <input type="number" name="price_costume"
+                                value="<%= product.prices.find(p => p.type === 'suit')?.price_test || '' %>">
+                        </div>
+
+                        <div id="priceWig" class="price-field">
+                            <label>ราคาเช่าวิก</label>
+                            <input type="number" name="price_wig"
+                                value="<%= product.prices.find(p => p.type === 'wig')?.price_test || '' %>">
+                        </div>
+
+                        <div id="priceProp" class="price-field">
+                            <label>ราคาเช่าพร็อพ</label>
+                            <input type="number" name="price_prop"
+                                value="<%= product.prices.find(p => p.type === 'solo_prop')?.price_test || '' %>">
+                        </div>
+
+                        <div id="priceShoe" class="price-field">
+                            <label>ราคาเช่ารองเท้า</label>
+                            <input type="number" name="price_shoe"
+                                value="<%= product.prices.find(p => p.type === 'solo_shoe')?.price_test || '' %>">
+                        </div>
+
+                        <div id="pricePryExtra" class="price-field">
+                            <label>ราคาเพิ่มสำหรับไพร</label>
+                            <input type="number" name="price_pry_extra"
+                                value="<%= product.prices.find(p => p.type === 'addon_prop')?.price_test || '' %>">
+                        </div>
+
+                        <div class="form-group">
+                            <label>สถานะสินค้า</label>
+                            <select name="status" required>
+                                <option value="active" <%=product.product_status ? "selected" : "" %>>เปิดให้เช่า
+                                </option>
+                                <option value="inactive" <%=!product.product_status ? "selected" : "" %>>ปิดการเช่า
+                                </option>
+                            </select>
+                        </div>
+
+                        <button type="submit" class="submit-btn">บันทึกการแก้ไข</button>
+                    </form>
+                </section>
+            </main>
+
+            <%- include('includes/footer') %>
+                <script src="/js/script.js"></script>
+                <script src="/js/add_product.js"></script>
+                <script>
+                    document.addEventListener("DOMContentLoaded", () => {
+                        const oldImages = document.querySelectorAll(".image-box");
+                        const removedContainer = document.getElementById("removed-container");
+
+                        oldImages.forEach(box => {
+                            const btn = box.querySelector(".remove-btn");
+                            btn.addEventListener("click", () => {
+                                const imageId = box.getAttribute("data-id");
+
+                                // สร้าง hidden input เพื่อส่ง id ของรูปที่จะลบ
+                                const input = document.createElement("input");
+                                input.type = "hidden";
+                                input.name = "removeImages";
+                                input.value = imageId;
+                                removedContainer.appendChild(input);
+
+                                // ลบรูปออกจากหน้า (ไม่ reload)
+                                box.remove();
+                            });
+                        });
+                    });
+                </script>
+
+    </body>
+
+    </html>

@@ -1,0 +1,481 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+//  ENUM SECTION
+
+// บทบาทของผู้ใช้
+enum Role {
+  ADMIN
+  USER
+}
+
+// สถานะการจัดส่ง
+enum Shipping_shipping_status {
+  IN_PROGRESS @map("กำลังจัดส่ง")
+  RETURNING   @map("กำลังจัดส่งคืน")
+  DELIVERED   @map("จัดส่งสำเร็จ")
+}
+
+// สถานะของการเช่าชุด (ในปฏิทินเช่า)
+enum Calender_rental_status {
+  WAITING_CONFIRM @map("รอยืนยันจากร้าน")
+  RENTED          @map("กำลังเช่า")
+  RETURNED        @map("คืนแล้ว")
+  CANCELLED       @map("ยกเลิก")
+}
+
+enum RentalMode {
+  TEST
+  PRI
+}
+
+// ประเภทของราคาสินค้า
+enum ProductPrice_status {
+  suit               @map("ชุด")
+  wig                @map("วิก")
+  suit_wig           @map("ชุด+วิก")
+  suit_wig_prop      @map("ชุด+วิก+พร็อพ")
+  suit_wig_shoe      @map("ชุด+วิก+รองเท้า")
+  suit_wig_prop_shoe @map("ชุด+วิก+พร็อพ+รองเท้า")
+  addon_prop         @map("พร็อพเสริม")
+  addon_shoe         @map("รองเท้า")
+  solo_prop          @map("พร็อพเดี่ยว")
+  solo_shoe          @map("รองเท้าเดี่ยว")
+}
+
+// ประเภทของการแจ้งเตือน
+enum Notification_status {
+  ORDER     @map("คำสั่งซื้อ")
+  PAYMENT   @map("การชำระเงิน")
+  REVIEW    @map("รีวิว")
+  PROMOTION @map("โปรโมชั่น")
+}
+
+// =======================
+// USER & PROFILE SECTION
+// =======================
+
+// เก็บข้อมูลลูกค้า (ผู้ใช้ระบบหลัก)
+model Customer {
+  customer_id       Int       @id @default(autoincrement())
+  name              String    @db.VarChar(45)
+  last_name         String    @db.VarChar(45)
+  customer_email    String?   @unique(map: "customer_email_UNIQUE") @db.VarChar(45)
+  customer_phone    String?   @unique(map: "customer_phone_UNIQUE") @db.VarChar(10)
+  address           String?   @db.VarChar(255)
+  id_card_number    String?   @unique(map: "id_card_number_UNIQUE") @db.VarChar(13)
+  username          String    @unique(map: "username_UNIQUE") @db.VarChar(30)
+  password          String    @db.VarChar(255)
+  customer_datetime DateTime  @default(now()) @db.DateTime(0)
+  customer_update   DateTime  @default(now()) @updatedAt
+  profile_image_url String?   @db.VarChar(255)
+  profile_public_id String?   @db.VarChar(255)
+  id_card_image_url String?   @db.VarChar(255)
+  id_card_public_id String?   @db.VarChar(255)
+  role              Role      @default(USER)
+  birthday          DateTime? @db.Date
+
+  age          Int?
+  rentals      Rentals[]
+  cart         Cart[]
+  chats        Chat[]
+  notification Notification[]
+  orders       Orders[]
+  proportion   Proportion?
+  reviews      Review[]
+  favorites    Favorite[]
+}
+
+// เก็บสัดส่วนร่างกายของลูกค้าเพื่อคำนวณขนาดชุด
+model Proportion {
+  proportion_id     Int      @id @default(autoincrement())
+  chest             Decimal? @db.Decimal(5, 1)
+  waist             Decimal? @db.Decimal(5, 1)
+  hips              Decimal? @db.Decimal(5, 1)
+  proportion_update DateTime @updatedAt
+  customerId        Int      @unique
+  customer          Customer @relation(fields: [customerId], references: [customer_id])
+}
+
+// =============================
+// 🧺 PRODUCT & CATEGORY SECTION
+// =============================
+
+// หมวดหมู่สินค้า (เช่น ชุดคอสเพลย์, วิกผม)
+model Category {
+  category_id       String    @id @db.VarChar(9)
+  category_name     String    @db.VarChar(45)
+  category_datetime DateTime  @default(now()) @db.DateTime(0)
+  category_update   DateTime  @updatedAt
+  products          Product[]
+}
+
+// สินค้า (ชุดให้เช่า)
+model Product {
+  product_id     Int                 @id @default(autoincrement())
+  ppId           Int?
+  categoryId     String              @db.VarChar(9)
+  product_name   String              @db.VarChar(100)
+  shipping_info  String?             @db.VarChar(255)
+  product_update DateTime            @updatedAt
+  product_status Boolean             @default(true)
+  story_name     String?             @db.VarChar(100)
+  rentals        Rentals[]
+  CartItem       CartItem[]
+  OrderItem      OrderItem[]
+  category       Category            @relation(fields: [categoryId], references: [category_id])
+  size           Proportion_product? @relation(fields: [ppId], references: [proportion_product_id])
+
+  images    ProductImage[]
+  prices    ProductPrice[]
+  reports   Report[]
+  reviews   Review[]
+  favorites Favorite[]
+
+  @@index([categoryId], map: "category_id_idx")
+  @@index([ppId], map: "fk_product_pp_idx")
+}
+
+//  รูปภาพของสินค้า
+model ProductImage {
+  image_id      Int     @id @default(autoincrement())
+  image_url     String  @db.VarChar(255)
+  cloudinary_id String  @db.VarChar(255)
+  productId     Int
+  product       Product @relation(fields: [productId], references: [product_id])
+
+  @@index([productId], map: "ProductImage_productId_fkey")
+}
+
+// สัดส่วนของสินค้าชุด (เก็บไซส์)
+model Proportion_product {
+  proportion_product_id Int       @id @default(autoincrement())
+  chest                 Decimal?  @db.Decimal(5, 1)
+  waist                 Decimal?  @db.Decimal(5, 1)
+  hips                  Decimal?  @db.Decimal(5, 1)
+  products              Product[]
+}
+
+// ราคาของสินค้า (แยกประเภทเช่น ชุด, วิก, พร็อพ)
+model ProductPrice {
+  productPrice_id Int                 @id @default(autoincrement())
+  productId       Int
+  type            ProductPrice_status
+  price_pri       Decimal             @db.Decimal(10, 2)
+  price_test      Decimal             @db.Decimal(10, 2)
+  days_test       Int?
+  days_pri        Int?
+  createdAt       DateTime            @default(now())
+  Deposit         Decimal?            @db.Decimal(10, 2) //ราคามัดจำ
+  CartItem        CartItem[]
+  OrderItem       OrderItem[]
+  product         Product             @relation(fields: [productId], references: [product_id])
+
+  @@index([productId], map: "fk_Product_ProductPrice_idx")
+}
+
+// =======================
+// CART & ORDER SECTION
+// =======================
+
+// ตะกร้าสินค้าของลูกค้า
+model Cart {
+  cart_id    Int        @id @default(autoincrement())
+  customerId Int
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  customer   Customer   @relation(fields: [customerId], references: [customer_id])
+  items      CartItem[]
+
+  @@index([customerId], map: "fk_cart_customer_idx")
+}
+
+// สินค้าแต่ละชิ้นในตะกร้า
+model CartItem {
+  cartItem_id    Int       @id @default(autoincrement())
+  cartId         Int
+  productId      Int
+  productPriceId Int?
+  mode           String?   @db.VarChar(10) // "test" หรือ "pri"
+  startDate      DateTime? @db.DateTime(0) // ✅ วันที่เริ่มเช่า
+  endDate        DateTime? @db.DateTime(0) // ✅ วันที่คืน
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  cart    Cart          @relation(fields: [cartId], references: [cart_id])
+  product Product       @relation(fields: [productId], references: [product_id])
+  price   ProductPrice? @relation(fields: [productPriceId], references: [productPrice_id])
+
+  @@index([cartId], map: "fk_cartItem_cart_idx")
+  @@index([productId], map: "fk_cartItem_product_idx")
+  @@index([productPriceId], map: "fk_cartItem_price_idx")
+}
+
+// คำสั่งซื้อหลัก (order)
+model Orders {
+  order_id              Int         @id @default(autoincrement())
+  customerId            Int
+  total_price           Decimal     @db.Decimal(10, 2)
+  deposit_amount        Decimal?    @db.Decimal(10, 2)
+  promotionPromotion_id Int?
+  OrderItem             OrderItem[]
+  customer              Customer    @relation(fields: [customerId], references: [customer_id])
+  Promotion             Promotion?  @relation(fields: [promotionPromotion_id], references: [promotion_id])
+  payments              Payment[]
+  shippings             Shipping[]
+  Rentals               Rentals[]
+
+  @@index([customerId], map: "fk_order_customer_idx")
+  @@index([promotionPromotion_id], map: "Orders_promotionPromotion_id_fkey")
+}
+
+// สินค้าแต่ละรายการในคำสั่งซื้อ
+model OrderItem {
+  orderItem_id    Int               @id @default(autoincrement())
+  orderId         Int
+  productId       Int
+  productPriceId  Int
+  order           Orders            @relation(fields: [orderId], references: [order_id])
+  product         Product           @relation(fields: [productId], references: [product_id])
+  price           ProductPrice      @relation(fields: [productPriceId], references: [productPrice_id])
+  ShippingBoxItem ShippingBoxItem[]
+
+  @@index([orderId], map: "fk_orderItem_order_idx")
+  @@index([productId], map: "fk_orderItem_product_idx")
+  @@index([productPriceId], map: "fk_orderItem_price_idx")
+}
+
+model Favorite {
+  favorite_id Int      @id @default(autoincrement())
+  customerId  Int
+  productId   Int
+  created_at  DateTime @default(now())
+
+  customer Customer @relation(fields: [customerId], references: [customer_id])
+  product  Product  @relation(fields: [productId], references: [product_id])
+
+  @@unique([customerId, productId])
+}
+
+// การชำระเงินของคำสั่งซื้อ
+model Payment {
+  payment_id      Int            @id @default(autoincrement())
+  orderId         Int
+  methodId        Int
+  omise_charge_id String         @db.VarChar(100)
+  payment_date    DateTime?      @default(now()) @db.DateTime(0)
+  payment_amount  Decimal        @db.Decimal(10, 2)
+  method          Payment_method @relation(fields: [methodId], references: [payment_method_id])
+  order           Orders         @relation(fields: [orderId], references: [order_id])
+
+  @@index([orderId], map: "fk_payment_order_idx")
+  @@index([methodId], map: "fk_payment_pmt_idx")
+}
+
+// ช่องทางการชำระเงิน
+model Payment_method {
+  payment_method_id   Int       @id @default(autoincrement())
+  payment_method_name String?   @db.VarChar(45)
+  payments            Payment[]
+}
+
+// โปรโมชั่นส่วนลด
+model Promotion {
+  promotion_id Int      @id @default(autoincrement())
+  code         String   @unique @db.VarChar(50)
+  description  String?  @db.Text
+  discount     Decimal  @db.Decimal(10, 2)
+  start_date   DateTime
+  end_date     DateTime
+  is_active    Boolean  @default(true)
+  created_at   DateTime @default(now())
+  orders       Orders[]
+}
+
+// =======================
+// SHIPPING SECTION (หลายกล่อง/รหัสพัสดุแยก)
+// =======================
+
+// การจัดส่งหลักของคำสั่งซื้อ (อาจมีหลายกล่อง)
+model Shipping {
+  shipping_id     Int                       @id @default(autoincrement())
+  orderId         Int
+  shipping_date   DateTime?                 @db.DateTime(0)
+  shipping_status Shipping_shipping_status?
+  shipping_name   String?                   @db.VarChar(45)
+  image_slip      String?                   @db.VarChar(255)
+  shipping_update DateTime                  @updatedAt
+
+  boxes           ShippingBox[] // กล่องย่อยในรอบนี้
+  order           Orders            @relation(fields: [orderId], references: [order_id])
+  ShippingHistory ShippingHistory[]
+
+  @@index([orderId], map: "fk_shipping_order_idx")
+}
+
+// กล่องแต่ละใบในรอบการจัดส่ง (tracking code คนละอัน)
+model ShippingBox {
+  box_id        Int               @id @default(autoincrement())
+  shippingId    Int
+  tracking_code String            @unique @db.VarChar(20)
+  note          String?           @db.VarChar(255)
+  shipping      Shipping          @relation(fields: [shippingId], references: [shipping_id])
+  items         ShippingBoxItem[]
+
+  @@index([shippingId], map: "fk_box_shipping_idx")
+}
+
+// รายการสินค้าที่อยู่ในกล่องแต่ละใบ
+model ShippingBoxItem {
+  shippingBoxItem_id Int         @id @default(autoincrement())
+  boxId              Int
+  orderItemId        Int
+  quantity           Int         @default(1)
+  box                ShippingBox @relation(fields: [boxId], references: [box_id])
+  orderItem          OrderItem   @relation(fields: [orderItemId], references: [orderItem_id])
+
+  @@index([boxId], map: "fk_shippingboxitem_box_idx")
+  @@index([orderItemId], map: "fk_shippingboxitem_orderitem_idx")
+}
+
+// ประวัติการอัปเดตสถานะของการจัดส่ง
+model ShippingHistory {
+  history_id Int                      @id @default(autoincrement())
+  shippingId Int
+  status     Shipping_shipping_status
+  changed_at DateTime                 @default(now())
+  note       String?                  @db.VarChar(255)
+  shipping   Shipping                 @relation(fields: [shippingId], references: [shipping_id])
+
+  @@index([shippingId], map: "ShippingHistory_shippingId_fkey")
+}
+
+// =======================
+// RENTAL & REPORT SECTION
+// =======================
+
+// ข้อมูลการเช่าสินค้าของลูกค้าแต่ละคน
+model Rentals {
+  rental_id       Int       @id @default(autoincrement())
+  customerId      Int
+  productId       Int
+  orderId         Int?
+  rental_date     DateTime? @default(now()) @db.DateTime(0)
+  rental_end_date DateTime? @default(now()) @db.DateTime(0)
+  total_price     Decimal?  @db.Decimal(10, 2)
+
+  rental_status   Calender_rental_status?
+  mode            RentalMode?             @default(TEST)
+  rental_datetime DateTime?               @default(now()) @db.DateTime(0)
+  rental_update   DateTime?               @updatedAt
+  customer        Customer                @relation(fields: [customerId], references: [customer_id])
+  product         Product                 @relation(fields: [productId], references: [product_id])
+  order           Orders?                 @relation(fields: [orderId], references: [order_id])
+  reports         Report[]
+
+  @@index([customerId], map: "FK_customer_id_idx")
+  @@index([productId], map: "FK_product_id")
+}
+
+// รายงานความเสียหายหรือปัญหาระหว่างการเช่า
+model Report {
+  report_id       Int           @id @default(autoincrement())
+  productId       Int
+  rentalId        Int
+  report_topics   String        @db.Text
+  report_detail   String?       @db.Text
+  report_fine     Decimal?      @db.Decimal(10, 2)
+  report_datetime DateTime?     @default(now()) @db.DateTime(0)
+  product         Product       @relation(fields: [productId], references: [product_id])
+  rental          Rentals       @relation(fields: [rentalId], references: [rental_id])
+  images          ReportImage[]
+
+  @@index([productId], map: "fk_report_product_idx")
+  @@index([rentalId], map: "fk_report_rental_idx")
+}
+
+// รูปภาพประกอบรายงาน
+model ReportImage {
+  reportimage_id Int    @id @default(autoincrement())
+  image_url      String @db.VarChar(255)
+  cloudinary_id  String @db.VarChar(255)
+  reportId       Int
+  report         Report @relation(fields: [reportId], references: [report_id])
+
+  @@index([reportId], map: "fk_reportimage_report_idx")
+}
+
+// =======================
+// COMMUNICATION & REVIEW SECTION
+// =======================
+
+// ห้องแชทระหว่างลูกค้าและร้าน
+model Chat {
+  chat_id       Int       @id @default(autoincrement())
+  customerId    Int
+  chat_detail   String?   @db.Text
+  chat_datetime DateTime? @default(now()) @db.DateTime(0)
+  customer      Customer  @relation(fields: [customerId], references: [customer_id])
+
+  @@index([customerId], map: "FK_customer_id")
+}
+
+// รีวิวสินค้า
+model Review {
+  review_id       Int           @id @default(autoincrement())
+  customerId      Int
+  productId       Int
+  review_details  String?       @db.Text
+  review_datetime DateTime?     @default(now()) @db.DateTime(0)
+  customer        Customer      @relation(fields: [customerId], references: [customer_id])
+  product         Product       @relation(fields: [productId], references: [product_id])
+  images          ReviewImage[]
+
+  @@index([customerId], map: "fk_review_customer_idx")
+  @@index([productId], map: "fk_review_product_idx")
+}
+
+// รูปภาพรีวิวสินค้า
+model ReviewImage {
+  reviewimage_id Int    @id @default(autoincrement())
+  image_url      String @db.VarChar(255)
+  cloudinary_id  String @db.VarChar(255)
+  reviewId       Int
+  review         Review @relation(fields: [reviewId], references: [review_id])
+
+  @@index([reviewId], map: "fk_reviewimage_review_idx")
+}
+
+// =======================
+// NOTIFICATION SECTION
+// =======================
+
+// การแจ้งเตือนลูกค้า (เช่น คำสั่งซื้อ, การชำระเงิน, โปรโมชั่น)
+model Notification {
+  notification_id Int                 @id @default(autoincrement())
+  customerId      Int
+  title           String              @db.VarChar(100)
+  description     String              @db.Text
+  type            Notification_status
+  is_read         Boolean             @default(false)
+  created_at      DateTime            @default(now())
+  user            Customer            @relation(fields: [customerId], references: [customer_id])
+
+  @@index([customerId], map: "Notification_customerId_fkey")
+}
+
+// =======================
+// OTHER DATA
+// =======================
+
+// จังหวัด / พื้นที่ (ใช้ในที่อยู่ลูกค้า)
+model County {
+  county_id   Int    @id @default(autoincrement())
+  county_name String @db.VarChar(40)
+}

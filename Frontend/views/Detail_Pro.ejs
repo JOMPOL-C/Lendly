@@ -1,255 +1,171 @@
 <%- include('includes/head') %>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-    <link rel="stylesheet" href="/styles/review.css">
-    </head>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <link rel="stylesheet" type="text/css" href="https://npmcdn.com/flatpickr/dist/themes/dark.css">
+  <link rel="stylesheet" href="/styles/review.css">
+  </head>
 
-    <body>
-        <%- include('includes/nav') %>
-    <main>
-            <section id="prodetails" class="section-p1">
-                <div class="single-pro-image">
-                    <img src="https://dokidokicos.com/cdn/shop/files/1_63d6aca4-1bf0-491b-af84-9f79b1ee5e44.jpg?v=1717159871"
-                        width="100%" id="MainImg" alt="">
-                    <div class="small-img-group ">
+  <body>
+    <%- include('includes/nav') %>
+      <main>
+        <section id="prodetails" class="section-p1">
+          <div class="single-pro-image">
+            <% if (product.images && product.images.length> 0) { %>
+              <img src="<%= product.images[0].image_url %>" width="100%" id="MainImg" alt="<%= product.product_name %>">
+              <% } else { %>
+                <img src="/images/no-image.png" width="100%" id="MainImg" alt="no image">
+                <% } %>
+
+                  <div class="small-img-group">
+                    <% if (product.images && product.images.length> 1) { %>
+                      <% product.images.forEach((img, index)=> { %>
                         <div class="small-img-col">
-                            <img src="https://dokidokicos.com/cdn/shop/files/1_63d6aca4-1bf0-491b-af84-9f79b1ee5e44.jpg?v=1717159871"
-                                width="100%" class="small-img" alt="">
+                          <img src="<%= img.image_url %>" width="100%" class="small-img" alt="image <%= index %>">
                         </div>
-                        <div class="small-img-col">
-                            <img src="https://ae-pic-a1.aliexpress-media.com/kf/Sfa6c29e9d71c434d88178bb42626cb30C.jpg"
-                                width="100%" class="small-img" alt="">
-                        </div>
-                        <div class="small-img-col">
-                            <img src="https://www.themadshop.com.au/img/product/emilia-cosplay-costume-re-zero-starting-life-in-another-world-12017573-1600.jpg"
-                                width="100%" class="small-img" alt="">
-                        </div>
-                        <div class="small-img-col">
-                            <img src="https://uwowocosplay.com/cdn/shop/files/2_eede980d-3be4-4694-993d-dcc2a146e4dc.jpg?v=1729237204&width=1445"
-                                width="100%" class="small-img" alt="">
-                        </div>
-                        <div class="small-img-col">
-                            <img src="https://dokidokicos.com/cdn/shop/files/1_63d6aca4-1bf0-491b-af84-9f79b1ee5e44.jpg?v=1717159871"
-                                width="100%" class="small-img" alt="">
-                        </div>
-                    </div>
-                </div>
+                        <% }) %>
+                          <% } %>
+                  </div>
+          </div>
 
-                <div class="single-pro-details">
-                    <h6>Re:Zero</h6>
-                    <h4>Emilia</h4>
-                    <h2>Price</h2>
+          <div class="single-pro-details">
+            <h6>
+              <%= product.category ? product.category.category_name : 'ไม่ระบุหมวดหมู่' %>
+            </h6>
+            <h4>
+              <%= product.product_name %>
+            </h4>
 
-                    <label><input type="radio" name="mode" value="test" checked> เทส (2 วัน)</label>
-                    <label><input type="radio" name="mode" value="pri"> ไพร (3 วัน)</label>
+            <h2 id="priceDisplay">กรุณาเลือกของเช่าและโหมดก่อน</h2>
 
-                    <select name="components" id="">
-                        <option value="" disabled selected>เลือกของเช่า</option>
-                        <option value="set-wig">ชุด วิก</option>
-                        <option value="set-wig-prop">ชุด วิก พร๊อบ</option>
-                        <option value="set-wig-shoe">ชุด วิก รองเท้า</option>
-                        <option value="set-wig-prop-shoe">ชุด วิก พร๊อบ รองเท้า</option>
-                        <option value="prop">พร๊อบ</option>
-                        <option value="shoe">รองเท้า</option>
-                    </select>
+            <!-- โหมดเช่า -->
+            <label><input type="radio" name="mode" value="test" checked> เทส (2 วัน)</label>
+            <label><input type="radio" name="mode" value="pri"> ไพร (3 วัน)</label>
 
+            <!-- ตัวเลือกการเช่า -->
+            <select name="components" id="">
+              <option value="" disabled selected>เลือกของเช่า</option>
+              <option value="suit">ชุด</option>
+              <option value="wig">วิก</option>
+              <option value="set-wig">ชุด + วิก</option>
+              <option value="set-wig-prop">ชุด + วิก + พร็อพ</option>
+              <option value="set-wig-shoe">ชุด + วิก + รองเท้า</option>
+              <option value="set-wig-prop-shoe">ชุด + วิก + พร็อพ + รองเท้า</option>
+              <option value="prop">พร็อพเดี่ยว</option>
+              <option value="shoe">รองเท้าเดี่ยว</option>
+            </select>
 
-                    <div id="calendar"></div>
+            <!-- ปฏิทิน -->
+            <div id="calendar" data-product-id="<%= product.product_id %>"></div>
 
+            <button id="addToCartBtn" class="btn-cart">เพิ่มลงตะกร้า</button>
+          </div>
+        </section>
+      </main>
 
-                    <button class="">Add to cart</button>
+      <%- include('includes/footer') %>
+        <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+        <script src="/js/script.js"></script>
+        <script src="/js/booking.js"></script>
 
-                </div>
-            </section>
+        <script>
+          // ✅ ราคาจากฐานข้อมูล
+          const productPrices = <%- JSON.stringify(product.prices || []) %>;
+          console.log("💰 productPrices:", productPrices);
 
-            <section id="tabdetail" class="section-p1">
+          const priceDisplay = document.getElementById("priceDisplay");
+          const componentSelect = document.querySelector("select[name=components]");
+          const modeRadios = document.querySelectorAll("input[name=mode]");
 
-                <div class="tabs">
-                    <a href="#" class="active" onclick="openTab(event, 'detail', this)">รายละเอียด</a>
-                    <a href="#" onclick="openTab(event, 'review', this)">รีวิวจากผู้ใช้</a>
-                </div>
+          // ✅ Mapping: ตัวเลือกหน้าเว็บ → type ในฐานข้อมูลจริง
+          const mapping = {
+            "suit": "suit",
+            "wig": "wig",
+            "set-wig": "suit_wig",
+            "set-wig-prop": "suit_wig_prop",
+            "set-wig-shoe": "suit_wig_shoe",
+            "set-wig-prop-shoe": "suit_wig_prop_shoe",
+            "prop": "solo_prop",
+            "shoe": "solo_shoe"
+          };
 
-                <!-- เนื้อหา -->
+          // ✅ เก็บ productPriceId ที่เลือกไว้ใช้ตอนเพิ่มตะกร้า
+          let selectedPriceId = null;
 
-                <div id="detail" class="tab-content" style="display:block">
-                    <h4>รายละเอียด</h4>
-                    <span>ชุดนี้เป็นชุด Emilia จากเรื่อง Re:Zero โดยในเซ็ตประกอบด้วย ชุด, วิก, พร๊อบ และรองเท้า
-                        (สามารถเลือกเช่าแยกได้)</span>
-                </div>
+          // ✅ อัปเดตราคาเมื่อเลือกโหมดหรือของเช่า
+          function updatePrice() {
+            const selectedMode = document.querySelector("input[name=mode]:checked")?.value;
+            const selectedComponent = componentSelect?.value;
 
-                <div id="review" class="tab-content" style="display:none">
-                    <h4>รีวิวจากผู้ใช้</h4>
-                    <div id="review-container">
-                        <div class="review-item">
-                            <div class="user-profile">
-                                <img src="https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/03c8d383-c259-4476-810e-9d8e743c41d1/dfzocxl-b0dcc01c-2ced-49c7-95f6-be8cc8737685.jpg/v1/fill/w_1280,h_960,q_75,strp/marin_kitagawa_by_pokearceus_dfzocxl-fullview.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7ImhlaWdodCI6Ijw9OTYwIiwicGF0aCI6Ii9mLzAzYzhkMzgzLWMyNTktNDQ3Ni04MTBlLTlkOGU3NDNjNDFkMS9kZnpvY3hsLWIwZGNjMDFjLTJjZWQtNDljNy05NWY2LWJlOGNjODczNzY4NS5qcGciLCJ3aWR0aCI6Ijw9MTI4MCJ9XV0sImF1ZCI6WyJ1cm46c2VydmljZTppbWFnZS5vcGVyYXRpb25zIl19.8Wwy6tQLgTzH9z_ITc8QVYFTWiMz8QxKud_cvoGW2Rg"
-                                    alt="">
-                                <h5>Jane Doe</h5>
-                            </div>
-                            <div class="review-content">
-                                <span>ชุดสวยมากค่ะ คุณภาพดี ใส่สบาย แนะนำเลย!</span>
-                                <div class="rev-img-group">
-                                    <div class="rev-img-col">
-                                        <img src="https://img.alicdn.com/imgextra/i4/4611686018427387103/O1CN01XwjkUI1ND51WjIRmo_!!4611686018427387103-0-rate.jpg_960x960.jpg_.webp"
-                                            alt="" onclick="openLightbox(0)">
-                                    </div>
-                                    <div class="rev-img-col">
-                                        <img src="https://img.alicdn.com/imgextra/i1/4611686018427383391/O1CN013PDZIG1kc1lGTL9q4_!!4611686018427383391-0-rate.jpg_960x960.jpg_.webp"
-                                            alt="" onclick="openLightbox(1)">
-                                    </div>
-                                    <div class="rev-img-col">
-                                        <img src="https://img.alicdn.com/imgextra/i2/4611686018427382682/O1CN013r6YOn2I8tUaR4BKR_!!4611686018427382682-0-rate.jpg_960x960.jpg_.webp"
-                                            alt="" onclick="openLightbox(2)">
-                                    </div>
-                                    <div class="rev-img-col">
-                                        <img src="https://img.alicdn.com/imgextra/i4/4611686018427382303/O1CN01pNAGzW1a5pn5lWS3v_!!4611686018427382303-0-rate.jpg_960x960.jpg_.webp"
-                                            alt="" onclick="openLightbox(3)">
-                                    </div>
-                                    <div class="rev-img-col">
-                                        <img src="https://img.alicdn.com/imgextra/i2/4611686018427386424/O1CN01jin0mG2ND5CL64lQI_!!4611686018427386424-0-rate.jpg_960x960.jpg_.webp"
-                                            alt="" onclick="openLightbox(4)">
-                                    </div>
-                                </div>
+            if (!selectedMode || !selectedComponent) {
+              priceDisplay.textContent = "กรุณาเลือกของเช่าและโหมดก่อน";
+              selectedPriceId = null;
+              return;
+            }
 
-                            </div>
-                        </div>
-                    </div>
+            const dbType = mapping[selectedComponent];
+            const priceObj = productPrices.find(p => p.type === dbType);
 
-                    <div id="review-container">
-                        <div class="review-item">
-                            <div class="user-profile">
-                                <img src="https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/03c8d383-c259-4476-810e-9d8e743c41d1/dfzocxl-b0dcc01c-2ced-49c7-95f6-be8cc8737685.jpg/v1/fill/w_1280,h_960,q_75,strp/marin_kitagawa_by_pokearceus_dfzocxl-fullview.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7ImhlaWdodCI6Ijw9OTYwIiwicGF0aCI6Ii9mLzAzYzhkMzgzLWMyNTktNDQ3Ni04MTBlLTlkOGU3NDNjNDFkMS9kZnpvY3hsLWIwZGNjMDFjLTJjZWQtNDljNy05NWY2LWJlOGNjODczNzY4NS5qcGciLCJ3aWR0aCI6Ijw9MTI4MCJ9XV0sImF1ZCI6WyJ1cm46c2VydmljZTppbWFnZS5vcGVyYXRpb25zIl19.8Wwy6tQLgTzH9z_ITc8QVYFTWiMz8QxKud_cvoGW2Rg"
-                                    alt="">
-                                <h5>Jane Doe</h5>
-                            </div>
-                            <div class="review-content">
-                                <span>ชุดสวยมากค่ะ คุณภาพดี ใส่สบาย แนะนำเลย!</span>
-                                <div class="rev-img-group">
-                                    <div class="rev-img-col">
-                                        <img src="https://img.alicdn.com/imgextra/i4/4611686018427387103/O1CN01XwjkUI1ND51WjIRmo_!!4611686018427387103-0-rate.jpg_960x960.jpg_.webp"
-                                            alt="" onclick="openLightbox(0)">
-                                    </div>
-                                    <div class="rev-img-col">
-                                        <img src="https://img.alicdn.com/imgextra/i1/4611686018427383391/O1CN013PDZIG1kc1lGTL9q4_!!4611686018427383391-0-rate.jpg_960x960.jpg_.webp"
-                                            alt="" onclick="openLightbox(1)">
-                                    </div>
-                                    <div class="rev-img-col">
-                                        <img src="https://img.alicdn.com/imgextra/i2/4611686018427382682/O1CN013r6YOn2I8tUaR4BKR_!!4611686018427382682-0-rate.jpg_960x960.jpg_.webp"
-                                            alt="" onclick="openLightbox(2)">
-                                    </div>
-                                    <div class="rev-img-col">
-                                        <img src="https://img.alicdn.com/imgextra/i4/4611686018427382303/O1CN01pNAGzW1a5pn5lWS3v_!!4611686018427382303-0-rate.jpg_960x960.jpg_.webp"
-                                            alt="" onclick="openLightbox(3)">
-                                    </div>
-                                    <div class="rev-img-col">
-                                        <img src="https://img.alicdn.com/imgextra/i2/4611686018427386424/O1CN01jin0mG2ND5CL64lQI_!!4611686018427386424-0-rate.jpg_960x960.jpg_.webp"
-                                            alt="" onclick="openLightbox(4)">
-                                    </div>
-                                </div>
+            if (!priceObj) {
+              priceDisplay.textContent = "ไม่มีราคาสำหรับตัวเลือกนี้ในระบบ";
+              selectedPriceId = null;
+              return;
+            }
 
-                            </div>
-                        </div>
-                    </div>
+            selectedPriceId = priceObj.productPrice_id; // 👈 เก็บ id จริง
+            const price = selectedMode === "test" ? priceObj.price_test : priceObj.price_pri;
+            const label = selectedMode === "test" ? "เทส (2 วัน)" : "ไพร (3 วัน)";
+            priceDisplay.textContent = `ราคาเช่า: ${price} บาท (${label})`;
+          }
 
-                    <div id="review-container">
-                        <div class="review-item">
-                            <div class="user-profile">
-                                <img src="https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/03c8d383-c259-4476-810e-9d8e743c41d1/dfzocxl-b0dcc01c-2ced-49c7-95f6-be8cc8737685.jpg/v1/fill/w_1280,h_960,q_75,strp/marin_kitagawa_by_pokearceus_dfzocxl-fullview.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7ImhlaWdodCI6Ijw9OTYwIiwicGF0aCI6Ii9mLzAzYzhkMzgzLWMyNTktNDQ3Ni04MTBlLTlkOGU3NDNjNDFkMS9kZnpvY3hsLWIwZGNjMDFjLTJjZWQtNDljNy05NWY2LWJlOGNjODczNzY4NS5qcGciLCJ3aWR0aCI6Ijw9MTI4MCJ9XV0sImF1ZCI6WyJ1cm46c2VydmljZTppbWFnZS5vcGVyYXRpb25zIl19.8Wwy6tQLgTzH9z_ITc8QVYFTWiMz8QxKud_cvoGW2Rg"
-                                    alt="">
-                                <h5>Jane Doe</h5>
-                            </div>
-                            <div class="review-content">
-                                <span>ชุดสวยมากค่ะ คุณภาพดี ใส่สบาย แนะนำเลย!</span>
-                                <div class="rev-img-group">
-                                    <div class="rev-img-col">
-                                        <img src="https://img.alicdn.com/imgextra/i4/4611686018427387103/O1CN01XwjkUI1ND51WjIRmo_!!4611686018427387103-0-rate.jpg_960x960.jpg_.webp"
-                                            alt="" onclick="openLightbox(0)">
-                                    </div>
-                                    <div class="rev-img-col">
-                                        <img src="https://img.alicdn.com/imgextra/i1/4611686018427383391/O1CN013PDZIG1kc1lGTL9q4_!!4611686018427383391-0-rate.jpg_960x960.jpg_.webp"
-                                            alt="" onclick="openLightbox(1)">
-                                    </div>
-                                    <div class="rev-img-col">
-                                        <img src="https://img.alicdn.com/imgextra/i2/4611686018427382682/O1CN013r6YOn2I8tUaR4BKR_!!4611686018427382682-0-rate.jpg_960x960.jpg_.webp"
-                                            alt="" onclick="openLightbox(2)">
-                                    </div>
-                                    <div class="rev-img-col">
-                                        <img src="https://img.alicdn.com/imgextra/i4/4611686018427382303/O1CN01pNAGzW1a5pn5lWS3v_!!4611686018427382303-0-rate.jpg_960x960.jpg_.webp"
-                                            alt="" onclick="openLightbox(3)">
-                                    </div>
-                                    <div class="rev-img-col">
-                                        <img src="https://img.alicdn.com/imgextra/i2/4611686018427386424/O1CN01jin0mG2ND5CL64lQI_!!4611686018427386424-0-rate.jpg_960x960.jpg_.webp"
-                                            alt="" onclick="openLightbox(4)">
-                                    </div>
-                                </div>
+          componentSelect.addEventListener("change", updatePrice);
+          modeRadios.forEach(r => r.addEventListener("change", updatePrice));
 
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!--  lightbox สำหรับขยายภาพรีวิว -->
-                <div id="lightbox" class="lightbox">
-                    <span class="close" onclick="closeLightbox()">&times;</span>
-                    <span class="prev" onclick="changeSlide(-1)">&#10094;</span>
-                    <span class="next" onclick="changeSlide(1)">&#10095;</span>
-                    <img id="lightbox-img" src="">
-                </div>
-            </section>
+          // ✅ สลับภาพหลัก
+          const MainImg = document.getElementById("MainImg");
+          const smallimg = document.getElementsByClassName("small-img");
+          for (let i = 0; i < smallimg.length; i++) {
+            smallimg[i].onclick = function () {
+              MainImg.src = smallimg[i].src;
+            };
+          }
 
-    </main>
-            <%- include('includes/footer') %>
-                <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-                <script src="/js/script.js"></script>
-                <script src="/js/booking.js"></script>
-                <script>
-                    // สคริปต์สำหรับเปลี่ยนภาพหลักเมื่อคลิกที่ภาพเล็ก
-                    var MainImg = document.getElementById("MainImg");
-                    var smallimg = document.getElementsByClassName("small-img");
+          // ✅ เพิ่มลงตะกร้า
+          document.getElementById("addToCartBtn").addEventListener("click", async () => {
+            const mode = document.querySelector("input[name=mode]:checked")?.value;
+            const component = document.querySelector("select[name=components]")?.value;
+            const range = document.querySelector("#calendar")._flatpickr.selectedDates;
 
-                    for (let i = 0; i < smallimg.length; i++) {
-                        smallimg[i].onclick = function () {
-                            MainImg.src = smallimg[i].src;
-                        };
-                    }
+            if (!mode) return alert("กรุณาเลือกโหมด เทส หรือ ไพร");
+            if (!component) return alert("กรุณาเลือกของเช่า");
+            if (!range || range.length < 2) return alert("กรุณาเลือกวันที่เช่าให้ครบ");
+            if (!selectedPriceId) return alert("กรุณาเลือกของเช่าให้มีราคาก่อน");
 
-                    // ฟังก์ชันสำหรับเปิดแท็บ
-                    function openTab(event, tabId, el) {
-                        event.preventDefault(); // กันไม่ให้รีเฟรชหน้า
+            // 🗓️ ดึงวันที่จากปฏิทิน
+            const start = range[0].toISOString().split("T")[0];
+            const end = range[1].toISOString().split("T")[0];
 
-                        // ซ่อนทุก content
-                        document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
-                        // ลบ active ทุกลิงก์
-                        document.querySelectorAll('.tabs a').forEach(a => a.classList.remove('active'));
+            const productId = "<%= product.product_id %>";
 
-                        // แสดง content ที่เลือก
-                        document.getElementById(tabId).style.display = 'block';
-                        // ใส่ active ให้ลิงก์ที่กด
-                        el.classList.add('active');
-                    }
-                    // กดรูปในรีวิวเพื่อขยาย
-                    const images = document.querySelectorAll(".rev-img-group img");
-                    const lightbox = document.getElementById("lightbox");
-                    const lightboxImg = document.getElementById("lightbox-img");
-                    let currentIndex = 0;
+            const res = await fetch("/api/cart/add", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                productId,
+                productPriceId: selectedPriceId,
+                mode,
+                start,
+                end,  // ✅ ส่งวันเริ่ม-คืนไปกับ body
+              }),
+            });
 
-                    function openLightbox(index) {
-                        currentIndex = index;
-                        lightbox.style.display = "flex";
-                        lightboxImg.src = images[index].src;
-                    }
+            const data = await res.json();
+            if (res.ok) {
+              alert("เพิ่มสินค้าลงตะกร้าเรียบร้อยแล้ว!");
+              window.location.href = "/cart";
+            } else {
+              alert(data.message || "ไม่สามารถเพิ่มสินค้าได้");
+            }
+          });
+        </script>
+  </body>
 
-                    function closeLightbox() {
-                        lightbox.style.display = "none";
-                    }
-
-                    function changeSlide(step) {
-                        currentIndex += step;
-                        if (currentIndex < 0) currentIndex = images.length - 1;
-                        if (currentIndex >= images.length) currentIndex = 0;
-                        lightboxImg.src = images[currentIndex].src;
-                    }
-
-                </script>
-    </body>
-
-
-    </html>
+  </html>

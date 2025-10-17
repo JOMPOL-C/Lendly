@@ -188,6 +188,7 @@ main {
     font-weight: bold;
     text-align: center;
 }
+
 /* Product */
 
 .product1 {
@@ -200,6 +201,7 @@ main {
     gap: 15px;
 }
 
+/* ===== การ์ดสินค้าเอฟเฟกต์ลอยขึ้นเมื่อ hover ===== */
 .product1 .pro {
     width: 23%;
     min-width: 250px;
@@ -207,19 +209,29 @@ main {
     border: 1px solid #eee;
     border-radius: 25px;
     cursor: pointer;
-    box-shadow: 20px 20px 30px rgba(0, 0, 0, 0.2);
+    background: #fff;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
     margin: 15px 0;
-    transition: 0.2s ease;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .product1 .pro:hover {
-    box-shadow: 20px 20px 30px rgba(0, 0, 0, 0.3);
+    transform: translateY(-10px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.25);
 }
 
+/* เพิ่มความนุ่มให้รูปภาพ */
 .product1 .pro img {
     width: 100%;
     border-radius: 20px;
+    transition: transform 0.3s ease;
 }
+
+/* เวลา hover แล้วรูปขยายเล็กน้อย */
+.product1 .pro:hover img {
+    transform: scale(1.03);
+}
+
 
 .product1 .pro .des {
     text-align: start;
@@ -250,6 +262,10 @@ main {
 .product1 .pro .btn-pro {
     display: flex;
     justify-content: space-between;
+}
+
+.product1 .pro .btn-pro :hover {
+    transform: scale(1.1);
 }
 
 .product1 .pro .btn {
@@ -570,4 +586,99 @@ footer .copyright {
         width: 50px;
         height: 50px;
     }
+}
+
+@media (max-width: 400px) {
+    #header .input-field {
+        width: 100%;
+        margin: 10px 0 0 0;
+    }
+
+    #header .input-field input {
+        font-size: 12px;
+    }
+
+    #header .input-field i {
+        font-size: 16px;
+        left: 10px;
+    }
+}
+
+/* ปิด scroll bar ออก */
+::-webkit-scrollbar {
+    display: none;
+}
+
+/* ตั้งค่า dropdown-menu ให้ซ่อนก่อน */
+.dropdown-menu {
+    position: absolute;
+    top: 60px;
+    /* ระยะห่างจาก icon */
+    right: 0;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, .1);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    /* ซ่อนขึ้นไปเล็กน้อย */
+    transition: all 0.3s ease;
+    /* smooth */
+    z-index: 1000;
+    max-height: 0;
+    /* ความสูงเริ่มต้นเป็น 0 */
+    overflow: hidden;
+    /* ซ่อนส่วนที่เกิน */
+    width: 200px;
+    /* กำหนดความกว้าง */
+    font-size: 14px;
+    font-weight: 500;
+    color: #222;
+    border: 1px solid #eee;
+    padding: 10px 0;
+    /* เพิ่ม padding ด้านบนและล่าง */
+}
+
+/* โชว์ตอน active */
+.dropdown-menu.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.dropdown-menu li {
+    list-style: none;
+}
+
+.dropdown-menu li a {
+    display: block;
+    padding: 10px 20px;
+    color: #222;
+    font-weight: 500;
+    text-decoration: none;
+}
+
+.dropdown-menu li a:hover {
+    background: #f4f4f4;
+    color: #7d4dff;
+}
+
+#lg-user.active .dropdown-menu {
+    max-height: 300px;
+    /* ความสูงพอที่จะครอบทุกเมนู */
+    opacity: 1;
+    visibility: visible;
+}
+
+.bxs-heart {
+    color: crimson;
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.bxs-heart:hover {
+    transform: scale(1.2);
+}
+
+.bxs-heart.active {
+    color: #7d4dff;
 }
