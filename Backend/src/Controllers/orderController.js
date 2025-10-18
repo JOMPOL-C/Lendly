@@ -1,5 +1,5 @@
 const prisma = require("../../prisma/prisma");
-const rentalsController = require("./rentalsControllers");
+const rentalsController = require("./rentalsController");
 
 exports.confirmOrder = async (req, res) => {
   try {
@@ -62,7 +62,7 @@ exports.createOrder = async (req, res) => {
       },
     });
 
-    const rentalsController = require("./rentalsControllers");
+    const rentalsController = require("./rentalsController");
     await rentalsController.createFromOrder(order);
 
     await prisma.CartItem.deleteMany({

@@ -11,9 +11,9 @@ const setUser = require('./src/middlewares/setUser');
 const cloudinary = require('cloudinary').v2;
 
 const PageRender = require('./src/utils/pagerender');
-const authController = require('./src/Controllers/authControllers');
-const productController = require('./src/Controllers/productControllers');
-const productControllersPage = require('./src/Controllers/productControllersPage');
+const authController = require('./src/Controllers/authController');
+const productController = require('./src/Controllers/productController');
+const productControllerPage = require('./src/Controllers/productControllerPage');
 const cartController = require('./src/Controllers/cartController');
 
 
@@ -58,7 +58,7 @@ app.set("views", path.join(__dirname, "../Frontend/views"));
 app.get('/favorites', PageRender.renderFav);
 app.get('/cart', cartController.getCart);
 app.get('/all_review', PageRender.renderAll_review);
-app.get('/category', (req, res) => productControllersPage.renderProductsPage(req, res, 'category'));
+app.get('/category', (req, res) => productControllerPage.renderProductsPage(req, res, 'category'));
 app.get('/Detail_Pro', PageRender.renderDetail_Pro);
 app.get('/my_rentals', PageRender.renderMy_rentals);
 
@@ -80,7 +80,7 @@ fs.readdirSync(path.join(__dirname, "src/routers"))
     app.use("/api", route);
   });
 
-app.get('/', productControllersPage.getProducts); // หน้า Home แสดงสินค้าทั้งหมด
+app.get('/', productControllerPage.getProducts); // หน้า Home แสดงสินค้าทั้งหมด
 app.get('/profile', authController.getProfile); // profile ต้อง login ก่อน
 app.get('/add_product', productController.renderAddProduct);
 app.get('/admin/products', productController.renderAdminAllProducts);
