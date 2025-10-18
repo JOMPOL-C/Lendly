@@ -38,10 +38,15 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+// 🔹 ไม่ต้องตรวจ token
+app.use("/", require("./src/routers/checkDuplicate"));
+app.get('/login', PageRender.renderLogin);
+app.get('/register', PageRender.renderRegister);
+
+// 🔹 เริ่มตรวจ token จากตรงนี้ลงไป
 app.use(require("./src/middlewares/authMiddleware"));
 app.use(require("./src/middlewares/setUser"));
 
-app.use("/", require("./src/routers/checkDuplicate"));
 app.use("/api", require("./src/routers/cart"));
 app.use("/api", require("./src/routers/favorite"));
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
@@ -56,9 +61,8 @@ app.get('/all_review', PageRender.renderAll_review);
 app.get('/category', (req, res) => productControllersPage.renderProductsPage(req, res, 'category'));
 app.get('/Detail_Pro', PageRender.renderDetail_Pro);
 app.get('/my_rentals', PageRender.renderMy_rentals);
-app.get('/login', PageRender.renderLogin);
-app.get('/register', PageRender.renderRegister);
-app.get('/forgotpassword', PageRender.renderForgotpassword);
+
+app.get('/forgetpassword', PageRender.renderForgetpassword);
 app.get('/resetpassword', PageRender.renderResetpassword);
 app.get('/otpVerify', PageRender.renderOtpVerify);
 app.get('/Detail_Ren', PageRender.renderDetail_Rnd);

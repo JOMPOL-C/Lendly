@@ -24,10 +24,13 @@ enum Shipping_shipping_status {
 
 // สถานะของการเช่าชุด (ในปฏิทินเช่า)
 enum Calender_rental_status {
-  WAITING_CONFIRM @map("รอยืนยันจากร้าน")
-  RENTED          @map("กำลังเช่า")
-  RETURNED        @map("คืนแล้ว")
-  CANCELLED       @map("ยกเลิก")
+  Ready_Rental     @map("พร้อมเช่า")
+  WAITING_CONFIRM  @map("รอยืนยันจากร้าน")
+  RENTED           @map("กำลังเช่า")
+  RETURNED         @map("คืนแล้ว")
+  CLEANING         @map("กำลังทำความสะอาด")
+  Not_Ready_Rental @map("ไม่พร้อมเช่า")
+  CANCELLED        @map("ยกเลิกเช่า")
 }
 
 enum RentalMode {
@@ -381,6 +384,15 @@ model Rentals {
 
   @@index([customerId], map: "FK_customer_id_idx")
   @@index([productId], map: "FK_product_id")
+}
+
+// ช่วงเวลาในการเช่า / ส่ง / ซักหรือดูแลสินค้า
+model DelaySetting {
+  delaySetting_id   Int      @id @default(autoincrement())
+  delay_ship_days   Int      @default(3) // ดีเลย์ก่อนวันเช่า (เผื่อส่งของ)
+  delay_return_days Int      @default(3) // ดีเลย์หลังคืน (เผื่อขนส่งกลับ)
+  delay_clean_days  Int      @default(5) // ดีเลย์หลังคืนเพื่อซัก/ตรวจเช็คชุด
+  updated_at        DateTime @default(now()) @updatedAt
 }
 
 // รายงานความเสียหายหรือปัญหาระหว่างการเช่า

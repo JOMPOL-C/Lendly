@@ -12,7 +12,7 @@ module.exports = {
     renderMy_rentals: redderPage('my_rentals', 'My Rentals Page'),
     renderLogin: redderPage('login', 'Login Page'),
     renderRegister: redderPage('register', 'Register Page'),
-    renderForgotpassword: redderPage('forgotpassword','forgetpassword Page'),
+    renderForgetpassword: redderPage('forgetpassword','forgetpassword Page'),
     renderResetpassword: redderPage('resetpassword', 'Reset Password Page'),
     renderOtpVerify: redderPage('otpVerify', 'OTP Verify Page'),
     renderProfile: redderPage('Profile', 'Profile Page'),

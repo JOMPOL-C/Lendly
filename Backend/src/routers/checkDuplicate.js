@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const prisma = require("../../prisma/prisma");
 
-router.get("/check", async (req, res) => {
+router.get("/register/check", async (req, res) => {
   const { field, value } = req.query;
   if (!field || !value) {
     return res.status(400).json({ error: "ต้องส่ง field และ value" });

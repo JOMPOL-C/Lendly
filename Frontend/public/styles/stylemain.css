@@ -514,9 +514,7 @@ footer .copyright {
 
     #lg-bag,
     #lg-fav,
-    #lg-user {
-        display: none;
-    }
+    #lg-user,
 
     .small-img-col {
         width: 75px;
