@@ -116,11 +116,13 @@ async function setupCalendar(bookings = []) {
   // ✅ ให้จองล่วงหน้าได้สูงสุด 3 เดือน
   const maxSelectable = new Date(today);
   maxSelectable.setMonth(today.getMonth() + 3);
+  maxSelectable.setDate(maxSelectable.getDate() + 1); // ✅ เพิ่ม 1 วัน
+
 
   // ✅ disable วันคิวที่ทับ
   const disabledRanges = await computeDisabledRanges(bookings, delay);
 
-  // ✅ หาวันสุดท้ายที่จองไว้ (กันรอบใหม่เร็วเกินไป)
+  // ✅ หาวันสุดท้ายที่จองไว้
   const latestEnd = bookings.reduce((latest, b) => {
     const end = new Date(b.end);
     const cleanEnd = new Date(end);
@@ -132,6 +134,15 @@ async function setupCalendar(bookings = []) {
     );
     return cleanEnd > latest ? cleanEnd : latest;
   }, today);
+
+  // ✅ บล็อกช่วงนี้เลยแทนที่จะรอ alert
+  if (latestEnd > today) {
+    disabledRanges.push({
+      from: today.toISOString().split("T")[0],
+      to: latestEnd.toISOString().split("T")[0],
+    });
+  }
+
 
   // ============================
   // 🗓️ Flatpickr setup
@@ -206,6 +217,8 @@ async function setupCalendar(bookings = []) {
       }
     },
   });
+
+
 
   // 🧹 เคลียร์วันที่เมื่อเปลี่ยนโหมด
   document.querySelectorAll("input[name=mode]").forEach(radio => {
