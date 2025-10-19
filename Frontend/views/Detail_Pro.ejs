@@ -1,5 +1,6 @@
 <%- include('includes/head') %>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
   <link rel="stylesheet" href="/styles/review.css">
   </head>
 
@@ -61,7 +62,6 @@
       </main>
 
       <%- include('includes/footer') %>
-        <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
         <script src="/js/script.js"></script>
         <script src="/js/booking.js"></script>
 
@@ -138,9 +138,14 @@
             if (!range || range.length < 2) return alert("กรุณาเลือกวันที่เช่าให้ครบ");
             if (!selectedPriceId) return alert("กรุณาเลือกของเช่าให้มีราคาก่อน");
 
-            // 🗓️ ดึงวันที่จากปฏิทิน
-            const start = range[0].toISOString().split("T")[0];
-            const end = range[1].toISOString().split("T")[0];
+            function fixDate(d) {
+              const local = new Date(d.getTime() - d.getTimezoneOffset() * 60000);
+              return local.toISOString().split("T")[0];
+            }
+
+            const start = fixDate(range[0]);
+            const end = fixDate(range[1]);
+
 
             const productId = "<%= product.product_id %>";
 

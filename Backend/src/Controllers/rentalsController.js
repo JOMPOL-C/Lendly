@@ -198,13 +198,15 @@ exports.createFromOrder = async (order) => {
         data: {
           customerId: order.customerId,
           productId: item.productId,
-          rental_date: cartItem.startDate,
-          rental_end_date: cartItem.endDate,
+          rental_date: cartItem.startDate, // 2025-10-11
+          rental_end_date: cartItem.endDate, // 2025-10-12 (เทส) / 2025-10-13 (ไพร)
           mode: cartItem.mode === "pri" ? "PRI" : "TEST",
           rental_status: "WAITING_CONFIRM",
           total_price: Number(priceRecord?.price_pri || priceRecord?.price_test || 0),
         },
       });
+
+
 
       console.log(`✅ Rental created for product ${item.productId}`);
     }
@@ -231,11 +233,16 @@ exports.confirmBatch = async (req, res) => {
   }
 };
 
-// ✅ ดึงข้อมูลการจองของสินค้า (เอาไว้ disable ปฏิทิน)
+function formatLocalDate(date) {
+  const d = new Date(date);
+  // หัก timezone ออกให้เป็นวันที่ตามเวลาท้องถิ่น
+  const local = new Date(d.getTime() - d.getTimezoneOffset() * 60000);
+  return local.toISOString().split("T")[0];
+}
+
 exports.getBookingsByProduct = async (req, res) => {
   try {
     const productId = Number(req.params.productId);
-
     const rentals = await prisma.Rentals.findMany({
       where: {
         productId,
@@ -244,30 +251,19 @@ exports.getBookingsByProduct = async (req, res) => {
       select: {
         rental_date: true,
         rental_end_date: true,
-        mode: true, // ✅ เพิ่มไว้เพื่อ debug ได้
+        mode: true,
       },
     });
 
-    // ✅ รวม buffer 3 วันก่อน / 9 วันหลัง — กันวันรวมหมดทุก mode
-    const withBuffer = rentals.map((r) => {
-      const start = new Date(r.rental_date);
-      const end = new Date(r.rental_end_date);
+    const bookings = rentals.map(r => ({
+      start: formatLocalDate(r.rental_date),
+      end: formatLocalDate(r.rental_end_date),
+      mode: r.mode,
+    }));
 
-      const startMinus3 = new Date(start);
-      startMinus3.setDate(start.getDate() - 3);
-
-      const endPlus9 = new Date(end);
-      endPlus9.setDate(end.getDate() + 9);
-
-      return {
-        start: startMinus3.toISOString().split("T")[0],
-        end: endPlus9.toISOString().split("T")[0],
-      };
-    });
-
-    res.json(withBuffer);
+    return res.json(bookings);
   } catch (err) {
     console.error("❌ getBookingsByProduct error:", err);
-    res.status(500).json({ message: "Server error" });
+    return res.status(500).json({ message: "Server error" });
   }
 };

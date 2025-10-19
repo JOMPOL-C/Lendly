@@ -388,11 +388,14 @@ model Rentals {
 
 // ช่วงเวลาในการเช่า / ส่ง / ซักหรือดูแลสินค้า
 model DelaySetting {
-  delaySetting_id   Int      @id @default(autoincrement())
-  delay_ship_days   Int      @default(3) // ดีเลย์ก่อนวันเช่า (เผื่อส่งของ)
-  delay_return_days Int      @default(3) // ดีเลย์หลังคืน (เผื่อขนส่งกลับ)
-  delay_clean_days  Int      @default(5) // ดีเลย์หลังคืนเพื่อซัก/ตรวจเช็คชุด
-  updated_at        DateTime @default(now()) @updatedAt
+  delaySetting_id      Int      @id @default(autoincrement())
+  delay_ship_days      Int      @default(3) // ดีเลย์ก่อนวันเช่า (เผื่อส่งของ)
+  delay_return_days    Int      @default(3) // ดีเลย์หลังคืน (เผื่อขนส่งกลับ)
+  delay_clean_days     Int      @default(5) // ดีเลย์หลังคืนเพื่อซัก/ตรวจเช็คชุด
+  delay_next_ship_days Int      @default(3) // ดีเลย์เตรียมส่งรอบต่อไป (กันชนคิวใหม่)
+  delay_admin_days     Int      @default(2) // ดีเลย์รอแอดมินกดยืนยัน (ใช้เฉพาะรอบแรก)
+  plus_delay_days      Int? // เวลาขั้นต่ำที่ต้องเว้นระหว่างรอบการเช่า (เช่น 16 วัน)
+  updated_at           DateTime @default(now()) @updatedAt
 }
 
 // รายงานความเสียหายหรือปัญหาระหว่างการเช่า

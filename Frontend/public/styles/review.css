@@ -151,3 +151,48 @@
 .booked-end {
   border-right: 3px solid red;
 }
+
+.tooltip-alert {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(50, 50, 50, 0.9);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-size: 14px;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  z-index: 9999;
+}
+
+.tooltip-alert.show {
+  opacity: 1;
+}
+
+.day-ship {
+  background-color: #b3e5fc !important;
+}
+
+/* ฟ้าอ่อน */
+.day-rent {
+  background-color: #c5cae9 !important;
+}
+
+/* ม่วงอ่อน */
+.day-return {
+  background-color: #f8bbd0 !important;
+}
+
+/* ชมพูอ่อน */
+.day-clean {
+  background-color: #ffe082 !important;
+}
+
+/* เหลือง */
+.day-nextship {
+  background-color: #d7ccc8 !important;
+}
+
+/* น้ำตาลอ่อน */
