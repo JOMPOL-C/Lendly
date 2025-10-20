@@ -37,26 +37,36 @@
             <h2 id="priceDisplay">กรุณาเลือกของเช่าและโหมดก่อน</h2>
 
             <!-- โหมดเช่า -->
-            <label><input type="radio" name="mode" value="test" checked> เทส (2 วัน)</label>
-            <label><input type="radio" name="mode" value="pri"> ไพร (3 วัน)</label>
+            <% const firstPrice=product.prices && product.prices.length> 0 ? product.prices[0] : null;
+              %>
 
-            <!-- ตัวเลือกการเช่า -->
-            <select name="components" id="">
-              <option value="" disabled selected>เลือกของเช่า</option>
-              <option value="suit">ชุด</option>
-              <option value="wig">วิก</option>
-              <option value="set-wig">ชุด + วิก</option>
-              <option value="set-wig-prop">ชุด + วิก + พร็อพ</option>
-              <option value="set-wig-shoe">ชุด + วิก + รองเท้า</option>
-              <option value="set-wig-prop-shoe">ชุด + วิก + พร็อพ + รองเท้า</option>
-              <option value="prop">พร็อพเดี่ยว</option>
-              <option value="shoe">รองเท้าเดี่ยว</option>
-            </select>
+              <label>
+                <input type="radio" name="mode" value="test" checked>
+                เทส (<%= firstPrice?.days_test || 2 %> วัน)
+              </label>
+              <label>
+                <input type="radio" name="mode" value="pri">
+                ไพร (<%= firstPrice?.days_pri || 3 %> วัน)
+              </label>
 
-            <!-- ปฏิทิน -->
-            <div id="calendar" data-product-id="<%= product.product_id %>"></div>
 
-            <button id="addToCartBtn" class="btn-cart">เพิ่มลงตะกร้า</button>
+              <!-- ตัวเลือกการเช่า -->
+              <select name="components" id="">
+                <option value="" disabled selected>เลือกของเช่า</option>
+                <option value="suit">ชุด</option>
+                <option value="wig">วิก</option>
+                <option value="set-wig">ชุด + วิก</option>
+                <option value="set-wig-prop">ชุด + วิก + พร็อพ</option>
+                <option value="set-wig-shoe">ชุด + วิก + รองเท้า</option>
+                <option value="set-wig-prop-shoe">ชุด + วิก + พร็อพ + รองเท้า</option>
+                <option value="prop">พร็อพเดี่ยว</option>
+                <option value="shoe">รองเท้าเดี่ยว</option>
+              </select>
+
+              <!-- ปฏิทิน -->
+              <div id="calendar" data-product-id="<%= product.product_id %>"></div>
+
+              <button id="addToCartBtn" class="btn-cart">เพิ่มลงตะกร้า</button>
           </div>
         </section>
       </main>
@@ -111,8 +121,19 @@
 
             selectedPriceId = priceObj.productPrice_id; // 👈 เก็บ id จริง
             const price = selectedMode === "test" ? priceObj.price_test : priceObj.price_pri;
-            const label = selectedMode === "test" ? "เทส (2 วัน)" : "ไพร (3 วัน)";
+
+            // ✅ ใช้ค่าจำนวนวันจริงจากฐานข้อมูล
+            const rentalDays =
+              selectedMode === "test"
+                ? (priceObj.days_test || 1)
+                : (priceObj.days_pri || 1);
+
+            const label = selectedMode === "test"
+              ? `เทส (${rentalDays} วัน)`
+              : `ไพร (${rentalDays} วัน)`;
+
             priceDisplay.textContent = `ราคาเช่า: ${price} บาท (${label})`;
+
           }
 
           componentSelect.addEventListener("change", updatePrice);

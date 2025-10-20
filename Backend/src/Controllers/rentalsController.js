@@ -1,4 +1,5 @@
-const prisma = require("../../prisma/prisma");
+const { PrismaClient, Calender_rental_status } = require("@prisma/client");
+const prisma = new PrismaClient();
 
 // ✅ ดึงข้อมูลการเช่าทั้งหมด (Admin / ร้านค้า)
 exports.getRentals = async (req, res) => {
@@ -32,68 +33,15 @@ exports.getMyRentals = async (req, res) => {
   }
 };
 
-// ✅ สร้างการเช่าใหม่ (ลูกค้ากดจอง)
-exports.createRental = async (req, res) => {
-  try {
-    const { productId, rental_date, rental_end_date, total_price, mode } = req.body;
-    const customerId = req.user?.id;
-
-    if (!customerId || !productId || !rental_date || !rental_end_date) {
-      return res.status(400).json({ error: "กรุณากรอกข้อมูลให้ครบทุกช่อง" });
-    }
-
-    const startDate = new Date(rental_date);
-    const endDate = new Date(rental_end_date);
-
-    if (endDate < startDate) {
-      return res.status(400).json({ error: "วันคืนต้องหลังวันเช่า" });
-    }
-
-    // 🔒 ตรวจสอบว่าสินค้าชนวันจองไหม
-    const overlap = await prisma.Rentals.findFirst({
-      where: {
-        productId: Number(productId),
-        rental_status: { notIn: ["CANCELLED", "RETURNED"] },
-        rental_end_date: { gte: startDate },
-        rental_date: { lte: endDate },
-      },
-    });
-
-    if (overlap) {
-      return res.status(400).json({
-        error: `สินค้าชิ้นนี้ถูกจองในช่วง ${overlap.rental_date.toISOString().split("T")[0]} ถึง ${overlap.rental_end_date.toISOString().split("T")[0]}`
-      });
-    }
-
-    // ✅ สร้างการเช่าใหม่ (สถานะเริ่มต้น: รอยืนยันจากร้าน)
-    const rental = await prisma.Rentals.create({
-      data: {
-        customerId,
-        productId: Number(productId),
-        rental_date: startDate,
-        rental_end_date: endDate,
-        mode: mode || "TEST",
-        total_price: Number(total_price) || 0,
-        rental_status: "WAITING_CONFIRM",
-      },
-    });
-
-    res.status(201).json({ message: "สร้างการจองสำเร็จ (รอยืนยันจากร้าน)", rental });
-  } catch (err) {
-    console.error("❌ createRental error:", err);
-    res.status(500).json({ error: "Server error" });
-  }
-};
-
 // ✅ ร้านค้า/แอดมินกดยืนยันการจอง
 exports.confirmRental = async (req, res) => {
   try {
     const { id } = req.params;
     const rental = await prisma.Rentals.update({
       where: { rental_id: Number(id) },
-      data: { rental_status: "RENTED" },
+      data: { rental_status: Calender_rental_status.WAITING_DELIVER }, // ✅ เหลืออันนี้อันเดียว
     });
-    res.status(200).json({ message: "ยืนยันการจองสำเร็จ", rental });
+    res.status(200).json({ message: "ยืนยันการเช่าสำเร็จ (รอจัดส่ง)", rental });
   } catch (err) {
     console.error("❌ confirmRental error:", err);
     res.status(500).json({ error: "Server error" });
@@ -111,21 +59,6 @@ exports.returnRental = async (req, res) => {
     res.status(200).json({ message: "บันทึกการคืนสินค้าเรียบร้อย", rental });
   } catch (err) {
     console.error("❌ returnRental error:", err);
-    res.status(500).json({ error: "Server error" });
-  }
-};
-
-// ✅ ลูกค้าหรือร้านกดยกเลิก
-exports.cancelRental = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const rental = await prisma.Rentals.update({
-      where: { rental_id: Number(id) },
-      data: { rental_status: "CANCELLED" },
-    });
-    res.status(200).json({ message: "ยกเลิกการจองเรียบร้อย", rental });
-  } catch (err) {
-    console.error("❌ cancelRental error:", err);
     res.status(500).json({ error: "Server error" });
   }
 };
@@ -217,21 +150,26 @@ exports.createFromOrder = async (order) => {
 
 exports.confirmBatch = async (req, res) => {
   try {
+    console.log("🧩 [DEBUG] req.body =", req.body);
+
     const { rentalIds } = req.body;
-    if (!rentalIds?.length)
-      return res.status(400).json({ message: "ไม่พบรายการที่ต้องการยืนยัน" });
+    if (!Array.isArray(rentalIds) || rentalIds.length === 0) {
+      return res.status(400).json({ message: "ไม่พบรายการที่ต้องการยืนยัน", body: req.body });
+    }
 
     await prisma.Rentals.updateMany({
       where: { rental_id: { in: rentalIds.map(Number) } },
-      data: { rental_status: "RENTED" },
+      data: { rental_status: Calender_rental_status.WAITING_DELIVER },
     });
 
-    res.json({ message: `ยืนยันการจอง ${rentalIds.length} รายการสำเร็จ` });
+    res.json({ message: `ยืนยันการจอง ${rentalIds.length} รายการสำเร็จ (รอจัดส่ง)` });
   } catch (err) {
     console.error("❌ confirmBatch error:", err);
-    res.status(500).json({ message: "เกิดข้อผิดพลาดในระบบ" });
+    res.status(500).json({ message: "เกิดข้อผิดพลาดในระบบ", error: err.message });
   }
 };
+
+
 
 function formatLocalDate(date) {
   const d = new Date(date);
@@ -265,5 +203,130 @@ exports.getBookingsByProduct = async (req, res) => {
   } catch (err) {
     console.error("❌ getBookingsByProduct error:", err);
     return res.status(500).json({ message: "Server error" });
+  }
+};
+
+exports.renderMy_rentals = async (req, res) => {
+  try {
+    if (!req.user) return res.redirect("/login");
+    console.log("🧩 req.user =", req.user);
+
+    const userId = Number(req.user?.id);
+    if (!userId) {
+      console.warn("⚠️ req.user ไม่มี id:", req.user);
+      return res.redirect("/login");
+    }
+
+    // ✅ ดึงสินค้าตามแต่ละสถานะ
+    const [waiting_confirm, waiting_deliver, renting, returned, cancelled] =
+      await Promise.all([
+        prisma.Rentals.findMany({
+          where: { customerId: userId, rental_status: Calender_rental_status.WAITING_CONFIRM },
+          include: { product: { include: { images: true } } },
+          orderBy: { rental_id: "desc" },
+        }),
+        prisma.Rentals.findMany({
+          where: { customerId: userId, rental_status: Calender_rental_status.WAITING_DELIVER },
+          include: { product: { include: { images: true } } },
+          orderBy: { rental_id: "desc" },
+        }),
+        prisma.Rentals.findMany({
+          where: { customerId: userId, rental_status: Calender_rental_status.RENTED },
+          include: { product: { include: { images: true } } },
+          orderBy: { rental_id: "desc" },
+        }),
+        prisma.Rentals.findMany({
+          where: { customerId: userId, rental_status: Calender_rental_status.RETURNED },
+          include: { product: { include: { images: true } } },
+          orderBy: { rental_id: "desc" },
+        }),
+        prisma.Rentals.findMany({
+          where: { customerId: userId, rental_status: Calender_rental_status.CANCELLED },
+          include: { product: { include: { images: true } } },
+          orderBy: { rental_id: "desc" },
+        }),
+      ]);
+
+    // ✅ ส่งทั้งหมดให้ EJS ใช้
+    res.render("my_rentals", {
+      waiting_confirm,
+      waiting_deliver,
+      renting,
+      returned,
+      cancelled,
+    });
+  } catch (err) {
+    console.error("❌ renderMy_rentals error:", err);
+    res.status(500).send("Server Error");
+  }
+};
+
+// ✅ ลูกค้าสร้างการเช่าใหม่ (เมื่อกดจอง)
+exports.createRental = async (req, res) => {
+  try {
+    const { productId, rental_date, rental_end_date, total_price, mode } = req.body;
+    const customerId = req.user?.id;
+
+    if (!customerId || !productId || !rental_date || !rental_end_date) {
+      return res.status(400).json({ error: "กรุณากรอกข้อมูลให้ครบทุกช่อง" });
+    }
+
+    const startDate = new Date(rental_date);
+    const endDate = new Date(rental_end_date);
+
+    if (endDate < startDate) {
+      return res.status(400).json({ error: "วันคืนต้องหลังวันเช่า" });
+    }
+
+    // 🔒 ตรวจสอบว่าสินค้าชนวันจองไหม
+    const overlap = await prisma.Rentals.findFirst({
+      where: {
+        productId: Number(productId),
+        rental_status: { notIn: ["CANCELLED", "RETURNED"] },
+        rental_end_date: { gte: startDate },
+        rental_date: { lte: endDate },
+      },
+    });
+
+    if (overlap) {
+      return res.status(400).json({
+        error: `สินค้าชิ้นนี้ถูกจองในช่วง ${overlap.rental_date.toISOString().split("T")[0]} ถึง ${overlap.rental_end_date.toISOString().split("T")[0]}`
+      });
+    }
+
+    // ✅ สร้างการเช่าใหม่ (สถานะเริ่มต้น: รอยืนยันจากร้าน)
+    const rental = await prisma.Rentals.create({
+      data: {
+        customerId,
+        productId: Number(productId),
+        rental_date: startDate,
+        rental_end_date: endDate,
+        mode: mode || "TEST",
+        total_price: Number(total_price) || 0,
+        rental_status: "WAITING_CONFIRM",
+      },
+    });
+
+    res.status(201).json({ message: "สร้างการจองสำเร็จ (รอยืนยันจากร้าน)", rental });
+  } catch (err) {
+    console.error("❌ createRental error:", err);
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
+// ✅ ยกเลิกการเช่า
+exports.cancelRental = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const rental = await prisma.Rentals.update({
+      where: { rental_id: Number(id) },
+      data: { rental_status: "CANCELLED" },
+    });
+
+    res.status(200).json({ message: "ยกเลิกการเช่าสำเร็จ", rental });
+  } catch (err) {
+    console.error("❌ cancelRental error:", err);
+    res.status(500).json({ error: "Server error" });
   }
 };

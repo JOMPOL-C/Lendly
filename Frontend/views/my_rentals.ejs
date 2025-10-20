@@ -1,68 +1,179 @@
 <%- include('includes/head') %>
     <link rel="stylesheet" href="/styles/rental.css">
-
     </head>
 
     <body>
         <%- include('includes/nav') %>
-    <main>
-            <section class="index">
-                <h2>เช่าของฉัน</h2>
-                <div class="tabs">
-                    <a href="#" class="active" onclick="openTab(event, 'all_rental', this)">ทั้งหมด</a>
-                    <a href="#" onclick="openTab(event, 'wait', this)">รอชำระ</a>
-                    <a href="#" onclick="openTab(event, 'renting', this)">กำลังเช่า</a>
-                    <a href="#" onclick="openTab(event, 'returning', this)">รอคืน / คืนแล้ว</a>
-                    <a href="#" onclick="openTab(event, 'problem', this)">มีปัญหา</a>
-                </div>
 
-                <div id="all_rental" class="tab-content" style="display:block">
-                    <div class="rental-card">
-                        <img src="https://dokidokicos.com/cdn/shop/files/1_63d6aca4-1bf0-491b-af84-9f79b1ee5e44.jpg?v=1717159871" alt="Product Image">
-                        <div class="rental-info">
-                            <h3>Emilia</h3>
-                            <p>สถานะ: กำลังเช่า</p>
-                            <p>วันที่เช่า: 01/01/2024</p>
-                            <p>วันที่คืน: 07/01/2024</p>
-                            <p>สิ่งที่เช่า: ชุด วิก</p>
-                            <p>ราคาค่าเช่า: 300฿</p>
-                            <a href="/Detail_Ren" class="btn">ดูรายละเอียด</a>
-                        </div>
+            <main>
+                <section class="index">
+                    <h2>เช่าของฉัน</h2>
+
+                    <!-- 🔹 แท็บเมนู -->
+                    <div class="tabs">
+                        <a href="#" class="active" onclick="openTab(event, 'waiting_confirm', this)">รอยืนยัน</a>
+                        <a href="#" onclick="openTab(event, 'waiting_deliver', this)">รอจัดส่ง</a>
+                        <a href="#" onclick="openTab(event, 'renting', this)">กำลังเช่า</a>
+                        <a href="#" onclick="openTab(event, 'returned', this)">คืนแล้ว</a>
+                        <a href="#" onclick="openTab(event, 'cancelled', this)">มีปัญหา / ยกเลิก</a>
                     </div>
-                </div>
 
-                <div id="wait" class="tab-content" style="display:none">
-                    <p>ยังไม่มีรายการรอชำระ</p>
-                </div>
+                    <!-- ✅ รอยืนยัน -->
+                    <div id="waiting_confirm" class="tab-content" style="display:block">
+                        <% const confirmList=waiting_confirm || []; %>
+                            <% if (confirmList.length> 0) { %>
+                                <% confirmList.forEach(rental=> { %>
+                                    <div class="rental-card">
+                                        <img src="<%= rental.product?.images?.[0]?.image_url || '/images/no-image.png' %>"
+                                            alt="">
+                                        <div class="rental-info">
+                                            <h3>
+                                                <%= rental.product?.product_name %>
+                                            </h3>
+                                            <p class="status waiting">สถานะ: รอยืนยันจากร้าน</p>
+                                            <p>วันที่เช่า: <%= new Date(rental.rental_date).toLocaleDateString() %>
+                                            </p>
+                                            <p>วันที่คืน: <%= new Date(rental.rental_end_date).toLocaleDateString() %>
+                                            </p>
+                                            <a href="/Detail_Ren?rental_id=<%= rental.rental_id %>"
+                                                class="btn">ดูรายละเอียด</a>
+                                        </div>
+                                    </div>
+                                    <% }) %>
+                                        <% } else { %>
+                                            <div class="empty-state">
+                                                <p>ยังไม่มีรายการรอยืนยัน</p>
+                                            </div>
+                                            <% } %>
+                    </div>
 
-                <div id="renting" class="tab-content" style="display:none">
-                    <p>ยังไม่มีรายการกำลังเช่า</p>
-                </div>
+                    <!-- ✅ รอจัดส่ง -->
+                    <div id="waiting_deliver" class="tab-content" style="display:none">
+                        <% const deliverList=waiting_deliver || []; %>
+                            <% if (deliverList.length> 0) { %>
+                                <% deliverList.forEach(rental=> { %>
+                                    <div class="rental-card">
+                                        <img src="<%= rental.product?.images?.[0]?.image_url || '/images/no-image.png' %>"
+                                            alt="">
+                                        <div class="rental-info">
+                                            <h3>
+                                                <%= rental.product?.product_name %>
+                                            </h3>
+                                            <p class="status waiting">สถานะ: รอจัดส่ง</p>
+                                            <p>วันที่เช่า: <%= new Date(rental.rental_date).toLocaleDateString() %>
+                                            </p>
+                                            <p>วันที่คืน: <%= new Date(rental.rental_end_date).toLocaleDateString() %>
+                                            </p>
+                                            <a href="/Detail_Ren?rental_id=<%= rental.rental_id %>"
+                                                class="btn">ดูรายละเอียด</a>
+                                        </div>
+                                    </div>
+                                    <% }) %>
+                                        <% } else { %>
+                                            <div class="empty-state">
+                                                <p>ยังไม่มีรายการรอจัดส่ง</p>
+                                            </div>
+                                            <% } %>
+                    </div>
 
-                <div id="returning" class="tab-content" style="display:none">
-                    <p>ยังไม่มีรายการรอคืน</p>
-                </div>
+                    <!-- ✅ กำลังเช่า -->
+                    <div id="renting" class="tab-content" style="display:none">
+                        <% const rentingList=renting || []; %>
+                            <% if (rentingList.length> 0) { %>
+                                <% rentingList.forEach(rental=> { %>
+                                    <div class="rental-card">
+                                        <img src="<%= rental.product?.images?.[0]?.image_url || '/images/no-image.png' %>"
+                                            alt="">
+                                        <div class="rental-info">
+                                            <h3>
+                                                <%= rental.product?.product_name %>
+                                            </h3>
+                                            <p class="status active">สถานะ: กำลังเช่า</p>
+                                            <p>วันที่เช่า: <%= new Date(rental.rental_date).toLocaleDateString() %>
+                                            </p>
+                                            <p>วันที่คืน: <%= new Date(rental.rental_end_date).toLocaleDateString() %>
+                                            </p>
+                                            <a href="/Detail_Ren?rental_id=<%= rental.rental_id %>"
+                                                class="btn">ดูรายละเอียด</a>
+                                        </div>
+                                    </div>
+                                    <% }) %>
+                                        <% } else { %>
+                                            <div class="empty-state">
+                                                <p>ยังไม่มีรายการกำลังเช่า</p>
+                                            </div>
+                                            <% } %>
+                    </div>
 
-                <div id="problem" class="tab-content"  style="display:none">
-                    <p>ยังไม่มีรายการมีปัญหา</p>
-                </div>
+                    <!-- ✅ คืนแล้ว -->
+                    <div id="returned" class="tab-content" style="display:none">
+                        <% const returnedList=returned || []; %>
+                            <% if (returnedList.length> 0) { %>
+                                <% returnedList.forEach(rental=> { %>
+                                    <div class="rental-card">
+                                        <img src="<%= rental.product?.images?.[0]?.image_url || '/images/no-image.png' %>"
+                                            alt="">
+                                        <div class="rental-info">
+                                            <h3>
+                                                <%= rental.product?.product_name %>
+                                            </h3>
+                                            <p class="status done">สถานะ: คืนแล้ว ✅</p>
+                                            <p>วันที่เช่า: <%= new Date(rental.rental_date).toLocaleDateString() %>
+                                            </p>
+                                            <p>วันที่คืน: <%= new Date(rental.rental_end_date).toLocaleDateString() %>
+                                            </p>
+                                            <a href="/Detail_Ren?rental_id=<%= rental.rental_id %>"
+                                                class="btn">ดูรายละเอียด</a>
+                                        </div>
+                                    </div>
+                                    <% }) %>
+                                        <% } else { %>
+                                            <div class="empty-state">
+                                                <p>ยังไม่มีรายการคืนแล้ว</p>
+                                            </div>
+                                            <% } %>
+                    </div>
 
-            </section>
-    </main>
+                    <!-- ✅ ยกเลิก / มีปัญหา -->
+                    <div id="cancelled" class="tab-content" style="display:none">
+                        <% const cancelList=cancelled || []; %>
+                            <% if (cancelList.length> 0) { %>
+                                <% cancelList.forEach(rental=> { %>
+                                    <div class="rental-card problem">
+                                        <img src="<%= rental.product?.images?.[0]?.image_url || '/images/no-image.png' %>"
+                                            alt="">
+                                        <div class="rental-info">
+                                            <h3>
+                                                <%= rental.product?.product_name %>
+                                            </h3>
+                                            <p class="status cancelled">สถานะ: ยกเลิก / มีปัญหา ❌</p>
+                                            <p>วันที่เช่า: <%= new Date(rental.rental_date).toLocaleDateString() %>
+                                            </p>
+                                            <p>วันที่คืน: <%= new Date(rental.rental_end_date).toLocaleDateString() %>
+                                            </p>
+                                            <a href="/Detail_Ren?rental_id=<%= rental.rental_id %>"
+                                                class="btn">ดูรายละเอียด</a>
+                                        </div>
+                                    </div>
+                                    <% }) %>
+                                        <% } else { %>
+                                            <div class="empty-state">
+                                                <p>ยังไม่มีรายการยกเลิกหรือมีปัญหา</p>
+                                            </div>
+                                            <% } %>
+                    </div>
+                </section>
+            </main>
+
             <%- include('includes/footer') %>
                 <script src="/js/script.js"></script>
+
                 <script>
                     function openTab(event, tabId, el) {
-                        event.preventDefault(); // กันไม่ให้รีเฟรชหน้า
-
-                        // ซ่อนทุก content
-                        document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
-                        // ลบ active ทุกลิงก์
+                        event.preventDefault();
+                        document.querySelectorAll('.tab-content').forEach(div => div.style.display = 'none');
                         document.querySelectorAll('.tabs a').forEach(a => a.classList.remove('active'));
-
-                        // แสดง content ที่เลือก
                         document.getElementById(tabId).style.display = 'block';
-                        // ใส่ active ให้ลิงก์ที่กด
                         el.classList.add('active');
                     }
                 </script>

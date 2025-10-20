@@ -24,13 +24,14 @@ enum Shipping_shipping_status {
 
 // สถานะของการเช่าชุด (ในปฏิทินเช่า)
 enum Calender_rental_status {
-  Ready_Rental     @map("พร้อมเช่า")
-  WAITING_CONFIRM  @map("รอยืนยันจากร้าน")
-  RENTED           @map("กำลังเช่า")
-  RETURNED         @map("คืนแล้ว")
-  CLEANING         @map("กำลังทำความสะอาด")
-  Not_Ready_Rental @map("ไม่พร้อมเช่า")
-  CANCELLED        @map("ยกเลิกเช่า")
+  Ready_Rental     @map("พร้อมเช่า") // สินค้าพร้อมเช่า
+  WAITING_CONFIRM  @map("รอยืนยันจากร้าน") // หลังจากลูกค้ากดสั่งซื้อสินค้า
+  WAITING_DELIVER  @map("รอส่ง") // หลังจากแอดมินกดยอมรับสินค้า
+  RENTED           @map("กำลังเช่า") // หลังจากลูกค้ากดได้รับสินค้า
+  RETURNED         @map("คืนแล้ว") // คืนสินค้าสำเร็จ
+  CLEANING         @map("กำลังทำความสะอาด") // เช็ค หรือ ซักชุด
+  Not_Ready_Rental @map("ไม่พร้อมเช่า") // ไม่พร้อมปล่อยเช่า
+  CANCELLED        @map("ยกเลิกเช่า") // ยกเลิกการเช่า
 }
 
 enum RentalMode {
@@ -372,7 +373,7 @@ model Rentals {
   rental_date     DateTime? @default(now()) @db.DateTime(0)
   rental_end_date DateTime? @default(now()) @db.DateTime(0)
   total_price     Decimal?  @db.Decimal(10, 2)
-
+  
   rental_status   Calender_rental_status?
   mode            RentalMode?             @default(TEST)
   rental_datetime DateTime?               @default(now()) @db.DateTime(0)

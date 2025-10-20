@@ -230,6 +230,11 @@
   outline: none;
   box-shadow: 0 0 0 2px rgba(125, 77, 255, 0.2);
 }
+.status.waiting {
+  color: #8b5cf6;
+  font-weight: 600;
+}
+
 
 @media (max-width: 477px) {
   .rental-card {

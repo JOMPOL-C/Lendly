@@ -15,6 +15,7 @@ const authController = require('./src/Controllers/authController');
 const productController = require('./src/Controllers/productController');
 const productControllerPage = require('./src/Controllers/productControllerPage');
 const cartController = require('./src/Controllers/cartController');
+const rentalsController = require('./src/Controllers/rentalsController');
 
 
 
@@ -37,6 +38,9 @@ app.use(morgan('dev'));
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 
 // 🔹 ไม่ต้องตรวจ token
 app.use("/", require("./src/routers/checkDuplicate"));
@@ -60,7 +64,7 @@ app.get('/cart', cartController.getCart);
 app.get('/all_review', PageRender.renderAll_review);
 app.get('/category', (req, res) => productControllerPage.renderProductsPage(req, res, 'category'));
 app.get('/Detail_Pro', PageRender.renderDetail_Pro);
-app.get('/my_rentals', PageRender.renderMy_rentals);
+app.get('/my_rentals', rentalsController.renderMy_rentals);
 
 app.get('/forgetpassword', PageRender.renderForgetpassword);
 app.get('/resetpassword', PageRender.renderResetpassword);

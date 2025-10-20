@@ -208,12 +208,25 @@ async function setupCalendar(bookings = []) {
         }
 
         // ✅ ตั้งวันสิ้นสุดตามโหมด
+        // ✅ ตั้งวันสิ้นสุดตามจำนวนวันจริงจากฐานข้อมูล
         isSettingDate = true;
         const end = new Date(start);
-        if (mode === "test") end.setDate(start.getDate() + 1);
-        else if (mode === "pri") end.setDate(start.getDate() + 2);
+
+        // ใช้ข้อมูลวันจาก productPrices ตัวแรก
+        const firstPrice = productPrices?.[0] || {};
+        const rentalDays =
+          mode === "test"
+            ? (firstPrice.days_test || 1)
+            : (firstPrice.days_pri || 1);
+
+        // บวกจำนวนวัน -1 เพราะวันเริ่มเช่านับเป็นวันแรกแล้ว
+        end.setDate(start.getDate() + (rentalDays - 1));
+
         instance.setDate([start, end], true);
         isSettingDate = false;
+
+        console.log(`📅 โหมด: ${mode}, จำนวนวันเช่า: ${rentalDays}`);
+
       }
     },
   });

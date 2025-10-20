@@ -1,0 +1,76 @@
+<%- include('includes/head') %>
+<link rel="stylesheet" href="/styles/admin.css">
+</head>
+
+<body>
+  <%- include('includes/nav') %>
+
+  <main class="section-p1">
+    <h2>รายการสินค้ารอจัดส่ง</h2>
+
+    <% if (pending && pending.length > 0) { %>
+      <table class="rental-table">
+        <thead>
+          <tr>
+            <th>ภาพสินค้า</th>
+            <th>ชื่อสินค้า</th>
+            <th>ลูกค้า</th>
+            <th>วันที่เช่า</th>
+            <th>วันที่คืน</th>
+            <th>รหัสพัสดุ</th>
+            <th>แนบรูปบิล</th>
+            <th>บันทึก</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% pending.forEach(r => { %>
+            <tr>
+              <td>
+                <img src="<%= r.product.images?.[0]?.image_url || '/images/no-image.png' %>"
+                  alt="<%= r.product.product_name %>" width="100">
+              </td>
+              <td><%= r.product.product_name %></td>
+              <td><%= r.customer.name %> <%= r.customer.last_name %></td>
+              <td><%= new Date(r.rental_date).toLocaleDateString() %></td>
+              <td><%= new Date(r.rental_end_date).toLocaleDateString() %></td>
+
+              <td>
+                <input type="text" name="tracking_code" placeholder="กรอกรหัสพัสดุ" required>
+                <input type="hidden" name="rental_id" value="<%= r.rental_id %>">
+                <input type="hidden" name="shippingId" value="<%= r.order?.shippings?.[0]?.shipping_id || '' %>">
+              </td>
+              <td><input type="file" name="image_slip" accept="image/*"></td>
+              <td><button class="btn-save" onclick="submitForm(event, this)">บันทึก</button></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    <% } else { %>
+      <p>ยังไม่มีสินค้าที่รอจัดส่ง</p>
+    <% } %>
+  </main>
+
+  <%- include('includes/footer') %>
+  <script>
+    async function submitForm(e, btn) {
+      e.preventDefault();
+      const row = btn.closest("tr");
+      const formData = new FormData();
+
+      formData.append("tracking_code", row.querySelector("[name=tracking_code]").value);
+      formData.append("shippingId", row.querySelector("[name=shippingId]").value);
+      formData.append("image_slip", row.querySelector("[name=image_slip]").files[0]);
+      formData.append("note", "จัดส่งสินค้าให้ลูกค้า");
+
+      const res = await fetch("/api/shipping/addBox", {
+        method: "POST",
+        body: formData
+      });
+
+      const data = await res.json();
+      alert(data.message || "บันทึกสำเร็จ");
+      if (res.ok) row.remove(); // ลบแถวเมื่อบันทึกเสร็จ
+    }
+  </script>
+</body>
+</html>
