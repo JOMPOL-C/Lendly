@@ -16,6 +16,7 @@ const productController = require('./src/Controllers/productController');
 const productControllerPage = require('./src/Controllers/productControllerPage');
 const cartController = require('./src/Controllers/cartController');
 const rentalsController = require('./src/Controllers/rentalsController');
+const orderController = require('./src/Controllers/orderController')
 
 
 
@@ -65,7 +66,7 @@ app.get('/all_review', PageRender.renderAll_review);
 app.get('/category', (req, res) => productControllerPage.renderProductsPage(req, res, 'category'));
 app.get('/Detail_Pro', PageRender.renderDetail_Pro);
 app.get('/my_rentals', rentalsController.renderMy_rentals);
-
+app.get('/my_orders', orderController.getMyOrders);
 app.get('/forgetpassword', PageRender.renderForgetpassword);
 app.get('/resetpassword', PageRender.renderResetpassword);
 app.get('/otpVerify', PageRender.renderOtpVerify);

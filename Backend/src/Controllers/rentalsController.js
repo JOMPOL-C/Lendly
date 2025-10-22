@@ -209,45 +209,50 @@ exports.getBookingsByProduct = async (req, res) => {
 exports.renderMy_rentals = async (req, res) => {
   try {
     if (!req.user) return res.redirect("/login");
-    console.log("🧩 req.user =", req.user);
+    const userId = Number(req.user.id);
 
-    const userId = Number(req.user?.id);
-    if (!userId) {
-      console.warn("⚠️ req.user ไม่มี id:", req.user);
-      return res.redirect("/login");
-    }
+    // ✅ ดึงคำสั่งซื้อทั้งหมดของลูกค้าคนนี้
+    const orders = await prisma.Orders.findMany({
+      where: { customerId: userId },
+      include: {
+        Rentals: {
+          include: {
+            product: { include: { images: true } },
+          },
+        },
+      },
+      orderBy: { order_id: "desc" },
+    });
 
-    // ✅ ดึงสินค้าตามแต่ละสถานะ
-    const [waiting_confirm, waiting_deliver, renting, returned, cancelled] =
-      await Promise.all([
-        prisma.Rentals.findMany({
-          where: { customerId: userId, rental_status: Calender_rental_status.WAITING_CONFIRM },
-          include: { product: { include: { images: true } } },
-          orderBy: { rental_id: "desc" },
-        }),
-        prisma.Rentals.findMany({
-          where: { customerId: userId, rental_status: Calender_rental_status.WAITING_DELIVER },
-          include: { product: { include: { images: true } } },
-          orderBy: { rental_id: "desc" },
-        }),
-        prisma.Rentals.findMany({
-          where: { customerId: userId, rental_status: Calender_rental_status.RENTED },
-          include: { product: { include: { images: true } } },
-          orderBy: { rental_id: "desc" },
-        }),
-        prisma.Rentals.findMany({
-          where: { customerId: userId, rental_status: Calender_rental_status.RETURNED },
-          include: { product: { include: { images: true } } },
-          orderBy: { rental_id: "desc" },
-        }),
-        prisma.Rentals.findMany({
-          where: { customerId: userId, rental_status: Calender_rental_status.CANCELLED },
-          include: { product: { include: { images: true } } },
-          orderBy: { rental_id: "desc" },
-        }),
-      ]);
+    // ✅ เตรียม array แยกตามสถานะ
+    const waiting_confirm = [];
+    const waiting_deliver = [];
+    const renting = [];
+    const returned = [];
+    const cancelled = [];
 
-    // ✅ ส่งทั้งหมดให้ EJS ใช้
+    // ✅ วนทุกคำสั่งซื้อ
+    orders.forEach(order => {
+      const byStatus = {
+        WAITING_CONFIRM: order.Rentals.filter(r => r.rental_status === "WAITING_CONFIRM"),
+        WAITING_DELIVER: order.Rentals.filter(r => r.rental_status === "WAITING_DELIVER"),
+        RENTED: order.Rentals.filter(r => r.rental_status === "RENTED"),
+        RETURNED: order.Rentals.filter(r => r.rental_status === "RETURNED"),
+        CANCELLED: order.Rentals.filter(r => r.rental_status === "CANCELLED"),
+      };
+
+      if (byStatus.WAITING_CONFIRM.length > 0)
+        waiting_confirm.push({ ...order, Rentals: byStatus.WAITING_CONFIRM });
+      if (byStatus.WAITING_DELIVER.length > 0)
+        waiting_deliver.push({ ...order, Rentals: byStatus.WAITING_DELIVER });
+      if (byStatus.RENTED.length > 0)
+        renting.push({ ...order, Rentals: byStatus.RENTED });
+      if (byStatus.RETURNED.length > 0)
+        returned.push({ ...order, Rentals: byStatus.RETURNED });
+      if (byStatus.CANCELLED.length > 0)
+        cancelled.push({ ...order, Rentals: byStatus.CANCELLED });
+    });
+
     res.render("my_rentals", {
       waiting_confirm,
       waiting_deliver,
@@ -260,6 +265,8 @@ exports.renderMy_rentals = async (req, res) => {
     res.status(500).send("Server Error");
   }
 };
+
+
 
 // ✅ ลูกค้าสร้างการเช่าใหม่ (เมื่อกดจอง)
 exports.createRental = async (req, res) => {
