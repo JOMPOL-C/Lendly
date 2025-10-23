@@ -227,6 +227,7 @@ exports.renderMy_rentals = async (req, res) => {
     // ✅ เตรียม array แยกตามสถานะ
     const waiting_confirm = [];
     const waiting_deliver = [];
+    const waiting_receive = []; // ✅ เพิ่มสถานะใหม่
     const renting = [];
     const returned = [];
     const cancelled = [];
@@ -236,6 +237,7 @@ exports.renderMy_rentals = async (req, res) => {
       const byStatus = {
         WAITING_CONFIRM: order.Rentals.filter(r => r.rental_status === "WAITING_CONFIRM"),
         WAITING_DELIVER: order.Rentals.filter(r => r.rental_status === "WAITING_DELIVER"),
+        WAITING_RECEIVE: order.Rentals.filter(r => r.rental_status === "WAITING_RECEIVE"), // ✅ เพิ่ม
         RENTED: order.Rentals.filter(r => r.rental_status === "RENTED"),
         RETURNED: order.Rentals.filter(r => r.rental_status === "RETURNED"),
         CANCELLED: order.Rentals.filter(r => r.rental_status === "CANCELLED"),
@@ -245,6 +247,8 @@ exports.renderMy_rentals = async (req, res) => {
         waiting_confirm.push({ ...order, Rentals: byStatus.WAITING_CONFIRM });
       if (byStatus.WAITING_DELIVER.length > 0)
         waiting_deliver.push({ ...order, Rentals: byStatus.WAITING_DELIVER });
+      if (byStatus.WAITING_RECEIVE.length > 0)
+        waiting_receive.push({ ...order, Rentals: byStatus.WAITING_RECEIVE }); // ✅ เพิ่ม
       if (byStatus.RENTED.length > 0)
         renting.push({ ...order, Rentals: byStatus.RENTED });
       if (byStatus.RETURNED.length > 0)
@@ -253,9 +257,11 @@ exports.renderMy_rentals = async (req, res) => {
         cancelled.push({ ...order, Rentals: byStatus.CANCELLED });
     });
 
+    // ✅ ส่งไป render พร้อมแท็บใหม่
     res.render("my_rentals", {
       waiting_confirm,
       waiting_deliver,
+      waiting_receive, // ✅ อย่าลืมส่งไปด้วย
       renting,
       returned,
       cancelled,
@@ -265,7 +271,6 @@ exports.renderMy_rentals = async (req, res) => {
     res.status(500).send("Server Error");
   }
 };
-
 
 
 // ✅ ลูกค้าสร้างการเช่าใหม่ (เมื่อกดจอง)
@@ -335,5 +340,77 @@ exports.cancelRental = async (req, res) => {
   } catch (err) {
     console.error("❌ cancelRental error:", err);
     res.status(500).json({ error: "Server error" });
+  }
+};
+
+exports.getRentalDetailPage = async (req, res) => {
+  try {
+    const orderId = parseInt(req.query.order_id);
+    if (!orderId) return res.status(400).send("ต้องระบุ order_id");
+
+    console.log("🟪 [DEBUG] โหลดข้อมูล Order ID:", orderId);
+
+    // 🧩 1. ดึงข้อมูล Shipping + Boxes + Items + Product
+    const shippings = await prisma.shipping.findMany({
+      where: { orderId },
+      include: {
+        boxes: {
+          include: {
+            items: {
+              include: {
+                orderItem: {
+                  include: { product: true },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    // 🧩 2. ดึงข้อมูลคำสั่งซื้อหลัก + Rentals
+    const order = await prisma.orders.findFirst({
+      where: { order_id: orderId },
+      include: {
+        Rentals: {
+          include: {
+            product: { include: { images: true } },
+          },
+        },
+      },
+    });
+
+    if (!order) return res.status(404).send("ไม่พบคำสั่งซื้อ");
+
+    // 🧩 3. ผูก Shipping เข้ากับ Order
+    order.shippings = shippings;
+
+    // 🧩 4. หา orderItemId ของสินค้าทุก rental
+    const allItems = shippings.flatMap(s =>
+      s.boxes.flatMap(b =>
+        b.items.map(it => ({
+          orderItemId: it.orderItemId,
+          productId: it.orderItem?.product?.product_id,
+        }))
+      )
+    );
+
+    for (const r of order.Rentals) {
+      const found = allItems.find(i => i.productId === r.productId);
+      r.orderItemId = found?.orderItemId || null;
+    }
+
+    // 🧩 5. Debug
+    console.log(`📦 พบ shipping ${shippings.length} รายการ`);
+    order.Rentals.forEach(r => {
+      const boxes = order.shippings.flatMap(s => s.boxes)
+        .filter(b => b.items.some(it => it.orderItem?.product?.product_id === r.product.product_id));
+      console.log(`🧩 ${r.product.product_name} → Tracking:`, boxes.map(b => b.tracking_code));
+    });
+
+    res.render("Detail_Ren", { order });
+  } catch (err) {
+    console.error("❌ renderDetail_Ren error:", err);
+    res.status(500).send("เกิดข้อผิดพลาดภายในเซิร์ฟเวอร์");
   }
 };

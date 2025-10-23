@@ -8,6 +8,7 @@ const authMiddleware = require("../middlewares/authMiddleware");
 router
     .post("/rentals", authMiddleware, rentalController.createRental)
     .get("/rentals/me", authMiddleware, rentalController.getMyRentals)
+    .get("/Detail_Ren", rentalController.getRentalDetailPage);
 
 // ร้านค้า/แอดมิน
 router

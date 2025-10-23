@@ -13,6 +13,7 @@
                     <div class="tabs">
                         <a href="#" class="active" onclick="openTab(event, 'waiting_confirm', this)">รอยืนยัน</a>
                         <a href="#" onclick="openTab(event, 'waiting_deliver', this)">รอจัดส่ง</a>
+                        <a href="#" onclick="openTab(event, 'waiting_receive', this)">กำลังจัดส่ง</a>
                         <a href="#" onclick="openTab(event, 'renting', this)">กำลังเช่า</a>
                         <a href="#" onclick="openTab(event, 'returned', this)">คืนแล้ว</a>
                         <a href="#" onclick="openTab(event, 'cancelled', this)">มีปัญหา / ยกเลิก</a>
@@ -28,7 +29,7 @@
                                         </h3>
                                         <p>วันที่สั่ง: <%= new Date(order.created_at).toLocaleDateString("th-TH") %>
                                         </p>
-                                        <p class="status waiting">สถานะ: รอยืนยันจากร้าน</p>
+                                        <p class="status">สถานะ: รอยืนยันจากร้าน</p>
 
                                         <% order.Rentals.forEach(rental=> { %>
                                             <div class="rental-card">
@@ -49,7 +50,7 @@
                                             <% }) %>
 
                                                 <div class="order-footer">
-                                                    <a href="/Detail_Ren?order_id=<%= order.order_id %>"
+                                                    <a href="/api/Detail_Ren?order_id=<%= order.order_id %>"
                                                         class="btn">ดูรายละเอียด</a>
                                                 </div>
                                     </div>
@@ -71,7 +72,7 @@
                                         </h3>
                                         <p>วันที่สั่ง: <%= new Date(order.created_at).toLocaleDateString("th-TH") %>
                                         </p>
-                                        <p class="status waiting">สถานะ: รอจัดส่ง</p>
+                                        <p class="status">สถานะ: รอจัดส่ง</p>
 
                                         <% order.Rentals.forEach(rental=> { %>
                                             <div class="rental-card">
@@ -92,7 +93,7 @@
                                             <% }) %>
 
                                                 <div class="order-footer">
-                                                    <a href="/Detail_Ren?order_id=<%= order.order_id %>"
+                                                    <a href="/api/Detail_Ren?order_id=<%= order.order_id %>"
                                                         class="btn">ดูรายละเอียด</a>
                                                 </div>
                                     </div>
@@ -104,17 +105,17 @@
                                             <% } %>
                     </div>
 
-                    <!-- 🔸 กำลังเช่า -->
-                    <div id="renting" class="tab-content" style="display:none">
-                        <% const rentingOrders=renting || []; %>
-                            <% if (rentingOrders.length> 0) { %>
-                                <% rentingOrders.forEach(order=> { %>
+                    <!-- 🔸 กำลังจัดส่ง -->
+                    <div id="waiting_receive" class="tab-content" style="display:none">
+                        <% const receiveOrders=waiting_receive || []; %>
+                            <% if (receiveOrders.length> 0) { %>
+                                <% receiveOrders.forEach(order=> { %>
                                     <div class="order-card">
                                         <h3>คำสั่งซื้อ: <%= order.order_code %>
                                         </h3>
                                         <p>วันที่สั่ง: <%= new Date(order.created_at).toLocaleDateString("th-TH") %>
                                         </p>
-                                        <p class="status active">สถานะ: กำลังเช่า</p>
+                                        <p class="status">สถานะ: กำลังจัดส่ง</p>
 
                                         <% order.Rentals.forEach(rental=> { %>
                                             <div class="rental-card">
@@ -135,7 +136,51 @@
                                             <% }) %>
 
                                                 <div class="order-footer">
-                                                    <a href="/Detail_Ren?order_id=<%= order.order_id %>"
+                                                    <a href="/api/Detail_Ren?order_id=<%= order.order_id %>"
+                                                        class="btn">ดูรายละเอียด</a>
+                                                </div>
+                                    </div>
+                                    <% }) %>
+                                        <% } else { %>
+                                            <div class="empty-state">
+                                                <p>ยังไม่มีรายการกำลังจัดส่ง</p>
+                                            </div>
+                                            <% } %>
+                    </div>
+
+
+                    <!-- 🔸 กำลังเช่า -->
+                    <div id="renting" class="tab-content" style="display:none">
+                        <% const rentingOrders=renting || []; %>
+                            <% if (rentingOrders.length> 0) { %>
+                                <% rentingOrders.forEach(order=> { %>
+                                    <div class="order-card">
+                                        <h3>คำสั่งซื้อ: <%= order.order_code %>
+                                        </h3>
+                                        <p>วันที่สั่ง: <%= new Date(order.created_at).toLocaleDateString("th-TH") %>
+                                        </p>
+                                        <p class="status">สถานะ: กำลังเช่า</p>
+
+                                        <% order.Rentals.forEach(rental=> { %>
+                                            <div class="rental-card">
+                                                <img src="<%= rental.product?.images?.[0]?.image_url || '/images/no-image.png' %>"
+                                                    alt="">
+                                                <div class="rental-info">
+                                                    <h4>
+                                                        <%= rental.product?.product_name %>
+                                                    </h4>
+                                                    <p>วันที่เช่า: <%= new
+                                                            Date(rental.rental_date).toLocaleDateString("th-TH") %>
+                                                    </p>
+                                                    <p>วันที่คืน: <%= new
+                                                            Date(rental.rental_end_date).toLocaleDateString("th-TH") %>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <% }) %>
+
+                                                <div class="order-footer">
+                                                    <a href="/api/Detail_Ren?order_id=<%= order.order_id %>"
                                                         class="btn">ดูรายละเอียด</a>
                                                 </div>
                                     </div>
@@ -157,7 +202,7 @@
                                         </h3>
                                         <p>วันที่สั่ง: <%= new Date(order.created_at).toLocaleDateString("th-TH") %>
                                         </p>
-                                        <p class="status done">สถานะ: คืนแล้ว ✅</p>
+                                        <p class="status" >สถานะ: คืนแล้ว ✅</p>
 
                                         <% order.Rentals.forEach(rental=> { %>
                                             <div class="rental-card">
@@ -178,7 +223,7 @@
                                             <% }) %>
 
                                                 <div class="order-footer">
-                                                    <a href="/Detail_Ren?order_id=<%= order.order_id %>"
+                                                    <a href="/api/Detail_Ren?order_id=<%= order.order_id %>"
                                                         class="btn">ดูรายละเอียด</a>
                                                 </div>
                                     </div>
@@ -200,7 +245,7 @@
                                         </h3>
                                         <p>วันที่สั่ง: <%= new Date(order.created_at).toLocaleDateString("th-TH") %>
                                         </p>
-                                        <p class="status cancelled">สถานะ: ยกเลิก / มีปัญหา ❌</p>
+                                        <p class="status">สถานะ: ยกเลิก / มีปัญหา ❌</p>
 
                                         <% order.Rentals.forEach(rental=> { %>
                                             <div class="rental-card">
@@ -221,7 +266,7 @@
                                             <% }) %>
 
                                                 <div class="order-footer">
-                                                    <a href="/Detail_Ren?order_id=<%= order.order_id %>"
+                                                    <a href="/api   /Detail_Ren?order_id=<%= order.order_id %>"
                                                         class="btn">ดูรายละเอียด</a>
                                                 </div>
                                     </div>

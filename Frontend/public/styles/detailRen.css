@@ -1,0 +1,56 @@
+/* 🌸 โทนพาสเทลหลัก: ม่วง-ชมพูอ่อน */
+.status {
+    display: inline-block;
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 15px;
+    margin-top: 5px;
+    border: 1px solid transparent;
+}
+
+/* 💛 รอยืนยันจากร้าน */
+.status.waiting-confirm {
+    background: #f9f1ff;
+    color: #7a3ea1;
+    border-color: #e0b3ff;
+}
+
+/* 🟣 เตรียมส่ง */
+.status.waiting-deliver {
+    background: #ede9fe;
+    color: #5b21b6;
+    border-color: #c4b5fd;
+}
+
+/* 🚚 กำลังจัดส่ง */
+.status.waiting-receive {
+    background: #f3e8ff;
+    color: #6b21a8;
+    border-color: #d8b4fe;
+}
+
+/* 💚 ได้รับสินค้า */
+.status.rented {
+    background: #f0fdfa;
+    color: #0f766e;
+    border-color: #99f6e4;
+}
+
+/* 💜 กำลังคืนสินค้า */
+.status.returning {
+    background: #faf5ff;
+    color: #7e22ce;
+    border-color: #e9d5ff;
+}
+
+/* 🩵 คืนสำเร็จ */
+.status.returned {
+    background: #f5f3ff;
+    color: #5b21b6;
+    border-color: #ddd6fe;
+}
+
+.status {
+    transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}

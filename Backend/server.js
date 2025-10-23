@@ -52,8 +52,6 @@ app.get('/register', PageRender.renderRegister);
 app.use(require("./src/middlewares/authMiddleware"));
 app.use(require("./src/middlewares/setUser"));
 
-app.use("/api", require("./src/routers/cart"));
-app.use("/api", require("./src/routers/favorite"));
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.set("view engine", "ejs");
@@ -76,6 +74,7 @@ app.get('/return_order', PageRender.renderReturn_order);
 app.get('/detail_product', PageRender.renderDetail_product);
 app.get('/edit_product', PageRender.renderEdit_product);
 app.get('/admin/rentals', PageRender.renderAdmin_rentals);
+// http://localhost:8000/api/admin/tracking
 
 fs.readdirSync(path.join(__dirname, "src/routers"))
   .filter(file => file.endsWith(".js"))

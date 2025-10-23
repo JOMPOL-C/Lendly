@@ -1,5 +1,6 @@
 <%- include('includes/head') %>
 <link rel="stylesheet" href="/styles/rental.css">
+<link rel="stylesheet" href="/styles/detailRen.css">
 </head>
 
 <body>
@@ -9,98 +10,193 @@
     <section class="index">
       <h2>ติดตามสถานะการเช่า</h2>
 
-      <div class="rental-info">
-        <p>ที่อยู่ในการจัดส่ง: โชยุ โชใจ 123/45 หมู่บ้านสุขสันต์ ต.สุขใจ อ.เมือง จ.เชียงใหม่ 50000</p>
-        <p>หมายเลขการเช่า: RNT-0001</p>
-        <p>ระยะเวลา: 01/10/2025 - 07/10/2025</p>
-      </div>
-
-      <!-- Timeline เดิม -->
+      <!-- ✅ Timeline ด้านบน -->
       <div class="timeline-horizontal">
-        <div class="step done">
-          <div class="circle">1</div>
-          <p>สร้างคำสั่งเช่า<br><span>2025-09-25</span></p>
-        </div>
+        <div class="step"><div class="circle">1</div><p>สร้างคำสั่งซื้อ</p></div>
         <div class="line"></div>
-        <div class="step done">
-          <div class="circle">2</div>
-          <p>ชำระเงิน<br><span>2025-09-25</span></p>
-        </div>
+        <div class="step"><div class="circle">2</div><p>เตรียมส่ง</p></div>
         <div class="line"></div>
-        <div class="step done">
-          <div class="circle">3</div>
-          <p>เตรียมสินค้า<br><span>2025-09-26</span></p>
-        </div>
+        <div class="step"><div class="circle">3</div><p>กำลังจัดส่ง</p></div>
         <div class="line"></div>
-        <div class="step done">
-          <div class="circle">4</div>
-          <p>จัดส่ง<br><span>2025-09-27</span></p>
-        </div>
+        <div class="step"><div class="circle">4</div><p>ได้รับสินค้า</p></div>
         <div class="line"></div>
-        <div class="step">
-          <div class="circle">5</div>
-          <p>ใช้งานอยู่</p>
-        </div>
+        <div class="step"><div class="circle">5</div><p>คืนสินค้า (ลูกค้า)</p></div>
         <div class="line"></div>
-        <div class="step">
-          <div class="circle">6</div>
-          <p>คืนสินค้า</p>
-        </div>
+        <div class="step"><div class="circle">6</div><p>คืนสำเร็จ (ถึงร้าน)</p></div>
         <div class="line"></div>
-        <div class="step">
-          <div class="circle">7</div>
-          <p>รีวิว</p>
-        </div>
+        <div class="step"><div class="circle">7</div><p>รีวิว</p></div>
       </div>
 
-      <div id="tracking-container" class="tracking-status"></div>
+      <p id="tracking-label" class="tracking-note">📦 เลือกสินค้าด้านล่างเพื่อดูสถานะ</p>
 
-      <div style="text-align:center; margin-top:20px;">
-        <a href="/return_order" class="btn">คืนสินค้า</a>
-        <a href="/write_review" class="btn">รีวิวสินค้า</a>
+      <!-- ✅ การ์ดคำสั่งซื้อ -->
+      <div class="order-summary">
+        <h3>คำสั่งซื้อ: <%= order.order_code %></h3>
+        <p>วันที่สั่ง: <%= new Date(order.created_at).toLocaleDateString("th-TH") %></p>
       </div>
+
+      <!-- ✅ สินค้าในคำสั่งซื้อนี้ -->
+      <% 
+        const activeRentals = order.Rentals.filter(r =>
+          ["WAITING_CONFIRM","WAITING_DELIVER","WAITING_RECEIVE","RENTED","RETURNING","RETURNED"].includes(r.rental_status)
+        );
+      %>
+
+      <% if (activeRentals.length === 0) { %>
+        <p style="text-align:center; color:#777;">ไม่มีสินค้าที่อยู่ระหว่างกระบวนการเช่า</p>
+      <% } else { %>
+        <% activeRentals.forEach(r => { %>
+          <article class="rental-card item-card" data-rental="<%= r.rental_id %>">
+            <img src="<%= r.product?.images?.[0]?.image_url || '/images/no-image.png' %>"
+                 alt="" class="thumb">
+
+            <div class="meta">
+              <h4><%= r.product?.product_name %></h4>
+              <p>
+                เช่า: <%= new Date(r.rental_date).toLocaleDateString('th-TH') %> •
+                คืน: <%= new Date(r.rental_end_date).toLocaleDateString('th-TH') %>
+              </p>
+
+              <p class="status <%= r.rental_status.toLowerCase().replace('_','-') %>">
+                สถานะ:
+                <% if (r.rental_status === "WAITING_CONFIRM") { %>
+                  รอยืนยันจากร้าน
+                <% } else if (r.rental_status === "WAITING_DELIVER") { %>
+                  เตรียมส่ง
+                <% } else if (r.rental_status === "WAITING_RECEIVE") { %>
+                  กำลังจัดส่ง
+                <% } else if (r.rental_status === "RENTED") { %>
+                  ได้รับสินค้า
+                <% } else if (r.rental_status === "RETURNING") { %>
+                  กำลังคืนสินค้า
+                <% } else if (r.rental_status === "RETURNED") { %>
+                  คืนสำเร็จ
+                <% } %>
+              </p>
+
+              <%
+              // ✅ ใช้ order.shippings แทน r.order เพราะข้อมูลอยู่ระดับบนสุด
+              const boxes = order.shippings.flatMap(s => s.boxes)
+                .filter(b => b.items?.some(it =>
+                  it.orderItem?.product?.product_id === r.product.product_id &&
+                  (!r.orderItemId || it.orderItemId === r.orderItemId)
+                ));
+            
+              const trackingCodes = boxes.map(b => b.tracking_code).filter(Boolean);
+              const canShowTracking = ["WAITING_RECEIVE", "RENTED", "RETURNING", "RETURNED"].includes(r.rental_status);
+            %>
+            
+
+              <div class="tracking-section">
+                <p>รหัสพัสดุ:</p>
+                <% if (canShowTracking && trackingCodes.length > 0) { %>
+                  <% trackingCodes.forEach(code => { %>
+                    <div class="tracking-box">
+                      <a href="https://track.thailandpost.co.th/?trackNumber=<%= code %>"
+                         target="_blank" class="tracking-link"><%= code %></a>
+                      <button type="button" class="btn-track" data-tracking="<%= code %>">
+                        ดูสถานะการขนส่ง
+                      </button>
+                      <div class="shipping-detail" style="display:none;"></div>
+                    </div>
+                  <% }) %>
+                <% } else { %>
+                  <span style="color:#888;">ยังไม่มีหมายเลขพัสดุ</span>
+                <% } %>
+              </div>
+            </div>
+          </article>
+        <% }) %>
+      <% } %>
     </section>
   </main>
 
   <%- include('includes/footer') %>
   <script src="/js/script.js"></script>
-
   <script>
-    const params = new URLSearchParams(window.location.search);
-    const rentalId = params.get("rental_id");
-    const container = document.getElementById("tracking-container");
-
-    async function loadTracking() {
-      try {
-        const res = await fetch(`/api/tracking?rental_id=${rentalId}`);
-        const data = await res.json();
-
-        if (data.message) {
-          container.innerHTML = `<p>${data.message}</p>`;
-          return;
+    document.addEventListener("DOMContentLoaded", () => {
+      // ✅ วาด timeline
+      function paintTimeline(step, label) {
+        document.querySelectorAll('.step').forEach(s => s.classList.remove('done'));
+        document.querySelectorAll('.line').forEach(l => l.classList.remove('completed'));
+        for (let i = 1; i <= step; i++) {
+          document.querySelector(`.step:nth-of-type(${i * 2 - 1})`)?.classList.add('done');
+          document.querySelector(`.line:nth-of-type(${i * 2})`)?.classList.add('completed');
         }
-
-        // สร้างบล็อกสถานะ
-        Object.entries(data).forEach(([code, events]) => {
-          const block = document.createElement("div");
-          block.style.marginTop = "15px";
-          block.innerHTML = `<h4>เลขพัสดุ: ${code}</h4>`;
-
-          events.forEach(ev => {
-            const line = document.createElement("p");
-            line.textContent = `${new Date(ev.status_date).toLocaleString("th-TH")} — ${ev.status_description}`;
-            block.appendChild(line);
-          });
-
-          container.appendChild(block);
-        });
-      } catch (err) {
-        container.innerHTML = `<p style="color:red;">ไม่สามารถโหลดข้อมูลการจัดส่งได้</p>`;
-        console.error("❌ tracking error:", err);
+        document.getElementById('tracking-label').textContent = `📦 สถานะล่าสุด: ${label}`;
       }
-    }
 
-    loadTracking();
+      // ✅ ดึงข้อมูลสถานะจาก API
+      async function loadForRental(rentalId) {
+        try {
+          const res = await fetch(`/api/tracking/timeline?rental_id=${rentalId}`);
+          const data = await res.json();
+          if (res.ok) {
+            paintTimeline(data.step || 1, data.label || 'กำลังตรวจสอบ...');
+          } else {
+            document.getElementById('tracking-label').textContent = data.message || 'เกิดข้อผิดพลาด';
+          }
+        } catch {
+          document.getElementById('tracking-label').textContent = '⚠️ ไม่สามารถโหลดข้อมูลได้';
+        }
+      }
+
+      // ✅ เมื่อกดการ์ดสินค้าให้โหลด timeline
+      document.querySelectorAll('.item-card').forEach(card => {
+        const id = card.dataset.rental;
+        card.addEventListener('click', () => {
+          document.querySelectorAll('.item-card').forEach(c => c.classList.remove('active'));
+          card.classList.add('active');
+          loadForRental(id);
+        });
+      });
+
+      // ✅ ผูก event กับปุ่ม “ดูสถานะการขนส่ง”
+      document.querySelectorAll('.btn-track').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const tracking = btn.dataset.tracking;
+          const container = btn.nextElementSibling;
+
+          if (container.style.display === 'block') {
+            container.style.display = 'none';
+            return;
+          }
+
+          document.querySelectorAll('.shipping-detail').forEach(div => div.style.display = 'none');
+          container.style.display = 'block';
+          container.innerHTML = '<p>⏳ กำลังโหลดข้อมูลพัสดุ...</p>';
+
+          try {
+            const res = await fetch(`/api/tracking/detail?tracking_code=${tracking}`);
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.message);
+
+            const html = data.tracks.map(item => `
+              <div class="track-item">
+                <p><b>สถานะ:</b> ${item.status}</p>
+                <p><b>เวลา:</b> ${item.date}</p>
+                <p><b>สถานที่:</b> ${item.location}</p>
+                <p><b>รายละเอียด:</b> ${item.detail}</p>
+                <hr>
+              </div>
+            `).join('');
+
+            container.innerHTML = `
+              <div class="shipping-timeline">
+                <h4>📦 สถานะการขนส่งของไปรษณีย์ไทย</h4>
+                ${html}
+              </div>
+            `;
+          } catch (err) {
+            container.innerHTML = `<p style="color:red;">⚠️ ${err.message}</p>`;
+          }
+        });
+      });
+
+      // ✅ ตั้งค่าเริ่มต้นให้เลือกสินค้าชิ้นแรก
+      const first = document.querySelector('.item-card');
+      if (first) first.click();
+    });
   </script>
 </body>
 </html>

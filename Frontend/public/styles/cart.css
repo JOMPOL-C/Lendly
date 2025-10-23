@@ -104,4 +104,8 @@
       height: auto;
     }
   }
+  #selectAll {
+    transform: scale(1.2);
+    accent-color: #5a67d8;
+  }
   

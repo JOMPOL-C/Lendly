@@ -1,6 +1,5 @@
-const prisma = require("../../prisma/prisma");
-const { Prisma } = require("@prisma/client");
-
+const { PrismaClient, Prisma, Shipping_shipping_status } = require("@prisma/client");
+const prisma = new PrismaClient();
 
 // 🪄 ฟังก์ชันสร้างรหัสคำสั่งซื้อ
 function generateOrderCode() {
@@ -52,9 +51,7 @@ exports.createOrder = async (req, res) => {
         cart: { customerId },
       },
       include: {
-        product: {
-          include: { category: true }, // เพื่อให้รู้ว่าชุด/วิก
-        },
+        product: { include: { category: true } },
         price: true,
       },
     });
@@ -64,32 +61,21 @@ exports.createOrder = async (req, res) => {
     }
 
     // 🧩 helper ฟังก์ชันคำนวณราคาตามโหมด
-    const getRentalPrice = (item) => {
-      if (item.mode === "pri") {
-        return parseFloat(item.price?.price_pri || 0);
-      } else {
-        return parseFloat(item.price?.price_test || 0);
-      }
-    };
+    const getRentalPrice = (item) =>
+      item.mode === "pri"
+        ? parseFloat(item.price?.price_pri || 0)
+        : parseFloat(item.price?.price_test || 0);
 
     // ✅ แสดง log รายการสินค้า
     console.log("🛒 สินค้าในตะกร้าที่เลือก:");
     cartItems.forEach((i) => {
-      const priceValue = getRentalPrice(i);
       console.log(
-        `  • ${i.product?.product_name} (${i.mode === "pri" ? "โหมดไพร" : "โหมดเทส"}) | ${priceValue}฿ }`
+        `  • ${i.product?.product_name} (${i.mode === "pri" ? "โหมดไพร" : "โหมดเทส"}) | ${getRentalPrice(i)}฿`
       );
     });
 
     // ✅ คำนวณราคารวม
-    const totalPrice = cartItems.reduce((sum, item) => {
-      const priceValue = getRentalPrice(item);
-      if (isNaN(priceValue)) {
-        console.warn(`⚠️ ราคาผิดพลาดในสินค้า ${item.product?.product_name}`);
-      }
-      return sum + (isNaN(priceValue) ? 0 : priceValue);
-    }, 0);
-
+    const totalPrice = cartItems.reduce((sum, item) => sum + getRentalPrice(item), 0);
     console.log("💰 ราคารวมทั้งหมด:", totalPrice);
 
     // ✅ สร้างคำสั่งซื้อพร้อมรหัส order_code
@@ -112,13 +98,19 @@ exports.createOrder = async (req, res) => {
 
     console.log(`🧾 สร้างออเดอร์สำเร็จ: ${order.order_code} (ID: ${order.order_id})`);
 
+    // 🆕 ✅ สร้าง Shipping record ทันที (สำคัญมาก)
+    const shipping = await prisma.Shipping.create({
+      data: {
+        orderId: order.order_id,
+        shipping_status: Shipping_shipping_status.IN_PROGRESS, // หรือ WAITING_DELIVER ถ้า enum ใช้ค่านี้
+      },
+    });
+    console.log(`🚚 สร้าง Shipping สำหรับ order_id: ${order.order_id}, shipping_id: ${shipping.shipping_id}`);
+
     // ✅ สร้าง Rentals ตามสินค้าในออเดอร์
     for (const item of cartItems) {
       const startDate = item.startDate || new Date();
-      const endDate =
-        item.endDate ||
-        new Date(startDate.getTime() + 3 * 24 * 60 * 60 * 1000);
-
+      const endDate = item.endDate || new Date(startDate.getTime() + 3 * 24 * 60 * 60 * 1000);
       const rentalPrice = getRentalPrice(item);
 
       await prisma.Rentals.create({
@@ -134,9 +126,7 @@ exports.createOrder = async (req, res) => {
         },
       });
 
-      console.log(
-        `📦 เพิ่ม Rentals: ${item.product?.product_name} (${item.mode}) | ราคา: ${rentalPrice}฿ }`
-      );
+      console.log(`📦 เพิ่ม Rentals: ${item.product?.product_name} (${item.mode}) | ราคา: ${rentalPrice}฿`);
     }
 
     // ✅ ลบสินค้าที่เช่าออกจากตะกร้า
@@ -146,13 +136,13 @@ exports.createOrder = async (req, res) => {
     console.log("🧹 ลบสินค้าที่เช่าออกจากตะกร้าแล้ว");
 
     console.log(`✅ สรุปคำสั่งซื้อของลูกค้า ID ${customerId}: ${cartItems.length} รายการ, รวม ${totalPrice}฿`);
-
-    res.json({ message: "สร้างคำสั่งเช่าสำเร็จ", order });
+    res.json({ message: "สร้างคำสั่งเช่าสำเร็จ", order, shipping });
   } catch (err) {
     console.error("❌ createOrder error:", err);
     res.status(500).json({ message: "Server error", details: err.message });
   }
 };
+
 
 
 // ✅ แสดงคำสั่งซื้อของลูกค้าคนปัจจุบัน
