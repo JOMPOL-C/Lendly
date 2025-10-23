@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const productController = require('../Controllers/productControllers');
-const productControllersPage = require('../Controllers/productControllersPage');
+const productController = require('../Controllers/productController');
+const productControllerPage = require('../Controllers/productControllerPage');
 
 // render ฟอร์มเพิ่มสินค้า
 router.get("/add-product", productController.renderAddProduct);
@@ -25,14 +25,14 @@ router.post(
 router.delete("/products/:id/delete", productController.deleteProduct);
 
 
-router.get("/products/:id/edit", productControllersPage.renderEditProduct);
+router.get("/products/:id/edit", productControllerPage.renderEditProduct);
 
 // แสดงรายละเอียดสินค้า (ทีละตัว)
 router.get("/products/:id", productController.getProductById);
 
 // แสดงสินค้าทั้งหมดที่หน้า home
-router.get('/home', (req, res) => productControllersPage.renderProductsPage(req, res, 'home'));
-router.get('/category', (req, res) => productControllersPage.renderProductsPage(req, res, 'category'));
+router.get('/home', (req, res) => productControllerPage.renderProductsPage(req, res, 'home'));
+router.get('/category', (req, res) => productControllerPage.renderProductsPage(req, res, 'category'));
 
 
 module.exports = router;

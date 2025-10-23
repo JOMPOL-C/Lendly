@@ -1,0 +1,130 @@
+/* 🌸 โทนพาสเทลหลัก: ม่วง-ชมพูอ่อน */
+.status {
+    display: inline-block;
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 15px;
+    margin-top: 5px;
+    border: 1px solid transparent;
+}
+
+/* 💛 รอยืนยันจากร้าน */
+.status.waiting-confirm {
+    background: #f9f1ff;
+    color: #7a3ea1;
+    border-color: #e0b3ff;
+}
+
+/* 🟣 เตรียมส่ง */
+.status.waiting-deliver {
+    background: #ede9fe;
+    color: #5b21b6;
+    border-color: #c4b5fd;
+}
+
+/* 🚚 กำลังจัดส่ง */
+.status.waiting-receive {
+    background: #f3e8ff;
+    color: #6b21a8;
+    border-color: #d8b4fe;
+}
+
+/* 💚 ได้รับสินค้า */
+.status.rented {
+    background: #f0fdfa;
+    color: #0f766e;
+    border-color: #99f6e4;
+}
+
+/* 💜 กำลังคืนสินค้า */
+.status.returning {
+    background: #faf5ff;
+    color: #7e22ce;
+    border-color: #e9d5ff;
+}
+
+/* 🩵 คืนสำเร็จ */
+.status.returned {
+    background: #f5f3ff;
+    color: #5b21b6;
+    border-color: #ddd6fe;
+}
+
+.status {
+    transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+.btn-confirm {
+    margin-top: 8px;
+    padding: 6px 14px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all .2s;
+}
+
+.btn-confirm.gray {
+    background: #e5e7eb;
+    color: #444;
+}
+
+.btn-confirm.gray:hover:not([disabled]) {
+    background: #d1d5db;
+}
+
+.btn-confirm[disabled] {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.btn-return {
+    background: #ede9fe;
+    color: #5b21b6;
+}
+
+.btn-return:hover {
+    background: #ddd6fe;
+}
+
+.tracking-title {
+    font-weight: 600;
+    color: #4b5563;
+    margin-bottom: 4px;
+}
+
+.tracking-link {
+    display: inline-block;
+    font-weight: 500;
+    color: #4f46e5;
+    text-decoration: none;
+    margin-right: 8px;
+}
+
+.tracking-link:hover {
+    text-decoration: underline;
+}
+
+.btn-track {
+    background: #ede9fe;
+    color: #4c1d95;
+    border: 1px solid #c4b5fd;
+    padding: 4px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+}
+
+.btn-track:hover {
+    background: #ddd6fe;
+}
+.btn-return {
+    background-color: #ede9fe;
+    color: #4c1d95;
+    border: 1px solid #c4b5fd;
+  }
+  .btn-return:hover {
+    background-color: #ddd6fe;
+  }
+  

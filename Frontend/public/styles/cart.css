@@ -1,4 +1,5 @@
 /* rental.css */
+
 .rental-card {
     border: 1px solid #ddd;
     border-radius: 8px;
@@ -7,26 +8,42 @@
     display: flex;
     align-items: center;
     gap: 20px;
-}
-.rental-card img {
+  }
+  
+  .rental-card img {
     width: 200px;
     height: 200px;
     object-fit: cover;
     border-radius: 8px;
-}
-.rental-info {
+  }
+  
+  .rental-info {
     flex: 1;
-}
-
-.rental-info h3 {
+  }
+  
+  .rental-info h3 {
     margin: 0 0 10px 0;
     font-size: 22px;
-}
-.rental-info p {
+  }
+  
+  .rental-info p {
     margin: 5px 0;
     font-size: 16px;
-}
-.rental-info .btn {
+  }
+  
+  .rental-info a {
+    text-decoration: none;
+    color: #000;
+    font-size: 20px;
+    font-weight: 600;
+    transition: color 0.2s ease;
+  }
+  
+  .rental-info a:hover {
+    color: #bf8bfe;
+  }
+  
+  .rental-info .btn {
     display: inline-block;
     margin-top: 10px;
     padding: 10px 15px;
@@ -34,30 +51,23 @@
     color: white;
     text-decoration: none;
     border-radius: 5px;
-}
-.rental-info .btn:hover {
+    transition: background-color 0.2s ease;
+  }
+  
+  .rental-info .btn:hover {
     background-color: rgb(159, 20, 252);
-}
-.tab-content {
+  }
+  
+  .tab-content {
     display: none;
-}
-
-.rental-info a {
-    text-decoration: none;
-    color: #000000;
-    font-size: 20px;
-    font-weight: 600;
-}
-
-.rental-info a:hover {
-    color: #bf8bfe;
-}
-
-i{
+  }
+  
+  i {
     font-size: 24px;
     font-weight: 600;
-}
-.cart-actions {
+  }
+  
+  .cart-actions {
     text-align: right;
     margin-top: 20px;
   }
@@ -70,23 +80,32 @@ i{
     border-radius: 10px;
     cursor: pointer;
     font-size: 1rem;
-    transition: 0.2s;
+    transition: background-color 0.2s ease, transform 0.15s ease;
   }
   
   .btn-rent:hover {
     background-color: #434190;
+    transform: scale(1.05);
   }
   
-
-@media (max-width: 477px) {
+  /* แก้ selector เดิมให้ถูกต้อง */
+  .bx-cart:hover {
+    transform: scale(1.15);
+  }
+  
+  @media (max-width: 477px) {
     .rental-card {
-        flex-direction: column;
-        align-items: flex-start;
+      flex-direction: column;
+      align-items: flex-start;
     }
-
+  
     .rental-card img {
-        width: 100%;
-        height: auto;
+      width: 100%;
+      height: auto;
     }
-    
-}
+  }
+  #selectAll {
+    transform: scale(1.2);
+    accent-color: #5a67d8;
+  }
+  

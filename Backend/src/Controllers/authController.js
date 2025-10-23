@@ -14,8 +14,6 @@ const upload = multer({
 });
 exports.upload = upload;
 
-
-
 exports.login = async (req, res) => {
   try {
     const { username, password } = req.body;
@@ -82,8 +80,6 @@ exports.getProfile = async (req, res) => {
   }
 };
 
-
-
 exports.editprofile = async (req, res) => {
   try {
     const { id } = req.params;
@@ -134,25 +130,28 @@ exports.editprofile = async (req, res) => {
       await cloudinary.uploader.destroy(oldUser.id_card_public_id);
     }
 
-    // อัปเดตข้อมูลลูกค้า
+    // ✅ อัปเดตข้อมูลลูกค้าแบบปลอดภัย (ไม่แตะ id_card_number ถ้าไม่ได้ส่งมา)
+    const updateData = {};
+
+    if (customer_email?.trim()) updateData.customer_email = customer_email.trim();
+    if (customer_phone?.trim()) updateData.customer_phone = customer_phone.trim();
+    if (name?.trim()) updateData.name = name.trim();
+    if (last_name?.trim()) updateData.last_name = last_name.trim();
+    if (address?.trim()) updateData.address = address.trim();
+    if (id_card_number?.trim()) updateData.id_card_number = id_card_number.trim();
+
+    if (profileUpload) {
+      updateData.profile_image_url = profileUpload.secure_url;
+      updateData.profile_public_id = profileUpload.public_id;
+    }
+    if (idCardUpload) {
+      updateData.id_card_image_url = idCardUpload.secure_url;
+      updateData.id_card_public_id = idCardUpload.public_id;
+    }
+
     await prisma.Customer.update({
       where: { customer_id: parseInt(id) },
-      data: {
-        customer_email,
-        customer_phone,
-        name,
-        last_name,
-        address,
-        id_card_number,
-        ...(profileUpload && {
-          profile_image_url: profileUpload.secure_url,
-          profile_public_id: profileUpload.public_id,
-        }),
-        ...(idCardUpload && {
-          id_card_image_url: idCardUpload.secure_url,
-          id_card_public_id: idCardUpload.public_id,
-        }),
-      },
+      data: updateData,
     });
 
     // อัปเดตหรือสร้าง Proportion
@@ -177,6 +176,7 @@ exports.editprofile = async (req, res) => {
     res.status(500).send("อัปเดตไม่สำเร็จ");
   }
 };
+
 
 
 // แก้ไขโดยใช้ bcrypt ในการ hash รหัสผ่าน

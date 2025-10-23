@@ -1,0 +1,111 @@
+<%- include('includes/head') %>
+  <link rel="stylesheet" href="/styles/admin.css">
+
+  </head>
+
+  <body>
+    <%- include('includes/nav') %>
+
+      <main class="section-p1">
+        <h2>📦 รายการสินค้ารอจัดส่ง</h2>
+
+        <!-- ✅ ฟอร์มกรอกข้อมูลรหัสพัสดุ -->
+        <div class="shipping-form-card">
+          <h3>เพิ่มข้อมูลจัดส่งสินค้า</h3>
+          <form id="shippingForm" enctype="multipart/form-data">
+            <label>รหัสพัสดุ:</label>
+            <input type="text" name="tracking_code" placeholder="เช่น EX123456789TH" required>
+
+            <label>แนบรูปบิล / ใบส่งพัสดุ:</label>
+            <input type="file" name="image_slip" accept="image/*" required>
+
+            <button type="submit" class="btn">บันทึกข้อมูลจัดส่ง</button>
+          </form>
+        </div>
+
+        <% if (pending && pending.length> 0) { %>
+          <div class="table-container">
+            <table class="rental-table">
+              <thead>
+                <tr>
+                  <th>เลือก</th>
+                  <th>ภาพสินค้า</th>
+                  <th>ชื่อสินค้า</th>
+                  <th>ลูกค้า</th>
+                  <th>วันที่เช่า</th>
+                  <th>วันที่คืน</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% pending.forEach(r=> { %>
+                  <tr>
+                    <td>
+                      <% // 🔍 หาค่า orderItem ที่ตรงกับ productId ของสินค้านี้ const
+                        matchedOrderItem=r.order?.OrderItem?.find(i=> i.productId === r.product.product_id);
+                        %>
+                        <input type="checkbox" name="selectItem" value="<%= matchedOrderItem?.orderItem_id || '' %>"
+                          data-shipping="<%= r.order?.shippings?.[0]?.shipping_id || '' %>">
+                    </td>
+
+                    <td><img src="<%= r.product.images?.[0]?.image_url || '/images/no-image.png' %>" width="80"></td>
+                    <td>
+                      <%= r.product.product_name %>
+                    </td>
+                    <td>
+                      <%= r.customer.name %>
+                        <%= r.customer.last_name %>
+                    </td>
+                    <td>
+                      <%= new Date(r.rental_date).toLocaleDateString() %>
+                    </td>
+                    <td>
+                      <%= new Date(r.rental_end_date).toLocaleDateString() %>
+                    </td>
+                  </tr>
+                  <% }) %>
+              </tbody>
+
+            </table>
+          </div>
+          <% } else { %>
+            <p style="text-align:center; font-size:18px; color:#718096;">ยังไม่มีสินค้าที่รอจัดส่ง</p>
+            <% } %>
+      </main>
+
+      <%- include('includes/footer') %>
+        <script src="/js/script.js"></script>
+
+        <script>
+          document.getElementById("shippingForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const selected = [...document.querySelectorAll("input[name='selectItem']:checked")];
+            if (selected.length === 0) return alert("กรุณาเลือกสินค้าที่ต้องการจัดส่ง");
+
+            const form = e.target;
+            const formData = new FormData(form);
+
+            // ✅ ดึง shippingId จากสินค้าตัวแรก (ทุกสินค้าจะอยู่ใน order เดียวกัน)
+            const shippingId = selected[0].dataset.shipping;
+            if (!shippingId) return alert("ไม่พบ Shipping ID");
+
+            // ✅ เก็บ orderItemIds ทั้งหมด
+            const orderItemIds = selected.map(cb => cb.value);
+            formData.append("shippingId", shippingId);
+            formData.append("orderItemIds", JSON.stringify(orderItemIds));
+            formData.append("note", "จัดส่งสินค้าพร้อมกันหลายรายการ");
+
+            const res = await fetch("/api/shipping/addBox", {
+              method: "POST",
+              body: formData
+            });
+
+            const data = await res.json();
+            alert(data.message || "บันทึกสำเร็จ");
+            if (res.ok) window.location.reload();
+          });
+
+        </script>
+  </body>
+
+  </html>

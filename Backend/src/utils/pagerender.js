@@ -12,7 +12,7 @@ module.exports = {
     renderMy_rentals: redderPage('my_rentals', 'My Rentals Page'),
     renderLogin: redderPage('login', 'Login Page'),
     renderRegister: redderPage('register', 'Register Page'),
-    renderForgotpassword: redderPage('forgotpassword','forgetpassword Page'),
+    renderForgetpassword: redderPage('forgetpassword', 'forgetpassword Page'),
     renderResetpassword: redderPage('resetpassword', 'Reset Password Page'),
     renderOtpVerify: redderPage('otpVerify', 'OTP Verify Page'),
     renderProfile: redderPage('Profile', 'Profile Page'),
@@ -23,4 +23,6 @@ module.exports = {
     renderWrite_review: redderPage('write_review', 'Write Review Page'),
     renderReturn_order: redderPage('return_order', 'Return Order Page'),
     renderAdmin_rentals: redderPage('admin_rentals', 'Admin Rentals'),
+    renderAdmin_tracking: redderPage('admin_tracking', 'Admin Tracking Page'),
+    renderAdmin_return: redderPage('admin_return', 'Admin Return Page'),
 };

@@ -231,6 +231,361 @@
   box-shadow: 0 0 0 2px rgba(125, 77, 255, 0.2);
 }
 
+.order-card .status {
+  display: inline-block !important;
+  padding: 5px 12px !important;
+  margin-top: 5px !important;
+  border-radius: 8px !important;
+  background: #f5f3ff !important;
+  /* พื้นม่วงอ่อน */
+  color: #6d28d9 !important;
+  /* ตัวอักษรม่วงเข้ม */
+  font-weight: 600 !important;
+  font-size: 15px !important;
+}
+
+p .status{
+  display: inline-block !important;
+  padding: 5px 12px !important;
+  margin-top: 5px !important;
+  border-radius: 8px !important;
+  background: #f5f3ff !important;
+  /* พื้นม่วงอ่อน */
+  color: #6d28d9 !important;
+  /* ตัวอักษรม่วงเข้ม */
+  font-weight: 600 !important;
+  font-size: 15px !important;
+}
+
+/* การ์ดคำสั่งซื้อ */
+.order-card {
+  background: #f8f5ff;
+  /* พื้นหลังม่วงอ่อน */
+  border: 1px solid #e2d6ff;
+  /* เส้นขอบบางสีม่วงพาสเทล */
+  border-radius: 16px;
+  /* มุมโค้งมน */
+  padding: 20px 25px;
+  margin-bottom: 30px;
+  box-shadow: 0 4px 10px rgba(125, 77, 255, 0.08);
+  /* เงาเบาๆ */
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* เอฟเฟกต์ hover */
+.order-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(125, 77, 255, 0.15);
+}
+
+/* หัวการ์ด (ชื่อคำสั่งซื้อ + วันที่) */
+.order-card h3 {
+  margin-top: 0;
+  color: #5b21b6;
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 5px;
+}
+
+.order-card p {
+  color: #444;
+  margin: 2px 0;
+}
+
+/* แถบสถานะ */
+.order-card .status {
+  margin-top: 10px;
+  font-weight: bold;
+  padding: 4px 8px;
+  border-radius: 6px;
+  display: inline-block;
+  background-color: #ede9fe;
+}
+
+/* ปุ่มในท้ายการ์ด */
+.order-footer {
+  margin-top: 15px;
+  text-align: right;
+}
+
+.order-footer .btn {
+  background-color: #7c3aed;
+  color: #fff;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: 0.2s;
+}
+
+.order-footer .btn:hover {
+  background-color: #6d28d9;
+}
+
+/* ======================
+   📦 การ์ดพัสดุ (Tracking)
+====================== */
+
+.parcel-title {
+  margin-top: 40px;
+  color: #5b21b6;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.parcel-card {
+  background: #f9f7ff;
+  border: 1px solid #e3d7ff;
+  border-radius: 14px;
+  padding: 20px;
+  margin-top: 20px;
+  box-shadow: 0 3px 8px rgba(125, 77, 255, 0.08);
+}
+
+.parcel-header h4 {
+  margin: 0;
+  color: #4c1d95;
+  font-weight: 700;
+}
+
+.parcel-header a.track-link {
+  color: #7c3aed;
+  text-decoration: none;
+}
+
+.parcel-header a.track-link:hover {
+  text-decoration: underline;
+}
+
+.parcel-products {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.parcel-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: white;
+  border-radius: 8px;
+  padding: 8px 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.parcel-item img {
+  width: 45px;
+  height: 45px;
+  border-radius: 6px;
+  object-fit: cover;
+}
+
+.status-box {
+  margin-top: 10px;
+  background: #fff;
+  border-left: 4px solid #7c3aed;
+  padding: 10px 15px;
+  border-radius: 6px;
+  font-size: 14px;
+  color: #333;
+}
+
+/* 🌀 Animation ตอนโหลด */
+.loading-spinner {
+  width: 24px;
+  height: 24px;
+  border: 3px solid #d6bcfa;
+  border-top: 3px solid #7c3aed;
+  border-radius: 50%;
+  margin: 10px auto;
+  animation: spin 0.8s linear infinite;
+}
+
+.loading-text {
+  text-align: center;
+  color: #5b21b6;
+  font-size: 14px;
+  margin-top: 5px;
+}
+
+.tracking-note {
+  text-align: center;
+  color: #5b21b6;
+  font-weight: 600;
+  font-size: 15px;
+  margin-top: 18px;
+  transition: 0.3s;
+}
+
+.tracking-note::before {
+  content: "";
+  display: block;
+  width: 50px;
+  height: 3px;
+  background: #c4b5fd;
+  margin: 10px auto;
+  border-radius: 10px;
+}
+
+.step.done .circle {
+  background: #28a745;
+  color: #fff;
+  border-color: #28a745;
+  animation: glow 1s ease-in-out;
+  box-shadow: 0 0 8px rgba(40, 167, 69, 0.6);
+}
+
+/* =============================
+   ✨ Timeline animation update
+============================= */
+.step.done .circle {
+  background-color: #28a745;
+  border-color: #28a745;
+  color: white;
+  animation: glow 1s ease-in-out;
+  box-shadow: 0 0 8px rgba(40, 167, 69, 0.6);
+}
+
+@keyframes glow {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 rgba(40, 167, 69, 0);
+  }
+
+  50% {
+    transform: scale(1.15);
+    box-shadow: 0 0 14px rgba(40, 167, 69, 0.8);
+  }
+
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 rgba(40, 167, 69, 0);
+  }
+}
+
+.line.completed {
+  background: linear-gradient(90deg, #28a745, #a7f3d0);
+  transition: background 0.4s ease;
+}
+
+.order-summary {
+  background: #f9f5ff;
+  border: 1px solid #e5d5ff;
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin: 18px 0
+}
+
+.item-card {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin: 12px 0;
+  cursor: pointer;
+  background: #fff;
+  transition: .2s
+}
+
+.item-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, .06)
+}
+
+.item-card.active {
+  outline: 2px solid #a78bfa;
+  background: #faf5ff
+}
+
+.item-card .thumb {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 8px
+}
+
+.item-card .meta {
+  flex: 1
+}
+
+.btn.btn-track {
+  background: #8b5cf6;
+  color: #fff;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 8px
+}
+
+.btn.btn-track:hover {
+  background: #7c3aed
+}
+
+.box-card {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 10px 15px;
+  background: #fafafa;
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.05);
+}
+
+.box-card p {
+  margin: 4px 0;
+  font-size: 15px;
+}
+
+.btn-track {
+  margin-top: 8px;
+  background: #ede9fe;
+  color: #5b21b6;
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.shipping-detail {
+  margin-top: 10px;
+  background: #fafafa;
+  border-left: 4px solid #a78bfa;
+  padding: 10px 15px;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.track-item {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 6px;
+}
+
+.track-item .time {
+  color: #666;
+  font-size: 13px;
+}
+
+.track-item .desc {
+  font-weight: 600;
+}
+
+.track-item .location {
+  color: #888;
+  font-size: 13px;
+}
+.track-item p:last-of-type {
+  color: #666;
+  font-style: italic;
+}
+
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 @media (max-width: 477px) {
   .rental-card {
     flex-direction: column;

@@ -1,0 +1,59 @@
+<%- include('includes/head') %>
+<link rel="stylesheet" href="/styles/admin.css">
+</head>
+<body>
+  <%- include('includes/nav') %>
+
+  <main class="admin-page">
+    <h2>สินค้ากำลังคืน</h2>
+
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>รหัสเช่า</th>
+          <th>ชื่อสินค้า</th>
+          <th>ลูกค้า</th>
+          <th>สถานะ</th>
+          <th>ดำเนินการ</th>
+        </tr>
+      </thead>
+      <tbody id="returning-list"></tbody>
+    </table>
+  </main>
+
+  <%- include('includes/footer') %>
+  <script>
+    async function loadReturning() {
+      const res = await fetch('/api/rentals');
+      const data = await res.json();
+      const tbody = document.getElementById('returning-list');
+      tbody.innerHTML = '';
+      data.filter(r => r.rental_status === 'RETURNING').forEach(r => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${r.rental_id}</td>
+          <td>${r.product.product_name}</td>
+          <td>${r.customer?.name || '-'}</td>
+          <td>${r.rental_status}</td>
+          <td>
+            <button onclick="markReturned(${r.rental_id})">✅ ได้รับคืนแล้ว</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    async function markReturned(id) {
+      const confirmed = confirm('ยืนยันได้รับสินค้าคืนแล้วใช่ไหม?');
+      if (!confirmed) return;
+
+      const res = await fetch(`/api/rentals/${id}/return`, { method: 'PUT' });
+      const data = await res.json();
+      alert(data.message || 'อัปเดตสถานะแล้ว');
+      loadReturning();
+    }
+
+    loadReturning();
+  </script>
+</body>
+</html>
