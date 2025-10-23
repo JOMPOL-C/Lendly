@@ -74,6 +74,7 @@ app.get('/return_order', PageRender.renderReturn_order);
 app.get('/detail_product', PageRender.renderDetail_product);
 app.get('/edit_product', PageRender.renderEdit_product);
 app.get('/admin/rentals', PageRender.renderAdmin_rentals);
+app.get('/admin/return', PageRender.renderAdmin_return);
 // http://localhost:8000/api/admin/tracking
 
 fs.readdirSync(path.join(__dirname, "src/routers"))

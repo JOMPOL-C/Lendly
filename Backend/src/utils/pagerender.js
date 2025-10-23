@@ -24,5 +24,5 @@ module.exports = {
     renderReturn_order: redderPage('return_order', 'Return Order Page'),
     renderAdmin_rentals: redderPage('admin_rentals', 'Admin Rentals'),
     renderAdmin_tracking: redderPage('admin_tracking', 'Admin Tracking Page'),
-    
+    renderAdmin_return: redderPage('admin_return', 'Admin Return Page'),
 };
