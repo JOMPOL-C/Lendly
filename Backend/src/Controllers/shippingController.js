@@ -46,104 +46,104 @@ async function getThaiPostToken() {
 
 exports.addBox = async (req, res) => {
     try {
-      const { tracking_code, note, shippingId } = req.body;
-      let { orderItemIds } = req.body;
-  
-      if (!shippingId)
-        return res.status(400).json({ message: "กรุณาระบุ shippingId" });
-      if (!tracking_code)
-        return res.status(400).json({ message: "กรุณากรอกรหัสพัสดุ" });
-  
-      // ✅ แปลง orderItemIds จาก JSON string → array
-      if (typeof orderItemIds === "string") {
-        orderItemIds = JSON.parse(orderItemIds);
-      }
-  
-      if (!Array.isArray(orderItemIds) || orderItemIds.length === 0) {
-        return res.status(400).json({ message: "ไม่พบสินค้าที่จะผูกเข้ากล่อง" });
-      }
-  
-      // ✅ อัปโหลดรูปบิล (ถ้ามี)
-      let imageUrl = null;
-      if (req.file) imageUrl = req.file.path;
-  
-      // ✅ ตรวจสอบว่า orderItemIds ที่ได้รับ มีอยู่จริงในระบบไหม
-      const validOrderItems = await prisma.orderItem.findMany({
-        where: { orderItem_id: { in: orderItemIds.map(Number) } },
-        select: { orderItem_id: true, productId: true, orderId: true },
-      });
-  
-      if (validOrderItems.length !== orderItemIds.length) {
-        return res.status(400).json({
-          message:
-            "พบ orderItemId ไม่ถูกต้องในคำขอ — โปรดตรวจสอบสินค้าอีกครั้ง",
+        const { tracking_code, note, shippingId } = req.body;
+        let { orderItemIds } = req.body;
+
+        if (!shippingId)
+            return res.status(400).json({ message: "กรุณาระบุ shippingId" });
+        if (!tracking_code)
+            return res.status(400).json({ message: "กรุณากรอกรหัสพัสดุ" });
+
+        // ✅ แปลง orderItemIds จาก JSON string → array
+        if (typeof orderItemIds === "string") {
+            orderItemIds = JSON.parse(orderItemIds);
+        }
+
+        if (!Array.isArray(orderItemIds) || orderItemIds.length === 0) {
+            return res.status(400).json({ message: "ไม่พบสินค้าที่จะผูกเข้ากล่อง" });
+        }
+
+        // ✅ อัปโหลดรูปบิล (ถ้ามี)
+        let imageUrl = null;
+        if (req.file) imageUrl = req.file.path;
+
+        // ✅ ตรวจสอบว่า orderItemIds ที่ได้รับ มีอยู่จริงในระบบไหม
+        const validOrderItems = await prisma.orderItem.findMany({
+            where: { orderItem_id: { in: orderItemIds.map(Number) } },
+            select: { orderItem_id: true, productId: true, orderId: true },
         });
-      }
-  
-      // ✅ สร้างกล่องใหม่
-      const newBox = await prisma.shippingBox.create({
-        data: {
-          shippingId: Number(shippingId),
-          tracking_code: tracking_code.toUpperCase(),
-          note: note || "กล่องพัสดุใหม่",
-        },
-      });
-  
-      console.log("📦 สร้างกล่องใหม่:", newBox.box_id);
-      console.log("🧩 ผูกสินค้า:", orderItemIds.join(", "));
-  
-      // ✅ ผูกสินค้าแต่ละตัวเข้ากล่อง
-      await prisma.shippingBoxItem.createMany({
-        data: validOrderItems.map((item) => ({
-          boxId: newBox.box_id,
-          orderItemId: item.orderItem_id,
-          quantity: 1,
-        })),
-      });
-  
-      // ✅ แนบรูปบิลไว้ที่ shipping (ถ้ามี)
-      if (imageUrl) {
-        await prisma.shipping.update({
-          where: { shipping_id: Number(shippingId) },
-          data: { image_slip: imageUrl },
+
+        if (validOrderItems.length !== orderItemIds.length) {
+            return res.status(400).json({
+                message:
+                    "พบ orderItemId ไม่ถูกต้องในคำขอ — โปรดตรวจสอบสินค้าอีกครั้ง",
+            });
+        }
+
+        // ✅ สร้างกล่องใหม่
+        const newBox = await prisma.shippingBox.create({
+            data: {
+                shippingId: Number(shippingId),
+                tracking_code: tracking_code.toUpperCase(),
+                note: note || "กล่องพัสดุใหม่",
+            },
         });
-        console.log("🧾 แนบรูปบิลเรียบร้อย");
-      }
-  
-      // ✅ ดึงข้อมูลสินค้าที่เกี่ยวข้อง
-      const productIds = validOrderItems.map((i) => i.productId);
-      const orderId = validOrderItems[0].orderId;
-  
-      console.log("📦 จะอัปเดต rentals ของสินค้า:", productIds);
-      console.log("📦 จากคำสั่งซื้อ:", orderId);
-  
-      // ✅ อัปเดตเฉพาะสินค้าที่พร้อมส่งเท่านั้น (WAITING_DELIVER)
-      const updated = await prisma.rentals.updateMany({
-        where: {
-          orderId: orderId,
-          productId: { in: productIds },
-          rental_status: "WAITING_DELIVER",
-        },
-        data: { rental_status: "WAITING_RECEIVE" },
-      });
-  
-      console.log(
-        `🚚 อัปเดตสถานะ rental เป็น WAITING_RECEIVE จำนวน ${updated.count} รายการ`
-      );
-  
-      // ✅ ตอบกลับ
-      res.json({
-        message: `เพิ่มกล่องพัสดุ ${tracking_code.toUpperCase()} สำเร็จ (ผูกสินค้า ${productIds.length} ชิ้น)`,
-        box_id: newBox.box_id,
-      });
+
+        console.log("📦 สร้างกล่องใหม่:", newBox.box_id);
+        console.log("🧩 ผูกสินค้า:", orderItemIds.join(", "));
+
+        // ✅ ผูกสินค้าแต่ละตัวเข้ากล่อง
+        await prisma.shippingBoxItem.createMany({
+            data: validOrderItems.map((item) => ({
+                boxId: newBox.box_id,
+                orderItemId: item.orderItem_id,
+                quantity: 1,
+            })),
+        });
+
+        // ✅ แนบรูปบิลไว้ที่ shipping (ถ้ามี)
+        if (imageUrl) {
+            await prisma.shipping.update({
+                where: { shipping_id: Number(shippingId) },
+                data: { image_slip: imageUrl },
+            });
+            console.log("🧾 แนบรูปบิลเรียบร้อย");
+        }
+
+        // ✅ ดึงข้อมูลสินค้าที่เกี่ยวข้อง
+        const productIds = validOrderItems.map((i) => i.productId);
+        const orderId = validOrderItems[0].orderId;
+
+        console.log("📦 จะอัปเดต rentals ของสินค้า:", productIds);
+        console.log("📦 จากคำสั่งซื้อ:", orderId);
+
+        // ✅ อัปเดตเฉพาะสินค้าที่พร้อมส่งเท่านั้น (WAITING_DELIVER)
+        const updated = await prisma.rentals.updateMany({
+            where: {
+                orderId: orderId,
+                productId: { in: productIds },
+                rental_status: "WAITING_DELIVER",
+            },
+            data: { rental_status: "WAITING_RECEIVE" },
+        });
+
+        console.log(
+            `🚚 อัปเดตสถานะ rental เป็น WAITING_RECEIVE จำนวน ${updated.count} รายการ`
+        );
+
+        // ✅ ตอบกลับ
+        res.json({
+            message: `เพิ่มกล่องพัสดุ ${tracking_code.toUpperCase()} สำเร็จ (ผูกสินค้า ${productIds.length} ชิ้น)`,
+            box_id: newBox.box_id,
+        });
     } catch (err) {
-      console.error("❌ addBox error:", err);
-      res
-        .status(500)
-        .json({ message: "เกิดข้อผิดพลาดในระบบ", error: err.message });
+        console.error("❌ addBox error:", err);
+        res
+            .status(500)
+            .json({ message: "เกิดข้อผิดพลาดในระบบ", error: err.message });
     }
-  };
-  
+};
+
 
 
 // ===================================================
@@ -434,6 +434,85 @@ exports.getOrderBoxes = async (req, res) => {
         res.status(500).json({ message: 'เกิดข้อผิดพลาดในการดึงกล่องจัดส่ง' });
     }
 };
+
+exports.confirmReceived = async (req, res) => {
+    try {
+        const { rental_id } = req.body;
+        const files = req.files; // อาจอัปได้หลายรูป
+        if (!rental_id) return res.status(400).json({ message: "ต้องระบุ rental_id" });
+
+        const rental = await prisma.rentals.findUnique({
+            where: { rental_id: parseInt(rental_id) },
+        });
+        if (!rental) return res.status(404).json({ message: "ไม่พบข้อมูลการเช่า" });
+        if (rental.rental_status !== "WAITING_RECEIVE")
+            return res.status(400).json({ message: "สถานะนี้ไม่สามารถกดยืนยันได้" });
+
+        // ✅ อัปโหลดรูปขึ้น Cloudinary
+        const uploadedImages = [];
+        for (const file of files || []) {
+            uploadedImages.push({ rental_id: rental.rental_id, image_url: file.path });
+        }
+
+        // ✅ เก็บรูปในตารางใหม่ (RentalReceiveImage)
+        if (uploadedImages.length > 0) {
+            await prisma.rentalReceiveImage.createMany({ data: uploadedImages });
+        }
+
+        // ✅ อัปเดตสถานะ + เวลารับสินค้า
+        await prisma.rentals.update({
+            where: { rental_id: rental.rental_id },
+            data: {
+                rental_status: "RENTED",
+                received_at: new Date(),
+            },
+        });
+
+        res.json({ message: "ยืนยันได้รับสินค้าแล้ว", images: uploadedImages });
+    } catch (err) {
+        console.error("❌ confirmReceived error:", err);
+        res.status(500).json({ message: "เกิดข้อผิดพลาดในระบบ" });
+    }
+};
+
+exports.createReturnBox = async (req, res) => {
+    try {
+        const { order_id, tracking_code, rental_ids, note } = req.body;
+        const files = req.files;
+
+        if (!tracking_code || !rental_ids?.length)
+            return res.status(400).json({ message: "ต้องระบุรหัสพัสดุและสินค้าที่จะคืน" });
+
+        // ✅ สร้างกล่องคืนสินค้า
+        const newBox = await prisma.returnBox.create({
+            data: {
+                orderId: parseInt(order_id),
+                tracking_code: tracking_code.toUpperCase(),
+                note: note || null,
+            },
+        });
+
+        // ✅ ผูกสินค้าทั้งหมดเข้ากล่อง
+        await prisma.returnBoxItem.createMany({
+            data: rental_ids.map(id => ({
+                boxId: newBox.box_id,
+                rentalId: parseInt(id),
+            })),
+        });
+
+        // ✅ เปลี่ยนสถานะสินค้าที่เลือกเป็น RETURNING
+        await prisma.rentals.updateMany({
+            where: { rental_id: { in: rental_ids.map(Number) } },
+            data: { rental_status: "RETURNING" },
+        });
+
+        res.json({ message: "สร้างกล่องคืนสินค้าเรียบร้อย", box_id: newBox.box_id });
+    } catch (err) {
+        console.error("❌ createReturnBox error:", err);
+        res.status(500).json({ message: "เกิดข้อผิดพลาดในระบบ" });
+    }
+};
+
 
 console.log("TH_POST_API_KEY:", process.env.TH_POST_API_KEY?.slice(0, 25) + "...");
 exports.getThaiPostToken = getThaiPostToken;

@@ -29,5 +29,15 @@ router.post(
     shippingController.upload.single("image_slip"),
     shippingController.addBox
 );
+router.post(
+    "/confirm-receive",
+    shippingController.upload.array("images", 5),
+    shippingController.confirmReceived
+);
+router.post(
+    "/return-box",
+    shippingController.upload.array("images", 5),
+    shippingController.createReturnBox
+);
 
 module.exports = router;
