@@ -227,8 +227,9 @@ exports.renderMy_rentals = async (req, res) => {
     // ✅ เตรียม array แยกตามสถานะ
     const waiting_confirm = [];
     const waiting_deliver = [];
-    const waiting_receive = []; // ✅ เพิ่มสถานะใหม่
+    const waiting_receive = [];
     const renting = [];
+    const returning = [];
     const returned = [];
     const cancelled = [];
 
@@ -237,8 +238,9 @@ exports.renderMy_rentals = async (req, res) => {
       const byStatus = {
         WAITING_CONFIRM: order.Rentals.filter(r => r.rental_status === "WAITING_CONFIRM"),
         WAITING_DELIVER: order.Rentals.filter(r => r.rental_status === "WAITING_DELIVER"),
-        WAITING_RECEIVE: order.Rentals.filter(r => r.rental_status === "WAITING_RECEIVE"), // ✅ เพิ่ม
+        WAITING_RECEIVE: order.Rentals.filter(r => r.rental_status === "WAITING_RECEIVE"),
         RENTED: order.Rentals.filter(r => r.rental_status === "RENTED"),
+        RETURNING: order.Rentals.filter(r => r.rental_status === "RETURNING"),
         RETURNED: order.Rentals.filter(r => r.rental_status === "RETURNED"),
         CANCELLED: order.Rentals.filter(r => r.rental_status === "CANCELLED"),
       };
@@ -248,9 +250,11 @@ exports.renderMy_rentals = async (req, res) => {
       if (byStatus.WAITING_DELIVER.length > 0)
         waiting_deliver.push({ ...order, Rentals: byStatus.WAITING_DELIVER });
       if (byStatus.WAITING_RECEIVE.length > 0)
-        waiting_receive.push({ ...order, Rentals: byStatus.WAITING_RECEIVE }); // ✅ เพิ่ม
+        waiting_receive.push({ ...order, Rentals: byStatus.WAITING_RECEIVE });
       if (byStatus.RENTED.length > 0)
         renting.push({ ...order, Rentals: byStatus.RENTED });
+      if (byStatus.RETURNING?.length > 0)
+        returning.push({ ...order, Rentals: byStatus.RETURNING });
       if (byStatus.RETURNED.length > 0)
         returned.push({ ...order, Rentals: byStatus.RETURNED });
       if (byStatus.CANCELLED.length > 0)
@@ -261,7 +265,8 @@ exports.renderMy_rentals = async (req, res) => {
     res.render("my_rentals", {
       waiting_confirm,
       waiting_deliver,
-      waiting_receive, // ✅ อย่าลืมส่งไปด้วย
+      waiting_receive,
+      returning,
       renting,
       returned,
       cancelled,

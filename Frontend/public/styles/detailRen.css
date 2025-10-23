@@ -63,16 +63,68 @@
     cursor: pointer;
     font-weight: 600;
     transition: all .2s;
-  }
-  .btn-confirm.gray {
+}
+
+.btn-confirm.gray {
     background: #e5e7eb;
     color: #444;
-  }
-  .btn-confirm.gray:hover:not([disabled]) {
+}
+
+.btn-confirm.gray:hover:not([disabled]) {
     background: #d1d5db;
-  }
-  .btn-confirm[disabled] {
+}
+
+.btn-confirm[disabled] {
     opacity: 0.5;
     cursor: not-allowed;
+}
+
+.btn-return {
+    background: #ede9fe;
+    color: #5b21b6;
+}
+
+.btn-return:hover {
+    background: #ddd6fe;
+}
+
+.tracking-title {
+    font-weight: 600;
+    color: #4b5563;
+    margin-bottom: 4px;
+}
+
+.tracking-link {
+    display: inline-block;
+    font-weight: 500;
+    color: #4f46e5;
+    text-decoration: none;
+    margin-right: 8px;
+}
+
+.tracking-link:hover {
+    text-decoration: underline;
+}
+
+.btn-track {
+    background: #ede9fe;
+    color: #4c1d95;
+    border: 1px solid #c4b5fd;
+    padding: 4px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+}
+
+.btn-track:hover {
+    background: #ddd6fe;
+}
+.btn-return {
+    background-color: #ede9fe;
+    color: #4c1d95;
+    border: 1px solid #c4b5fd;
+  }
+  .btn-return:hover {
+    background-color: #ddd6fe;
   }
   

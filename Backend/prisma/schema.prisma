@@ -29,6 +29,7 @@ enum Calender_rental_status {
   WAITING_DELIVER  @map("รอส่ง") // หลังจากแอดมินกดยอมรับสินค้า
   WAITING_RECEIVE  @map("กำลังจัดส่ง")
   RENTED           @map("กำลังเช่า") // หลังจากลูกค้ากดได้รับสินค้า
+  RETURNING        @map("กำลังคืนสินค้า")
   RETURNED         @map("คืนแล้ว") // คืนสินค้าสำเร็จ
   CLEANING         @map("กำลังทำความสะอาด") // เช็ค หรือ ซักชุด
   Not_Ready_Rental @map("ไม่พร้อมเช่า") // ไม่พร้อมปล่อยเช่า

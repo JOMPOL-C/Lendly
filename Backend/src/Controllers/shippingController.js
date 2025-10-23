@@ -14,6 +14,18 @@ const storage = new CloudinaryStorage({
 });
 exports.upload = multer({ storage });
 
+const storageReturn = new CloudinaryStorage({
+    cloudinary,
+    params: {
+        folder: 'return_receipts',  // ✅ แยกโฟลเดอร์ใหม่สำหรับใบเสร็จคืนสินค้า
+        allowed_formats: ['jpg', 'png', 'jpeg'],
+    },
+});
+const uploadReturn = multer({ storage: storageReturn });
+
+// แล้ว export ไว้ใช้เฉพาะ route คืนสินค้า
+exports.uploadReturn = uploadReturn;
+
 // 🧩 ฟังก์ชันขอ Token จากไปรษณีย์ไทย
 let thaiPostToken = null;
 let thaiPostExpire = 0;
@@ -478,7 +490,7 @@ exports.confirmReceived = async (req, res) => {
 exports.createReturnBox = async (req, res) => {
     try {
         const { order_id, tracking_code, rental_ids, note } = req.body;
-        const files = req.files;
+        const file = req.file;
 
         if (!tracking_code || !rental_ids?.length)
             return res.status(400).json({ message: "ต้องระบุรหัสพัสดุและสินค้าที่จะคืน" });
@@ -505,6 +517,18 @@ exports.createReturnBox = async (req, res) => {
             where: { rental_id: { in: rental_ids.map(Number) } },
             data: { rental_status: "RETURNING" },
         });
+
+        await prisma.rentals.updateMany({
+            where: { rental_id: { in: rental_ids.map(Number) } },
+            data: { return_tracking_code: tracking_code.toUpperCase() },
+        });
+        
+        if (file) {
+            await prisma.returnBox.update({
+                where: { box_id: newBox.box_id },
+                data: { note: file.path },
+            });
+        }
 
         res.json({ message: "สร้างกล่องคืนสินค้าเรียบร้อย", box_id: newBox.box_id });
     } catch (err) {

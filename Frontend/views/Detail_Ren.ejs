@@ -1,6 +1,72 @@
 <%- include('includes/head') %>
     <link rel="stylesheet" href="/styles/rental.css">
     <link rel="stylesheet" href="/styles/detailRen.css">
+    <style>
+        .popup {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+        }
+
+        .popup-content {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 450px;
+            text-align: left;
+        }
+
+        .popup-content h3 {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .popup-content label {
+            display: block;
+            margin-top: 10px;
+            font-weight: 600;
+        }
+
+        .popup-content input[type="text"],
+        .popup-content input[type="file"] {
+            width: 100%;
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+            margin-top: 5px;
+        }
+
+        .item-list {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+            margin-top: 5px;
+        }
+
+        .item-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+
+        .item-option img {
+            border-radius: 5px;
+            border: 1px solid #eee;
+        }
+
+        .popup-actions {
+            text-align: center;
+            margin-top: 15px;
+        }
+    </style>
     </head>
 
     <body>
@@ -97,54 +163,102 @@
                                                                         คืนสำเร็จ
                                                                         <% } %>
                                             </p>
-                                            <!-- ✅ ปุ่มยืนยันรับสินค้า -->
+
+                                            <!-- ปุ่มสำหรับยืนยันรับสินค้า -->
                                             <% if (r.rental_status==="WAITING_RECEIVE" ) { %>
-                                                <button class="btn-confirm gray" data-rental="<%= r.rental_id %>">
+                                                <button class="btn-receive gray" data-rental="<%= r.rental_id %>">
                                                     📦 ได้รับสินค้าแล้ว
                                                 </button>
-                                                <% } else { %>
-                                                    <button class="btn-confirm gray" disabled>
-                                                        📦 ได้รับสินค้าแล้ว
+                                                <% } else if (r.rental_status==="RENTED" ) { %>
+                                                    <button class="btn-return gray" data-order="<%= order.order_id %>">
+                                                        📦 คืนสินค้า
                                                     </button>
-                                                    <% } %>
-
-                                                        <% var boxes=order.shippings.flatMap(s=> s.boxes)
-                                                            .filter(b => b.items?.some(it =>
-                                                            it.orderItem?.product?.product_id === r.product.product_id
-                                                            &&
-                                                            (!r.orderItemId || it.orderItemId === r.orderItemId)
-                                                            ));
-
-                                                            var trackingCodes = boxes.map(b =>
-                                                            b.tracking_code).filter(Boolean);
-                                                            var canShowTracking = ["WAITING_RECEIVE", "RENTED",
-                                                            "RETURNING", "RETURNED"].includes(r.rental_status);
-                                                            %>
+                                                    <% } else { %>
+                                                        <button class="btn-gray" disabled>
+                                                            📦 คืนสินค้า
+                                                        </button>
+                                                        <% } %>
 
 
+                                                            <% var boxes=order.shippings.flatMap(s=> s.boxes)
+                                                                .filter(b => b.items?.some(it =>
+                                                                it.orderItem?.product?.product_id ===
+                                                                r.product.product_id
+                                                                &&
+                                                                (!r.orderItemId || it.orderItemId === r.orderItemId)
+                                                                ));
 
-                                                            <div class="tracking-section">
+                                                                var trackingCodes = boxes.map(b =>
+                                                                b.tracking_code).filter(Boolean);
+                                                                var canShowTracking = ["WAITING_RECEIVE", "RENTED",
+                                                                "RETURNING", "RETURNED"].includes(r.rental_status);
+                                                                %>
 
-                                                                <% if (canShowTracking && trackingCodes.length> 0) { %>
-                                                                    <% trackingCodes.forEach(code=> { %>
-                                                                        <div class="tracking-box">
-                                                                            <a href="https://track.thailandpost.co.th/?trackNumber=<%= code %>"
-                                                                                target="_blank" class="tracking-link">
-                                                                                <%= code %>
-                                                                            </a>
-                                                                            <button type="button" class="btn-track"
-                                                                                data-tracking="<%= code %>">
-                                                                                ดูสถานะการขนส่ง
-                                                                            </button>
-                                                                            <div class="shipping-detail"
-                                                                                style="display:none;"></div>
-                                                                        </div>
-                                                                        <% }) %>
+
+
+                                                                <div class="tracking-section">
+                                                                    <% if (r.rental_status==="RETURNING" ||
+                                                                        r.rental_status==="RETURNED" ) { %>
+                                                                        <% if (r.return_tracking_code) { %>
+                                                                            <div class="tracking-box">
+                                                                                <p class="tracking-title">📦
+                                                                                    รหัสพัสดุคืนสินค้า:</p>
+                                                                                <a href="https://track.thailandpost.co.th/?trackNumber=<%= r.return_tracking_code %>"
+                                                                                    target="_blank"
+                                                                                    class="tracking-link">
+                                                                                    <%= r.return_tracking_code %>
+                                                                                </a>
+                                                                                <button type="button" class="btn-track"
+                                                                                    data-tracking="<%= r.return_tracking_code %>">
+                                                                                    ดูสถานะการส่งคืน
+                                                                                </button>
+                                                                                <div class="shipping-detail"
+                                                                                    style="display:none;"></div>
+                                                                            </div>
                                                                             <% } else { %>
-                                                                                <span
-                                                                                    style="color:#888;">ยังไม่มีหมายเลขพัสดุ</span>
+                                                                                <p style="color:#888;">
+                                                                                    ยังไม่มีหมายเลขพัสดุคืนสินค้า</p>
                                                                                 <% } %>
-                                                            </div>
+                                                                                    <% } else { %>
+                                                                                        <% if (canShowTracking &&
+                                                                                            trackingCodes.length> 0) {
+                                                                                            %>
+                                                                                            <%
+                                                                                                trackingCodes.forEach(code=>
+                                                                                                { %>
+                                                                                                <div
+                                                                                                    class="tracking-box">
+                                                                                                    <p
+                                                                                                        class="tracking-title">
+                                                                                                        🚚
+                                                                                                        รหัสพัสดุจัดส่ง:
+                                                                                                    </p>
+                                                                                                    <a href="https://track.thailandpost.co.th/?trackNumber=<%= code %>"
+                                                                                                        target="_blank"
+                                                                                                        class="tracking-link">
+                                                                                                        <%= code %>
+                                                                                                    </a>
+                                                                                                    <button
+                                                                                                        type="button"
+                                                                                                        class="btn-track"
+                                                                                                        data-tracking="<%= code %>">
+                                                                                                        ดูสถานะการขนส่ง
+                                                                                                    </button>
+                                                                                                    <div class="shipping-detail"
+                                                                                                        style="display:none;">
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                                <% }) %>
+                                                                                                    <% } else { %>
+                                                                                                        <p
+                                                                                                            style="color:#888;">
+                                                                                                            ยังไม่มีหมายเลขพัสดุจัดส่ง
+                                                                                                        </p>
+                                                                                                        <% } %>
+                                                                                                            <% } %>
+                                                                </div>
+
+
                                         </div>
                                     </article>
                                     <% }) %>
@@ -153,6 +267,7 @@
             </main>
 
             <%- include('includes/footer') %>
+
                 <!-- ✅ Popup ยืนยันรับสินค้า -->
                 <div id="receive-popup" class="popup" style="display:none;">
                     <div class="popup-content">
@@ -165,6 +280,43 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- ✅ Popup คืนสินค้า -->
+                <div id="return-popup" class="popup" style="display:none;">
+                    <div class="popup-content">
+                        <h3>📦 คืนสินค้า</h3>
+
+                        <form id="returnForm" enctype="multipart/form-data">
+                            <label>รหัสพัสดุ:</label>
+                            <input type="text" id="return-tracking" name="tracking_code"
+                                placeholder="เช่น EX123456789TH" required>
+
+                            <label>แนบรูปใบเสร็จ / ใบส่งพัสดุ:</label>
+                            <input type="file" id="return-image" name="receipt" accept="image/*" required>
+
+                            <label>เลือกสินค้าที่อยู่ในกล่องนี้:</label>
+                            <div id="return-items" class="item-list">
+                                <% activeRentals .filter(r=> r.rental_status === "RENTED")
+                                    .forEach(r => { %>
+                                    <div class="item-option">
+                                        <input type="checkbox" name="rental_ids" value="<%= r.rental_id %>">
+                                        <img src="<%= r.product?.images?.[0]?.image_url || '/images/no-image.png' %>"
+                                            width="60">
+                                        <span>
+                                            <%= r.product.product_name %>
+                                        </span>
+                                    </div>
+                                    <% }) %>
+                            </div>
+
+                            <div class="popup-actions">
+                                <button type="submit" class="btn">บันทึกข้อมูลคืนสินค้า</button>
+                                <button type="button" id="cancel-return" class="btn gray">ยกเลิก</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
                 <script src="/js/script.js"></script>
 
                 <script>
@@ -259,7 +411,7 @@
                     const input = document.getElementById('receive-images');
                     const preview = document.getElementById('preview-area');
 
-                    document.querySelectorAll('.btn-confirm').forEach(btn => {
+                    document.querySelectorAll('.btn-receive').forEach(btn => {
                         btn.addEventListener('click', () => {
                             if (btn.disabled) return;
                             currentRentalId = btn.dataset.rental;
@@ -303,39 +455,59 @@
                             alert('❌ ' + (data.message || 'เกิดข้อผิดพลาด'));
                         }
                     };
+
+                    // ============================
+                    // 📦 Popup คืนสินค้า
+                    // ============================
+                    const returnPopup = document.getElementById("return-popup");
+                    const cancelReturn = document.getElementById("cancel-return");
+                    const returnForm = document.getElementById("returnForm");
+
+                    document.querySelectorAll('.btn-return').forEach(btn => {
+                        btn.addEventListener('click', () => {
+                            returnPopup.style.display = 'flex';
+                            returnForm.dataset.order = btn.dataset.order;
+                        });
+                    });
+
+                    cancelReturn.addEventListener('click', () => {
+                        returnPopup.style.display = 'none';
+                        returnForm.reset();
+                    });
+
+                    returnForm.addEventListener('submit', async e => {
+                        e.preventDefault();
+
+                        const orderId = returnForm.dataset.order;
+                        const trackingCode = document.getElementById('return-tracking').value.trim();
+                        const imageFile = document.getElementById('return-image').files[0];
+                        const selected = [...document.querySelectorAll("input[name='rental_ids']:checked")].map(el => el.value);
+
+                        if (!selected.length) return alert("กรุณาเลือกสินค้าที่จะคืน");
+                        if (!trackingCode) return alert("กรุณากรอกรหัสพัสดุ");
+
+                        const formData = new FormData();
+                        formData.append('order_id', orderId);
+                        formData.append('tracking_code', trackingCode);
+                        selected.forEach(id => formData.append('rental_ids[]', id));
+                        formData.append('receipt', imageFile);
+
+                        const res = await fetch('/api/return-box', {
+                            method: 'POST',
+                            body: formData
+                        });
+                        const data = await res.json();
+
+                        if (res.ok) {
+                            alert('📦 บันทึกข้อมูลคืนสินค้าเรียบร้อย');
+                            location.reload();
+                        } else {
+                            alert('❌ ' + (data.message || 'เกิดข้อผิดพลาด'));
+                        }
+                    });
+
                 </script>
 
     </body>
-
-    <style>
-        .popup {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.4);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 999;
-        }
-
-        .popup-content {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            width: 90%;
-            max-width: 420px;
-            text-align: center;
-        }
-
-        #preview-area img {
-            width: 80px;
-            height: 80px;
-            object-fit: cover;
-            margin: 5px;
-            border-radius: 8px;
-            border: 1px solid #ddd;
-        }
-    </style>
-
 
     </html>

@@ -15,6 +15,7 @@
                         <a href="#" onclick="openTab(event, 'waiting_deliver', this)">รอจัดส่ง</a>
                         <a href="#" onclick="openTab(event, 'waiting_receive', this)">กำลังจัดส่ง</a>
                         <a href="#" onclick="openTab(event, 'renting', this)">กำลังเช่า</a>
+                        <a href="#" onclick="openTab(event, 'returning', this)">กำลังส่งคืน</a>
                         <a href="#" onclick="openTab(event, 'returned', this)">คืนแล้ว</a>
                         <a href="#" onclick="openTab(event, 'cancelled', this)">มีปัญหา / ยกเลิก</a>
                     </div>
@@ -192,6 +193,51 @@
                                             <% } %>
                     </div>
 
+                    <!-- 🔸 กำลังส่งคืน -->
+                    <div id="returning" class="tab-content" style="display:none">
+                        <% const returningOrders=returning || []; %>
+                            <% if (returningOrders.length> 0) { %>
+                                <% returningOrders.forEach(order=> { %>
+                                    <div class="order-card">
+                                        <h3>คำสั่งซื้อ: <%= order.order_code %>
+                                        </h3>
+                                        <p>วันที่สั่ง: <%= new Date(order.created_at).toLocaleDateString("th-TH") %>
+                                        </p>
+                                        <p class="status">สถานะ: กำลังส่งคืน 📦</p>
+
+                                        <% order.Rentals.forEach(rental=> { %>
+                                            <div class="rental-card">
+                                                <img src="<%= rental.product?.images?.[0]?.image_url || '/images/no-image.png' %>"
+                                                    alt="">
+                                                <div class="rental-info">
+                                                    <h4>
+                                                        <%= rental.product?.product_name %>
+                                                    </h4>
+                                                    <p>วันที่เช่า: <%= new
+                                                            Date(rental.rental_date).toLocaleDateString("th-TH") %>
+                                                    </p>
+                                                    <p>วันที่คืน: <%= new
+                                                            Date(rental.rental_end_date).toLocaleDateString("th-TH") %>
+                                                    </p>
+                                                    
+                                                </div>
+                                            </div>
+                                            <% }) %>
+
+                                                <div class="order-footer">
+                                                    <a href="/api/Detail_Ren?order_id=<%= order.order_id %>"
+                                                        class="btn">ดูรายละเอียด</a>
+                                                </div>
+                                    </div>
+                                    <% }) %>
+                                        <% } else { %>
+                                            <div class="empty-state">
+                                                <p>ยังไม่มีรายการกำลังส่งคืน</p>
+                                            </div>
+                                            <% } %>
+                    </div>
+
+
                     <!-- 🔸 คืนแล้ว -->
                     <div id="returned" class="tab-content" style="display:none">
                         <% const returnedOrders=returned || []; %>
@@ -202,7 +248,7 @@
                                         </h3>
                                         <p>วันที่สั่ง: <%= new Date(order.created_at).toLocaleDateString("th-TH") %>
                                         </p>
-                                        <p class="status" >สถานะ: คืนแล้ว ✅</p>
+                                        <p class="status">สถานะ: คืนแล้ว ✅</p>
 
                                         <% order.Rentals.forEach(rental=> { %>
                                             <div class="rental-card">

@@ -3,6 +3,8 @@ const router = express.Router();
 const prisma = require("../../prisma/prisma");
 const shippingController = require("../Controllers/shippingController");
 const { validateAddBox } = require("../validators/shippingValidator");
+const { validateReturnBox } = require("../validators/validateReturnBox");
+
 
 router.get("/rentals/:id/shipping-id", async (req, res) => {
     const rental = await prisma.rentals.findUnique({
@@ -36,7 +38,8 @@ router.post(
 );
 router.post(
     "/return-box",
-    shippingController.upload.array("images", 5),
+    validateReturnBox,
+    shippingController.uploadReturn.single("receipt"),
     shippingController.createReturnBox
 );
 
