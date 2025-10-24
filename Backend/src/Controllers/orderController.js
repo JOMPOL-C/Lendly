@@ -1,5 +1,8 @@
 const { PrismaClient, Prisma, Shipping_shipping_status } = require("@prisma/client");
 const prisma = new PrismaClient();
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
+const multer = require("multer");
+const cloudinary = require("cloudinary").v2;
 
 // 🪄 ฟังก์ชันสร้างรหัสคำสั่งซื้อ
 function generateOrderCode() {
@@ -10,6 +13,26 @@ function generateOrderCode() {
   const rand = Math.floor(Math.random() * 9999).toString().padStart(4, "0");
   return `POPI${y}${m}${d}${rand}`;
 }
+
+// ตั้งค่า Cloudinary สำหรับเก็บสลิป
+const storage = new CloudinaryStorage({
+  cloudinary,
+  params: { folder: "Lendly_Slips" },
+});
+const upload = multer({ storage });
+
+// 🧩 helper — ทำให้ multer ส่ง error แบบ JSON ได้
+function handleMulterError(middleware) {
+  return (req, res, next) => {
+    middleware(req, res, (err) => {
+      if (err) {
+        console.error("❌ Multer error:", err);
+      }
+      next();
+    });
+  };
+}
+
 
 // ✅ ยืนยันคำสั่งเช่า (ใช้โดยแอดมิน)
 exports.confirmOrder = async (req, res) => {
@@ -33,6 +56,63 @@ exports.confirmOrder = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
+// ✅ อัปโหลดสลิปการชำระเงิน (ผูกกับ rental โดยตรง)
+exports.uploadSlip = [
+  handleMulterError(upload.single("slip")),
+  async (req, res) => {
+    try {
+      console.log("📥 [UPLOAD-SLIP] req.file =", req.file);
+      console.log("📩 req.body =", req.body);
+
+      const { orderId } = req.body;
+      if (!orderId) return res.status(400).json({ message: "ต้องระบุ orderId" });
+
+      // ✅ ดึงข้อมูลคำสั่งซื้อนี้พร้อม rentals ทั้งหมด
+      const order = await prisma.Orders.findUnique({
+        where: { order_id: parseInt(orderId) },
+        include: { Rentals: true },
+      });
+
+      if (!order)
+        return res.status(404).json({ message: "ไม่พบคำสั่งซื้อนี้" });
+
+      const imageUrl = req.file?.path;
+      const cloudinaryId = req.file?.filename;
+      if (!imageUrl)
+        return res.status(400).json({ message: "ไม่พบไฟล์สลิป" });
+
+      // ✅ สร้างสลิปผูกกับทุก rental ใน order นี้
+      for (const rental of order.Rentals) {
+        await prisma.PaymentSlip.create({
+          data: {
+            rentalId: rental.rental_id,
+            image_url: imageUrl,
+            cloudinary_id: cloudinaryId,
+          },
+        });
+      }
+
+      // ✅ อัปเดตสถานะของทุก rental ใน order นี้
+      await prisma.Rentals.updateMany({
+        where: { orderId: order.order_id },
+        data: { rental_status: "WAITING_CONFIRM" },
+      });
+
+      console.log(`✅ ผูกสลิปกับ Rentals ทั้งหมดใน Order ID: ${order.order_id}`);
+
+      res.json({
+        message: "อัปโหลดสลิปสำเร็จและอัปเดตสถานะของการเช่าทั้งหมดเรียบร้อย",
+        orderId: order.order_id,
+        rentalsUpdated: order.Rentals.length,
+      });
+    } catch (err) {
+      console.error("❌ uploadSlip error:", err);
+      res.status(500).json({ message: "เกิดข้อผิดพลาดในระบบ", error: err.message });
+    }
+  },
+];
+
 
 // ✅ สร้างคำสั่งซื้อใหม่
 exports.createOrder = async (req, res) => {
@@ -142,8 +222,6 @@ exports.createOrder = async (req, res) => {
     res.status(500).json({ message: "Server error", details: err.message });
   }
 };
-
-
 
 // ✅ แสดงคำสั่งซื้อของลูกค้าคนปัจจุบัน
 exports.getMyOrders = async (req, res) => {

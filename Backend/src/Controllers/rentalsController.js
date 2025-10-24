@@ -8,6 +8,7 @@ exports.getRentals = async (req, res) => {
       include: {
         customer: true,
         product: true,
+        PaymentSlip: true,
       },
       orderBy: { rental_id: "desc" },
     });

@@ -25,4 +25,6 @@ module.exports = {
     renderAdmin_rentals: redderPage('admin_rentals', 'Admin Rentals'),
     renderAdmin_tracking: redderPage('admin_tracking', 'Admin Tracking Page'),
     renderAdmin_return: redderPage('admin_return', 'Admin Return Page'),
+    // payment
+    renderPayment: redderPage('payment', 'Payment Page'),
 };

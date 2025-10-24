@@ -19,6 +19,7 @@
                 <th>วันเช่า</th>
                 <th>วันคืน</th>
                 <th>สถานะ</th>
+                <th>สลีป</th>
               </tr>
             </thead>
             <tbody id="rentalBody"></tbody>
@@ -42,18 +43,24 @@
             rentals
               .filter(r => r.rental_status === "WAITING_CONFIRM")
               .forEach(r => {
+                const slipLink = r.PaymentSlip?.length
+                  ? `<a href="${r.PaymentSlip[0].image_url}" target="_blank" class="slip-link">ดูสลิป</a>`
+                  : `<span class="no-slip">ไม่มีสลิป</span>`;
+
                 const tr = document.createElement("tr");
                 tr.innerHTML = `
-            <td><input type="checkbox" name="selected" value="${r.rental_id}"></td>
-            <td>${r.rental_id}</td>
-            <td>${r.customer ? `${r.customer.name} ${r.customer.last_name}` : "ไม่ระบุ"}</td>
-            <td>${r.product?.product_name}</td>
-            <td>${new Date(r.rental_date).toLocaleDateString()}</td>
-            <td>${new Date(r.rental_end_date).toLocaleDateString()}</td>
-            <td>${r.rental_status}</td>
-          `;
+      <td><input type="checkbox" name="selected" value="${r.rental_id}"></td>
+      <td>${r.rental_id}</td>
+      <td>${r.customer ? `${r.customer.name} ${r.customer.last_name}` : "ไม่ระบุ"}</td>
+      <td>${r.product?.product_name}</td>
+      <td>${new Date(r.rental_date).toLocaleDateString()}</td>
+      <td>${new Date(r.rental_end_date).toLocaleDateString()}</td>
+      <td>${r.rental_status}</td>
+      <td>${slipLink}</td>
+    `;
                 tbody.appendChild(tr);
               });
+
 
             // ✅ ติ๊กเลือกทั้งหมด
             const selectAll = document.getElementById("selectAll");
@@ -90,6 +97,7 @@
               }
             });
           });
+
         </script>
 
   </body>

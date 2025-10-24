@@ -25,6 +25,7 @@ enum Shipping_shipping_status {
 // สถานะของการเช่าชุด (ในปฏิทินเช่า)
 enum Calender_rental_status {
   Ready_Rental     @map("พร้อมเช่า") // สินค้าพร้อมเช่า
+  WAITING_PAYMENT  @map("รอชำระเงิน")
   WAITING_CONFIRM  @map("รอยืนยันจากร้าน") // หลังจากลูกค้ากดสั่งซื้อสินค้า
   WAITING_DELIVER  @map("รอส่ง") // หลังจากแอดมินกดยอมรับสินค้า
   WAITING_RECEIVE  @map("กำลังจัดส่ง")
@@ -294,6 +295,16 @@ model Payment_method {
   payments            Payment[]
 }
 
+model PaymentSlip {
+  slip_id       Int      @id @default(autoincrement())
+  rentalId      Int // ✅ ผูกกับสินค้าเช่าตัวนั้นโดยตรง
+  image_url     String   @db.VarChar(255) // URL จาก Cloudinary
+  cloudinary_id String   @db.VarChar(255) // public_id เผื่อไว้ลบทีหลัง
+  uploaded_at   DateTime @default(now())
+
+  rental Rentals @relation(fields: [rentalId], references: [rental_id], onDelete: Cascade)
+}
+
 // โปรโมชั่นส่วนลด
 model Promotion {
   promotion_id Int      @id @default(autoincrement())
@@ -414,6 +425,7 @@ model Rentals {
   reports         Report[]
   ReceiveImages   RentalReceiveImage[]
   ReturnBoxItem   ReturnBoxItem[]
+  PaymentSlip     PaymentSlip[]
 
   @@index([customerId], map: "FK_customer_id_idx")
   @@index([productId], map: "FK_product_id")
