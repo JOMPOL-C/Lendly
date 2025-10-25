@@ -30,7 +30,7 @@ exports.renderEditProduct = async (req, res) => {
                 size: true,
                 category: true,
                 images: true
-              }
+            }
         });
 
         if (!product) return res.status(404).send("ไม่พบสินค้า");
@@ -44,24 +44,24 @@ exports.renderEditProduct = async (req, res) => {
     }
 };
 
-// GET โชว์สินค้าในหน้า category
+
 // ✅ โชว์สินค้าในหน้า category พร้อมกรองด้วยหมวดหมู่, สัดส่วน, ชื่อสินค้า
 exports.renderProductsPage = async (req, res) => {
     try {
       const { categoryId, sizeId, search } = req.query;
       const user = req.user; // จาก middleware auth ถ้ามี
   
-      // ดึงหมวดหมู่ทั้งหมด
+      // 📂 ดึงหมวดหมู่ทั้งหมด
       const categories = await prisma.category.findMany({
         orderBy: { category_name: "asc" },
       });
   
-      // ดึงสัดส่วนทั้งหมด
+      // 📏 ดึงสัดส่วนทั้งหมด
       const proportions = await prisma.proportion_product.findMany({
         orderBy: { proportion_product_id: "asc" },
       });
   
-      // 🧍 ถ้ามีผู้ใช้ล็อกอิน ให้ใช้สัดส่วนของเขาเป็น default
+      // 🧍 ถ้ามีผู้ใช้ล็อกอิน ให้ใช้สัดส่วนของเขาเป็นค่าเริ่มต้น
       let defaultSize = "";
       if (user) {
         const customer = await prisma.customer.findUnique({
@@ -71,7 +71,7 @@ exports.renderProductsPage = async (req, res) => {
         defaultSize = customer?.proportion?.proportion_product_id || "";
       }
   
-      // 📦 เงื่อนไขการกรองสินค้า
+      // 🔍 เงื่อนไขการกรองสินค้า
       const whereClause = {
         ...(categoryId ? { categoryId } : {}),
         ...(sizeId
@@ -79,10 +79,10 @@ exports.renderProductsPage = async (req, res) => {
           : defaultSize
           ? { ppId: parseInt(defaultSize) }
           : {}),
-        ...(search ? { product_name: { contains: search, mode: "insensitive" } } : {}),
+        ...(search ? { product_name: { contains: search } } : {}), // ✅ ลบ mode ออก
       };
   
-      // 🔍 ดึงสินค้าพร้อมข้อมูลที่เกี่ยวข้อง
+      // 📦 ดึงสินค้าพร้อมข้อมูลที่เกี่ยวข้อง
       const products = await prisma.product.findMany({
         where: whereClause,
         include: {
@@ -94,6 +94,7 @@ exports.renderProductsPage = async (req, res) => {
         orderBy: { product_id: "desc" },
       });
   
+      // 🖼️ ส่งข้อมูลไปหน้า category
       res.render("category", {
         categories,
         proportions,
@@ -108,4 +109,5 @@ exports.renderProductsPage = async (req, res) => {
     }
   };
   
+
 

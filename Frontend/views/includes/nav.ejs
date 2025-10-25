@@ -1,17 +1,22 @@
 <section id="header">
   <a href="/"><img src="/imag/LENDLY_logo.png" alt="" style="width: 50px;"></a>
-  <div class="input-field">
+
+  <!-- 🔍 ฟอร์มค้นหาสินค้า -->
+  <form action="/category" method="get" class="input-field">
     <i class='bx bx-search'></i>
-    <input type="text" placeholder="ค้นหาสินค้า">
-  </div>
+    <input type="text" name="search" placeholder="ค้นหาสินค้า..." value="<%= typeof searchTerm !== 'undefined' ? searchTerm : '' %>">
+
+  </form>
+
   <div>
     <ul id="navbar">
       <li><a href="/">หน้าหลัก</a></li>
-      <li><a href="/category">หมวดหมู่</a></li>
+      <li><a href="/category" class="active">หมวดหมู่</a></li>
       <li><a href="/my_rentals">เช่าของฉัน</a></li>
       <li><a href="/all_review">รีวิวทั้งหมด</a></li>
-      <li id="lg-fav"><a href="/favorites" class="nav-fav-link"><i class="bx bx-heart"></i></a>
-      <li id="lg-bag"><a href="/cart"><i class='bxr  bx-cart'></i> </a></li>
+      <li id="lg-fav"><a href="/favorites" class="nav-fav-link"><i class="bx bx-heart"></i></a></li>
+      <li id="lg-bag"><a href="/cart"><i class='bx bx-cart'></i></a></li>
+
       <li id="lg-user" class="dropdown">
         <a href="javascript:void(0)" class="user-icon">
           <% if (user && user.profile_image_url) { %>
@@ -32,18 +37,14 @@
         </ul>
       </li>
 
-
-
-
-      <a href="#" id="close"><i class="bxr bx-x"></i></a>
+      <a href="#" id="close"><i class="bx bx-x"></i></a>
     </ul>
   </div>
+
   <div id="mobile">
-    <i class='bxr  bx-heart'></i>
-    <i class='bxr  bx-cart'></i>
-    <i class='bxr  bx-user'></i>
+    <i class='bx bx-heart'></i>
+    <i class='bx bx-cart'></i>
+    <i class='bx bx-user'></i>
     <i id="bar" class="fas fa-outdent"></i>
-
   </div>
-
 </section>
