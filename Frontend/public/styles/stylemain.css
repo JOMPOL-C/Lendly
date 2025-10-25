@@ -162,19 +162,81 @@ main {
 #close {
     display: none;
 }
-
 #banner {
-    background-image: url(https://media.online-station.net/images/m/2024/09/4d630dc394160ee821b9ceb4d86e455b.webp);
-    height: 45vh;
+    position: relative;
+    height: 50vh;
     width: 100%;
-    background-size: cover;
     display: flex;
     flex-direction: column;
-    align-items: center;
     justify-content: center;
-
-
-}
+    align-items: center;
+  
+    /* 💜 ไล่สีม่วงพาสเทลเคลื่อนไหว */
+    background: linear-gradient(-45deg, #f3e8ff, #e0c3fc, #c4b5fd, #ddd6fe);
+    background-size: 400% 400%;
+    animation: gradientBG 10s ease infinite;
+  
+    /* ✨ สไตล์ข้อความ */
+    color: #fff;
+    text-align: center;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+  }
+  
+  @keyframes gradientBG {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+  
+  /* 🪶 เพิ่ม motion แสงเงาบางเบา */
+  #banner::after {
+    content: "";
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: radial-gradient(circle at top left, rgba(255,255,255,0.2), transparent 70%),
+                radial-gradient(circle at bottom right, rgba(255,255,255,0.15), transparent 70%);
+    animation: shimmer 8s ease-in-out infinite alternate;
+    z-index: 0;
+  }
+  
+  @keyframes shimmer {
+    from { opacity: 0.4; transform: scale(1); }
+    to { opacity: 0.8; transform: scale(1.05); }
+  }
+  
+  #banner h2, #banner p {
+    position: relative;
+    z-index: 1;
+  }
+  
+  #banner h2 {
+    font-size: 40px;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+  
+  #banner p {
+    font-size: 18px;
+    margin-top: 10px;
+    opacity: 0.9;
+  }
+  
+#banner video {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+    filter: brightness(0.6);
+  }
+  
+  #banner h2, #banner p {
+    position: relative;
+    z-index: 1;
+  }
 
 .index {
     max-width: 1200px;

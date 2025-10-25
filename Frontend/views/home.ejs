@@ -6,8 +6,13 @@
         <%- include('includes/nav') %>
             <main>
                 <section id="banner" class="section-p1">
-                    <h4>banner</h4>
+                    <video autoplay muted loop playsinline id="banner-video">
+                        <source src="/videos/banner-bg.mp4" type="video/mp4">
+                    </video>
+                    <h2>LENDLY</h2>
+                    <p>Welcome to my website</p>
                 </section>
+
 
                 <!-- ชุดมาใหม่ (โชว์ 4 ชิ้นล่าสุด) -->
                 <section id="new_product" class="section-p1 product1">
@@ -63,10 +68,10 @@
                 </section>
             </main>
             <%- include('includes/footer') %>
-            <%- include('includes/chatWidget') %>
-            
-                <script src="/js/script.js"></script>
-                <script src="/js/heart-toggle.js"></script>
+                <%- include('includes/chatWidget') %>
+
+                    <script src="/js/script.js"></script>
+                    <script src="/js/heart-toggle.js"></script>
     </body>
 
     </html>

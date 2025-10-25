@@ -45,21 +45,67 @@ exports.renderEditProduct = async (req, res) => {
 };
 
 // GET โชว์สินค้าในหน้า category
+// ✅ โชว์สินค้าในหน้า category พร้อมกรองด้วยหมวดหมู่, สัดส่วน, ชื่อสินค้า
 exports.renderProductsPage = async (req, res) => {
     try {
-        const categories = await prisma.category.findMany({
-            orderBy: { category_name: 'asc' }
+      const { categoryId, sizeId, search } = req.query;
+      const user = req.user; // จาก middleware auth ถ้ามี
+  
+      // ดึงหมวดหมู่ทั้งหมด
+      const categories = await prisma.category.findMany({
+        orderBy: { category_name: "asc" },
+      });
+  
+      // ดึงสัดส่วนทั้งหมด
+      const proportions = await prisma.proportion_product.findMany({
+        orderBy: { proportion_product_id: "asc" },
+      });
+  
+      // 🧍 ถ้ามีผู้ใช้ล็อกอิน ให้ใช้สัดส่วนของเขาเป็น default
+      let defaultSize = "";
+      if (user) {
+        const customer = await prisma.customer.findUnique({
+          where: { customer_id: user.customer_id },
+          include: { proportion: true },
         });
-
-        const products = await prisma.product.findMany({
-            include: { images: true, prices: true, category: true },
-            orderBy: { product_id: 'desc' }
-        });
-
-        res.render("category", { categories, products }); // ✅ ส่งทั้งคู่
+        defaultSize = customer?.proportion?.proportion_product_id || "";
+      }
+  
+      // 📦 เงื่อนไขการกรองสินค้า
+      const whereClause = {
+        ...(categoryId ? { categoryId } : {}),
+        ...(sizeId
+          ? { ppId: parseInt(sizeId) }
+          : defaultSize
+          ? { ppId: parseInt(defaultSize) }
+          : {}),
+        ...(search ? { product_name: { contains: search, mode: "insensitive" } } : {}),
+      };
+  
+      // 🔍 ดึงสินค้าพร้อมข้อมูลที่เกี่ยวข้อง
+      const products = await prisma.product.findMany({
+        where: whereClause,
+        include: {
+          images: true,
+          prices: true,
+          category: true,
+          size: true,
+        },
+        orderBy: { product_id: "desc" },
+      });
+  
+      res.render("category", {
+        categories,
+        proportions,
+        products,
+        selectedCategory: categoryId || "",
+        selectedSize: sizeId || defaultSize || "",
+        searchTerm: search || "",
+      });
     } catch (err) {
-        console.error("Error renderProductsPage:", err);
-        res.status(500).send("โหลดสินค้าล้มเหลว");
+      console.error("❌ Error renderProductsPage:", err);
+      res.status(500).send("โหลดสินค้าล้มเหลว");
     }
-};
+  };
+  
 
