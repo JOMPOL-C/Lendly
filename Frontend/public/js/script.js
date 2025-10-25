@@ -1,54 +1,48 @@
-// JavaScript for toggle menu
+// ======== 📱 Toggle menu (mobile) ========
 const bar = document.getElementById('bar');
 const close = document.getElementById('close');
 const nav = document.getElementById('navbar');
 
 if (bar) {
-  bar.addEventListener('click', () => {
-    nav.classList.add('active');
-  });
+  bar.addEventListener('click', () => nav.classList.add('active'));
 }
 
 if (close) {
-  close.addEventListener('click', () => {
-    nav.classList.remove('active');
-  });
+  close.addEventListener('click', () => nav.classList.remove('active'));
 }
-// active link highlighting
-const currentPage = window.location.pathname.split("/").pop();
-const fullPath = window.location.pathname; // เก็บ path เต็ม
+
+// ปิดเมนูเมื่อคลิก link บนมือถือ
+document.querySelectorAll('#navbar a').forEach(a => {
+  a.addEventListener('click', () => nav.classList.remove('active'));
+});
+
+// ======== 🌈 Active link highlighting ========
+const currentPath = window.location.pathname;
 const links = document.querySelectorAll("#navbar li a");
 
 links.forEach(link => {
   const href = link.getAttribute("href");
 
-  if (
-    href === currentPage ||
-    (href === "/" && currentPage === "") ||
-    (href.includes("category") && fullPath.includes("category"))
-  ) {
+  // เช็คเฉพาะ path ที่ตรงกันเป๊ะ หรือกรณี /home /category แบบตรงเท่านั้น
+  if (currentPath === href || (href !== "/" && currentPath.startsWith(href + "/"))) {
     link.classList.add("active");
+  } else {
+    link.classList.remove("active");
   }
 });
 
+// ======== 👤 User dropdown toggle ========
 document.addEventListener('DOMContentLoaded', () => {
   const dropdown = document.querySelector('#lg-user');
+  if (!dropdown) return;
 
-  if (dropdown) {
-    dropdown.querySelector('.user-icon').addEventListener('click', (e) => {
-      // e.preventDefault();
-      if (e.target.closest('.user-icon')) {
-        e.preventDefault();
-        dropdown.classList.toggle('active');
-      }
-    });
+  const icon = dropdown.querySelector('.user-icon');
+  icon.addEventListener('click', (e) => {
+    e.preventDefault();
+    dropdown.classList.toggle('active');
+  });
 
-    // ปิด dropdown ถ้าคลิกข้างนอก
-    document.addEventListener('click', (e) => {
-      if (!dropdown.contains(e.target)) {
-        dropdown.classList.remove('active');
-      }
-    });
-  }
+  document.addEventListener('click', (e) => {
+    if (!dropdown.contains(e.target)) dropdown.classList.remove('active');
+  });
 });
-

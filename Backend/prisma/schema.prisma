@@ -423,6 +423,7 @@ model Rentals {
   product         Product                 @relation(fields: [productId], references: [product_id])
   order           Orders?                 @relation(fields: [orderId], references: [order_id], onDelete: Cascade, onUpdate: Cascade)
   reports         Report[]
+  Review          Review[]
   ReceiveImages   RentalReceiveImage[]
   ReturnBoxItem   ReturnBoxItem[]
   PaymentSlip     PaymentSlip[]
@@ -479,37 +480,42 @@ model ReportImage {
 model Chat {
   chat_id       Int       @id @default(autoincrement())
   customerId    Int
-  chat_detail   String?   @db.Text
-  chat_datetime DateTime? @default(now()) @db.DateTime(0)
+  created_at    DateTime  @default(now())
+
+  // ความสัมพันธ์
   customer      Customer  @relation(fields: [customerId], references: [customer_id])
-
-  @@index([customerId], map: "FK_customer_id")
+  messages      Message[]
 }
 
-// รีวิวสินค้า
+model Message {
+  message_id    Int       @id @default(autoincrement())
+  chatId        Int
+  sender_role   String    // 'CUSTOMER' หรือ 'ADMIN'
+  content       String
+  sent_at       DateTime  @default(now())
+
+  chat          Chat      @relation(fields: [chatId], references: [chat_id])
+}
+
 model Review {
-  review_id       Int           @id @default(autoincrement())
-  customerId      Int
-  productId       Int
-  review_details  String?       @db.Text
-  review_datetime DateTime?     @default(now()) @db.DateTime(0)
-  customer        Customer      @relation(fields: [customerId], references: [customer_id])
-  product         Product       @relation(fields: [productId], references: [product_id])
-  images          ReviewImage[]
+  review_id     Int        @id @default(autoincrement())
+  customerId    Int
+  productId     Int
+  rentalId      Int
+  reviewText    String
+  created_at    DateTime   @default(now())
+  images        ReviewImage[]
 
-  @@index([customerId], map: "fk_review_customer_idx")
-  @@index([productId], map: "fk_review_product_idx")
+  customer      Customer   @relation(fields: [customerId], references: [customer_id])
+  product       Product    @relation(fields: [productId], references: [product_id])
+  rental        Rentals    @relation(fields: [rentalId], references: [rental_id])
 }
 
-// รูปภาพรีวิวสินค้า
 model ReviewImage {
-  reviewimage_id Int    @id @default(autoincrement())
-  image_url      String @db.VarChar(255)
-  cloudinary_id  String @db.VarChar(255)
-  reviewId       Int
-  review         Review @relation(fields: [reviewId], references: [review_id])
-
-  @@index([reviewId], map: "fk_reviewimage_review_idx")
+  id         Int     @id @default(autoincrement())
+  reviewId   Int
+  image_url  String  @db.VarChar(255)
+  review     Review  @relation(fields: [reviewId], references: [review_id])
 }
 
 model RentalReceiveImage {

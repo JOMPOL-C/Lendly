@@ -27,4 +27,5 @@ module.exports = {
     renderAdmin_return: redderPage('admin_return', 'Admin Return Page'),
     // payment
     renderPayment: redderPage('payment', 'Payment Page'),
+    renderAdmin_chat: redderPage('admin_chat', 'Admin Chat Page'),
 };

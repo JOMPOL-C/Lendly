@@ -3,6 +3,8 @@ const prisma = require('../../prisma/prisma');
 const cloudinary = require('cloudinary').v2;
 const multer = require('multer');
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
+const { notifyUserEmail, notifyAdminEmail } = require("../utils/emailNotify");
+
 
 // 📦 Config multer สำหรับอัปโหลดรูปบิล
 const storage = new CloudinaryStorage({
@@ -142,6 +144,44 @@ exports.addBox = async (req, res) => {
         console.log(
             `🚚 อัปเดตสถานะ rental เป็น WAITING_RECEIVE จำนวน ${updated.count} รายการ`
         );
+
+        try {
+            const order = await prisma.orders.findUnique({
+              where: { order_id: orderId },
+              include: {
+                customer: true,
+                Rentals: {
+                  include: { product: true },
+                },
+              },
+            });
+          
+            if (order?.customer?.customer_email) {
+              const productList = order.Rentals
+                .filter((r) => productIds.includes(r.productId))
+                .map((r) => `• ${r.product.product_name}`)
+                .join("<br>");
+          
+              await notifyUserEmail(
+                order.customer.customer_email,
+                `
+                🚚 ร้านได้จัดส่งสินค้าของคุณแล้ว!<br><br>
+                หมายเลขพัสดุ: <b>${tracking_code.toUpperCase()}</b><br><br>
+                รายการสินค้าที่จัดส่ง:<br>
+                ${productList}<br><br>
+                ขอบคุณที่ใช้บริการ Lendly 💜
+                `,
+                "📦 Lendly แจ้งจัดส่งสินค้าเรียบร้อยแล้ว"
+              );
+            }
+          
+            // 🔔 แจ้งแอดมินด้วย (optional)
+            await notifyAdminEmail(`
+              ✅ เพิ่มกล่องพัสดุใหม่ ${tracking_code.toUpperCase()} สำหรับคำสั่งซื้อ #${orderId}
+            `);
+          } catch (mailErr) {
+            console.error("⚠️ ส่งอีเมลแจ้งเตือนการจัดส่งล้มเหลว:", mailErr.message);
+          }
 
         // ✅ ตอบกลับ
         res.json({
@@ -449,43 +489,46 @@ exports.getOrderBoxes = async (req, res) => {
 
 exports.confirmReceived = async (req, res) => {
     try {
-        const { rental_id } = req.body;
-        const files = req.files; // อาจอัปได้หลายรูป
-        if (!rental_id) return res.status(400).json({ message: "ต้องระบุ rental_id" });
-
-        const rental = await prisma.rentals.findUnique({
-            where: { rental_id: parseInt(rental_id) },
-        });
-        if (!rental) return res.status(404).json({ message: "ไม่พบข้อมูลการเช่า" });
-        if (rental.rental_status !== "WAITING_RECEIVE")
-            return res.status(400).json({ message: "สถานะนี้ไม่สามารถกดยืนยันได้" });
-
-        // ✅ อัปโหลดรูปขึ้น Cloudinary
-        const uploadedImages = [];
-        for (const file of files || []) {
-            uploadedImages.push({ rental_id: rental.rental_id, image_url: file.path });
-        }
-
-        // ✅ เก็บรูปในตารางใหม่ (RentalReceiveImage)
-        if (uploadedImages.length > 0) {
-            await prisma.rentalReceiveImage.createMany({ data: uploadedImages });
-        }
-
-        // ✅ อัปเดตสถานะ + เวลารับสินค้า
-        await prisma.rentals.update({
-            where: { rental_id: rental.rental_id },
-            data: {
-                rental_status: "RENTED",
-                received_at: new Date(),
-            },
-        });
-
-        res.json({ message: "ยืนยันได้รับสินค้าแล้ว", images: uploadedImages });
+      const { rental_id } = req.body;
+      const files = req.files;
+  
+      if (!rental_id) return res.status(400).json({ message: "ต้องระบุ rental_id" });
+  
+      const rental = await prisma.rentals.findUnique({
+        where: { rental_id: parseInt(rental_id) },
+        include: { customer: true, product: true },
+      });
+  
+      if (!rental) return res.status(404).json({ message: "ไม่พบข้อมูลการเช่า" });
+      if (rental.rental_status !== "WAITING_RECEIVE")
+        return res.status(400).json({ message: "สถานะนี้ไม่สามารถกดยืนยันได้" });
+  
+      // ✅ อัปโหลดรูปขึ้น Cloudinary
+      const uploadedImages = [];
+      for (const file of files || []) {
+        uploadedImages.push({ rental_id: rental.rental_id, image_url: file.path });
+      }
+      if (uploadedImages.length > 0)
+        await prisma.rentalReceiveImage.createMany({ data: uploadedImages });
+  
+      // ✅ อัปเดตสถานะ + เวลารับสินค้า
+      await prisma.rentals.update({
+        where: { rental_id: rental.rental_id },
+        data: { rental_status: "RENTED", received_at: new Date() },
+      });
+  
+      // ✉️ แจ้งแอดมินด้วย
+      await notifyAdminEmail(`
+        📦 ลูกค้า ${rental.customer.name} ${rental.customer.last_name}  
+        ยืนยันได้รับสินค้าแล้ว (${rental.product.product_name})
+      `);
+  
+      res.json({ message: "ยืนยันได้รับสินค้าแล้ว", images: uploadedImages });
     } catch (err) {
-        console.error("❌ confirmReceived error:", err);
-        res.status(500).json({ message: "เกิดข้อผิดพลาดในระบบ" });
+      console.error("❌ confirmReceived error:", err);
+      res.status(500).json({ message: "เกิดข้อผิดพลาดในระบบ" });
     }
-};
+  };
 
 exports.createReturnBox = async (req, res) => {
     try {

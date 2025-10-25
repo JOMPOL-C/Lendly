@@ -11,7 +11,8 @@
 
                     <!-- 🔹 แท็บเมนู -->
                     <div class="tabs">
-                        <a href="#" class="active" onclick="openTab(event, 'waiting_confirm', this)">รอยืนยัน</a>
+                        <a href="#" class="active" onclick="openTab(event, 'waiting_payment', this)">รอชำระเงิน</a>
+                        <a href="#" onclick="openTab(event, 'waiting_confirm', this)">รอยืนยัน</a>
                         <a href="#" onclick="openTab(event, 'waiting_deliver', this)">รอจัดส่ง</a>
                         <a href="#" onclick="openTab(event, 'waiting_receive', this)">กำลังจัดส่ง</a>
                         <a href="#" onclick="openTab(event, 'renting', this)">กำลังเช่า</a>
@@ -19,9 +20,55 @@
                         <a href="#" onclick="openTab(event, 'returned', this)">คืนแล้ว</a>
                         <a href="#" onclick="openTab(event, 'cancelled', this)">มีปัญหา / ยกเลิก</a>
                     </div>
+                    
+
+                    <!-- 🔸 รอชำระเงิน -->
+                    <div id="waiting_payment" class="tab-content" style="display:block">
+                        <% const payOrders=waiting_payment || []; %>
+                            <% if (payOrders.length> 0) { %>
+                                <% payOrders.forEach(order=> { %>
+                                    <div class="order-card">
+                                        <h3>คำสั่งซื้อ: <%= order.order_code %>
+                                        </h3>
+                                        <p>สถานะ: รอชำระเงิน 💸</p>
+                                        <p>หมดเวลาภายใน:
+                                            <span class="countdown"
+                                                data-time="<%= new Date(order.created_at).getTime() %>"></span>
+                                        </p>
+
+                                        <% order.Rentals.forEach(rental=> { %>
+                                            <div class="rental-card">
+                                                <img src="<%= rental.product?.images?.[0]?.image_url || '/images/no-image.png' %>"
+                                                    alt="">
+                                                <div class="rental-info">
+                                                    <h4>
+                                                        <%= rental.product?.product_name %>
+                                                    </h4>
+                                                    <p>วันที่เช่า: <%= new
+                                                            Date(rental.rental_date).toLocaleDateString('th-TH') %>
+                                                    </p>
+                                                    <p>วันที่คืน: <%= new
+                                                            Date(rental.rental_end_date).toLocaleDateString('th-TH') %>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <% }) %>
+
+                                                <div class="order-footer">
+                                                    <a href="/payment?orderId=<%= order.order_id %>"
+                                                        class="btn btn-pay">แนบสลิป / ยืนยันการชำระเงิน</a>
+                                                </div>
+                                    </div>
+                                    <% }) %>
+                                        <% } else { %>
+                                            <div class="empty-state">
+                                                <p>ยังไม่มีรายการรอชำระเงิน</p>
+                                            </div>
+                                            <% } %>
+                    </div>
 
                     <!-- 🔸 รอยืนยัน -->
-                    <div id="waiting_confirm" class="tab-content" style="display:block">
+                    <div id="waiting_confirm" class="tab-content" style="display:none">
                         <% const confirmOrders=waiting_confirm || []; %>
                             <% if (confirmOrders.length> 0) { %>
                                 <% confirmOrders.forEach(order=> { %>
@@ -219,7 +266,7 @@
                                                     <p>วันที่คืน: <%= new
                                                             Date(rental.rental_end_date).toLocaleDateString("th-TH") %>
                                                     </p>
-                                                    
+
                                                 </div>
                                             </div>
                                             <% }) %>
@@ -327,7 +374,10 @@
             </main>
 
             <%- include('includes/footer') %>
+            <%- include('includes/chatWidget') %>
+            
                 <script src="/js/script.js"></script>
+            
 
                 <script>
                     function openTab(event, tabId, el) {
@@ -337,6 +387,22 @@
                         document.getElementById(tabId).style.display = 'block';
                         el.classList.add('active');
                     }
+                </script>
+
+
+                <script>
+                    document.querySelectorAll(".countdown").forEach(span => {
+                        const startTime = Number(span.dataset.time);
+                        function update() {
+                            const remain = 30 * 60 * 1000 - (Date.now() - startTime);
+                            if (remain <= 0) { span.textContent = "หมดเวลาแล้ว"; return; }
+                            const min = Math.floor(remain / 60000);
+                            const sec = Math.floor((remain % 60000) / 1000);
+                            span.textContent = `${min}:${sec.toString().padStart(2, '0')} นาที`;
+                            requestAnimationFrame(update);
+                        }
+                        update();
+                    });
                 </script>
     </body>
 

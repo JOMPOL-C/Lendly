@@ -3,6 +3,7 @@ const prisma = new PrismaClient();
 const { CloudinaryStorage } = require("multer-storage-cloudinary");
 const multer = require("multer");
 const cloudinary = require("cloudinary").v2;
+const { notifyAdminEmail, notifyUserEmail } = require("../utils/emailNotify");
 
 // 🪄 ฟังก์ชันสร้างรหัสคำสั่งซื้อ
 function generateOrderCode() {
@@ -57,7 +58,7 @@ exports.confirmOrder = async (req, res) => {
   }
 };
 
-// ✅ อัปโหลดสลิปการชำระเงิน (ผูกกับ rental โดยตรง)
+// ✅ อัปโหลดสลิปการชำระเงิน (เฉพาะที่ยัง WAITING_PAYMENT)
 exports.uploadSlip = [
   handleMulterError(upload.single("slip")),
   async (req, res) => {
@@ -68,22 +69,26 @@ exports.uploadSlip = [
       const { orderId } = req.body;
       if (!orderId) return res.status(400).json({ message: "ต้องระบุ orderId" });
 
-      // ✅ ดึงข้อมูลคำสั่งซื้อนี้พร้อม rentals ทั้งหมด
       const order = await prisma.Orders.findUnique({
         where: { order_id: parseInt(orderId) },
-        include: { Rentals: true },
+        include: { Rentals: { include: { customer: true, product: true } } },
       });
 
-      if (!order)
-        return res.status(404).json({ message: "ไม่พบคำสั่งซื้อนี้" });
+      if (!order) return res.status(404).json({ message: "ไม่พบคำสั่งซื้อนี้" });
 
       const imageUrl = req.file?.path;
       const cloudinaryId = req.file?.filename;
       if (!imageUrl)
         return res.status(400).json({ message: "ไม่พบไฟล์สลิป" });
 
-      // ✅ สร้างสลิปผูกกับทุก rental ใน order นี้
-      for (const rental of order.Rentals) {
+      // ✅ ตรวจเฉพาะ rental ที่ยังรอชำระเงินเท่านั้น
+      const targetRentals = order.Rentals.filter(r => r.rental_status === "WAITING_PAYMENT");
+
+      if (targetRentals.length === 0)
+        return res.status(400).json({ message: "รายการนี้ชำระเงินไปแล้วหรือหมดเวลาแล้ว" });
+
+      // ✅ ผูกสลิปกับทุก rental ที่ยังรอชำระ
+      for (const rental of targetRentals) {
         await prisma.PaymentSlip.create({
           data: {
             rentalId: rental.rental_id,
@@ -93,26 +98,53 @@ exports.uploadSlip = [
         });
       }
 
-      // ✅ อัปเดตสถานะของทุก rental ใน order นี้
+      // ✅ เปลี่ยนสถานะจาก WAITING_PAYMENT → WAITING_CONFIRM
       await prisma.Rentals.updateMany({
-        where: { orderId: order.order_id },
+        where: {
+          orderId: order.order_id,
+          rental_status: "WAITING_PAYMENT",
+        },
         data: { rental_status: "WAITING_CONFIRM" },
       });
 
-      console.log(`✅ ผูกสลิปกับ Rentals ทั้งหมดใน Order ID: ${order.order_id}`);
+      console.log(`✅ แนบสลิปเรียบร้อย เปลี่ยนสถานะเป็น WAITING_CONFIRM ของ order ${order.order_id}`);
 
-      res.json({
-        message: "อัปโหลดสลิปสำเร็จและอัปเดตสถานะของการเช่าทั้งหมดเรียบร้อย",
-        orderId: order.order_id,
-        rentalsUpdated: order.Rentals.length,
-      });
+      // ==========================================
+      // ✉️ เพิ่มส่วน "ส่งอีเมลแจ้งเตือน" หลังอัปโหลดสลิป
+      // ==========================================
+      try {
+        // 🔔 แจ้งแอดมิน
+        await notifyAdminEmail(`
+          🧾 มีการอัปโหลดสลิปใหม่จากลูกค้า #${order.customerId}  
+          คำสั่งซื้อหมายเลข: ${order.order_code}  
+          โปรดตรวจสอบและยืนยันการชำระเงินในหน้า Admin Panel
+        `);
+
+        // 🔔 แจ้งลูกค้า (อีเมลสวยงามจากระบบใหม่)
+        for (const r of targetRentals) {
+          if (r.customer?.customer_email) {
+            await notifyUserEmail(
+              r.customer.customer_email,
+              `📨 ระบบได้รับสลิปการชำระเงินของคุณเรียบร้อยแล้ว (${r.product.product_name})  
+              กรุณารอการตรวจสอบจากร้านค้า ขอบคุณที่ใช้บริการ Lendly 💜`
+            );
+          }
+        }
+
+        console.log("✅ ส่งอีเมลแจ้งเตือนหลังอัปโหลดสลิปเรียบร้อย");
+      } catch (mailErr) {
+        console.error("⚠️ ส่งอีเมลหลังอัปโหลดสลิปล้มเหลว:", mailErr.message);
+      }
+
+      // ✅ ตอบกลับฝั่ง client
+      res.json({ message: "อัปโหลดสลิปสำเร็จและอัปเดตสถานะเป็นรอยืนยันจากร้าน" });
+
     } catch (err) {
       console.error("❌ uploadSlip error:", err);
-      res.status(500).json({ message: "เกิดข้อผิดพลาดในระบบ", error: err.message });
+      res.status(500).json({ message: "เกิดข้อผิดพลาดภายในเซิร์ฟเวอร์" });
     }
   },
 ];
-
 
 // ✅ สร้างคำสั่งซื้อใหม่
 exports.createOrder = async (req, res) => {
@@ -200,7 +232,7 @@ exports.createOrder = async (req, res) => {
           orderId: order.order_id,
           rental_date: startDate,
           rental_end_date: endDate,
-          rental_status: "WAITING_CONFIRM",
+          rental_status: "WAITING_PAYMENT",
           mode: item.mode === "pri" ? "PRI" : "TEST",
           total_price: new Prisma.Decimal(rentalPrice.toFixed(2)),
         },
@@ -214,6 +246,35 @@ exports.createOrder = async (req, res) => {
       where: { cartItem_id: { in: selectedItems.map(Number) } },
     });
     console.log("🧹 ลบสินค้าที่เช่าออกจากตะกร้าแล้ว");
+
+    try {
+      // 🔔 แจ้งแอดมิน
+      await notifyAdminEmail(`
+        🛍️ มีคำสั่งเช่าใหม่จากลูกค้า #${customerId}  
+        รหัสคำสั่งซื้อ: ${order.order_code}  
+        จำนวนสินค้า: ${cartItems.length} รายการ  
+        💰 รวมยอด: ${totalPrice.toFixed(2)} บาท  
+        โปรดตรวจสอบในหน้า Admin Panel ของ Lendly
+      `);
+    
+      // 🔔 แจ้งลูกค้า
+      const customer = await prisma.Customer.findUnique({
+        where: { customer_id: customerId },
+      });
+    
+      if (customer?.customer_email) {
+        await notifyUserEmail(
+          customer.customer_email,
+          `📦 ระบบได้รับคำสั่งเช่าของคุณเรียบร้อยแล้ว 🎉  
+          หมายเลขคำสั่งซื้อ: ${order.order_code}  
+          กรุณาชำระเงินภายใน 30 นาที เพื่อยืนยันคำสั่งซื้อของคุณ`
+        );
+      }
+    
+      console.log("✅ ส่งอีเมลแจ้งเตือนเมื่อสร้างคำสั่งซื้อใหม่เรียบร้อย");
+    } catch (mailErr) {
+      console.error("⚠️ ส่งอีเมลหลังสร้างคำสั่งซื้อล้มเหลว:", mailErr.message);
+    }
 
     console.log(`✅ สรุปคำสั่งซื้อของลูกค้า ID ${customerId}: ${cartItems.length} รายการ, รวม ${totalPrice}฿`);
     res.json({ message: "สร้างคำสั่งเช่าสำเร็จ", order, shipping });

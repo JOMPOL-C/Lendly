@@ -1,52 +1,64 @@
 <%- include('includes/head') %>
     <link rel="stylesheet" href="/styles/rental.css">
     <link rel="stylesheet" href="/styles/review.css">
-
     </head>
 
     <body>
         <%- include('includes/nav') %>
             <main>
-                <section class="index ">
+                <section class="index">
                     <h2>เขียนรีวิวสินค้า</h2>
 
-                    <div id="all_rental" class="tab-content" style="display:block">
-                    <div class="rental-card">
-                        <img src="https://dokidokicos.com/cdn/shop/files/1_63d6aca4-1bf0-491b-af84-9f79b1ee5e44.jpg?v=1717159871" alt="Product Image">
-                        <div class="rental-info">
-                            <h3>Emilia</h3>
-                            <p>วันที่เช่า: 01/01/2024</p>
-                            <p>วันที่คืน: 07/01/2024</p>
-                            <p>สิ่งที่เช่า: ชุด วิก</p>
-                            <p>ราคาค่าเช่า: 300฿</p>
-                        </div>
-                    </div>
-                </div>
+                    <% if (rentals.length===0) { %>
+                        <p style="text-align:center; color:#777;">ยังไม่มีสินค้าที่คืนแล้วสำหรับการรีวิว</p>
+                        <% } else { %>
+                            <% rentals.forEach(rental=> { %>
+                                <div class="rental-card">
+                                    <img src="<%= rental.product.images[0]?.image_url || '/images/no-image.png' %>"
+                                        alt="Product Image">
+                                    <div class="rental-info">
+                                        <h3>
+                                            <%= rental.product.product_name %>
+                                        </h3>
+                                        <p>วันที่เช่า:
+                                            <%= rental.rental_date ? new
+                                                Date(rental.rental_date).toLocaleDateString('th-TH') : '-' %>
+                                        </p>
+                                        <p>วันที่คืน:
+                                            <%= rental.rental_end_date ? new
+                                                Date(rental.rental_end_date).toLocaleDateString('th-TH') : '-' %>
+                                        </p>
 
-                    <form action="/orders/review" method="POST" enctype="multipart/form-data">
-                        <div class="form-group">
-                            <label for="reviewText">ข้อความรีวิว</label>
-                            <textarea id="reviewText" name="reviewText" rows="4"
-                                placeholder="เล่าประสบการณ์การเช่า เช่น คุณภาพสินค้า การจัดส่ง ฯลฯ" required></textarea>
-                        </div>
+                                        <p>ราคาค่าเช่า: <%= rental.product.price %>฿</p>
 
-                        <div class="form-group">
-                            <label for="reviewImages">อัปโหลดรูป (ถ้ามี)</label>
-                            <input type="file" id="reviewImages" name="reviewImages" accept="image/*" multiple>
-                            <p class="note">เลือกได้หลายรูป</p>
-                        </div>
+                                        <form action="/api/orders/review" method="POST" enctype="multipart/form-data"
+                                            class="review-form">
+                                            <div class="form-group">
+                                                <label for="reviewText">ข้อความรีวิว</label>
+                                                <textarea name="reviewText" rows="3" required
+                                                    placeholder="เล่าประสบการณ์การเช่า เช่น คุณภาพสินค้า การจัดส่ง ฯลฯ"></textarea>
+                                            </div>
 
-                        <input type="hidden" name="orderId" value="RNT-0001">
+                                            <div class="form-group">
+                                                <label for="reviewImages">อัปโหลดรูป (ถ้ามี)</label>
+                                                <input type="file" name="reviewImages" accept="image/*" multiple>
+                                            </div>
 
-                        <button type="submit" class="submit-btn">ส่งรีวิว</button>
-                    </form>
+                                            <input type="hidden" name="productId"
+                                                value="<%= rental.product.product_id %>">
+                                            <input type="hidden" name="rentalId" value="<%= rental.rental_id %>">
+
+                                            <button type="submit" class="submit-btn">ส่งรีวิว</button>
+                                        </form>
+                                    </div>
+                                </div>
+                                <% }) %>
+                                    <% } %>
                 </section>
-
-
             </main>
             <%- include('includes/footer') %>
-                <script src="/js/script.js"></script>
-
+                <%- include('includes/chatWidget') %>
+                    <script src="/js/script.js"></script>
     </body>
 
     </html>
