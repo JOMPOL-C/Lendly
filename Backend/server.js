@@ -26,6 +26,8 @@ const productControllerPage = require("./src/Controllers/productControllerPage")
 const cartController = require("./src/Controllers/cartController");
 const rentalsController = require("./src/Controllers/rentalsController");
 const reviewController = require("./src/Controllers/reviewController");
+const adminController = require("./src/Controllers/adminController");
+const shippingController = require("./src/Controllers/shippingController");
 
 const { autoCancelExpiredPayments } = require("./src/Controllers/rentalsController");
 
@@ -91,10 +93,12 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use("/admin", requireAdmin);
 app.get("/admin/products", productController.renderAdminAllProducts);
 app.get("/admin/rentals", PageRender.renderAdmin_rentals);
+app.get("/admin/tracking", shippingController.getPendingShipments);
 app.get("/admin/return", PageRender.renderAdmin_return);
 app.get("/admin/add_product", productController.renderAddProduct);
 app.get("/admin/edit_product", PageRender.renderEdit_product);
 app.get("/admin/chat", PageRender.renderAdmin_chat);
+app.get("/admin/dashboard", adminController.renderAdminDashboard);
  
 
 // ============================

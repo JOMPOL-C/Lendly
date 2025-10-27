@@ -1,12 +1,15 @@
 const express = require('express');
 const router = express.Router();
+const adminController = require('../Controllers/adminController');
 
-router
-    .route('/admin/users')   // get /api/admin/users
-    .get(require('../Controllers/adminController').getUsers)
+// ✅ ผู้ใช้ทั้งหมด
+router.get('/admin/users', adminController.getUsers);
 
-// ✅ อัปเดตสถานะเมื่อกดยืนยันการเช่า
-router
-    .put("/admin/confirm-rental/:rentalId", require("../Controllers/adminController").confirmRental);
+// ✅ ยืนยันการเช่า
+router.put('/admin/confirm-rental/:rentalId', adminController.confirmRental);
+
+// ✅ แดชบอร์ด
+router.get('/admin/dashboard', adminController.renderAdminDashboard);
+router.get('/admin/top-stats', require('../Controllers/adminController').getTopStats);
 
 module.exports = router;

@@ -1,0 +1,308 @@
+/* 🎀 โทนหลัก Lendly: ม่วงพาสเทล + ขาวสะอาด */
+body {
+    background: #faf8ff;
+    font-family: 'Prompt', sans-serif;
+    color: #3b0764;
+  }
+  
+  /* ===============================
+     🧺 โครงร่างหลักของหน้า
+  ================================ */
+  #prodetails {
+    display: flex;
+    flex-direction: column;
+    gap: 60px;
+    align-items: center;
+    justify-content: center;
+    margin-top: 40px;
+    background: #fff;
+    padding: 50px 60px;
+    border-radius: 20px;
+    box-shadow: 0 8px 20px rgba(109, 40, 217, 0.08);
+  }
+  
+  /* ===============================
+     🔹 ครึ่งบน: รูปภาพ + ตัวเลือกเช่า
+  ================================ */
+  .top-section {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 40px;
+    width: 100%;
+  }
+  
+  /* 📸 ภาพหลัก */
+  .image-gallery {
+    flex: 1 1 45%;
+    text-align: center;
+  }
+  
+  .image-gallery .main-image {
+    width: 80%;
+    max-width: 420px;
+    border-radius: 14px;
+    box-shadow: 0 4px 10px rgba(109, 40, 217, 0.15);
+    margin-bottom: 15px;
+    transition: transform 0.3s ease;
+  }
+  
+  .image-gallery .main-image:hover {
+    transform: scale(1.03);
+  }
+  
+  /* 🔍 รูปย่อย */
+  .thumbnail-row {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  
+  .thumbnail-row img {
+    width: 70px;
+    height: 70px;
+    border-radius: 10px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: all 0.25s ease;
+  }
+  
+  .thumbnail-row img:hover {
+    border-color: #a78bfa;
+    transform: scale(1.05);
+  }
+  
+  .thumbnail-row img.active {
+    border-color: #8b5cf6;
+  }
+  
+  /* 🧾 ตัวเลือกเช่า */
+  .rent-options {
+    flex: 1 1 45%;
+  }
+  
+  .rent-options h6 {
+    color: #8b5cf6;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  
+  .rent-options h4 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #4c1d95;
+    margin-bottom: 10px;
+  }
+  
+  .rent-options h2 {
+    font-size: 20px;
+    color: #6d28d9;
+    margin-top: 10px;
+    margin-bottom: 20px;
+  }
+  
+  .rent-options p.category {
+    color: #6d28d9;
+    font-weight: 500;
+    margin-bottom: 15px;
+  }
+  
+  /* 🎚️ โหมดเช่า */
+  .mode-box label {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    margin-right: 15px;
+    background: #f5f3ff;
+    padding: 8px 14px;
+    border-radius: 12px;
+    border: 1px solid #ddd6fe;
+    cursor: pointer;
+    transition: all 0.25s ease;
+  }
+  
+  .mode-box label:hover {
+    background: #ede9fe;
+    box-shadow: 0 0 8px rgba(139, 92, 246, 0.2);
+  }
+  
+  /* 📦 ตัวเลือกเช่า */
+  .rent-options select {
+    display: block;
+    margin-top: 20px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: 1px solid #ddd6fe;
+    background: #faf5ff;
+    color: #4b0082;
+    font-size: 15px;
+    outline: none;
+    width: 100%;
+    max-width: 300px;
+  }
+  /* 🛒 ปุ่มเพิ่มตะกร้า */
+  .btn-cart {
+    background: linear-gradient(135deg, #a78bfa, #8b5cf6);
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    padding: 12px 24px;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.25s ease;
+    box-shadow: 0 4px 10px rgba(139, 92, 246, 0.25);
+  }
+  
+  .btn-cart:hover {
+    transform: scale(1.05);
+    background: linear-gradient(135deg, #8b5cf6, #7e22ce);
+  }
+  
+  /* ===============================
+     🔹 ครึ่งล่าง: รายละเอียดสินค้า
+  ================================ */
+  .bottom-section {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+  
+  .product-info {
+    background: #f9f5ff;
+    border-radius: 16px;
+    padding: 25px 30px;
+    border: 1px solid #e9d5ff;
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.08);
+    width: 90%;
+    max-width: 800px;
+  }
+  
+  .product-info h3 {
+    color: #4c1d95;
+    font-size: 20px;
+    margin-bottom: 10px;
+    font-weight: 700;
+  }
+  
+  .product-info p {
+    color: #4b0082;
+    line-height: 1.7;
+    font-size: 15px;
+    margin: 5px 0;
+  }
+  
+  /* ===============================
+     ✨ Responsive Design
+  ================================ */
+  @media (max-width: 992px) {
+    .top-section {
+      flex-direction: column;
+      align-items: center;
+    }
+  
+    .image-gallery,
+    .rent-options {
+      flex: 1 1 100%;
+      text-align: center;
+    }
+  
+    .rent-options select {
+      margin: 0 auto;
+    }
+  
+    .btn-cart {
+      margin: 20px auto;
+      display: block;
+    }
+  
+    .product-info {
+      width: 100%;
+    }
+  }
+  /* =========================
+   🧾 รายละเอียดสินค้า (ล่าง)
+========================= */
+.product-info {
+    background: #f9f5ff;
+    border-radius: 16px;
+    padding: 30px 35px;
+    border: 1px solid #e9d5ff;
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.08);
+    width: 90%;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  
+  .product-info h3 {
+    color: #4c1d95;
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 15px;
+  }
+  
+  .product-info p {
+    color: #4b0082;
+    line-height: 1.8;
+    font-size: 15px;
+    margin: 5px 0;
+  }
+  
+  /* 👗 ขนาดสินค้า */
+  .size-box {
+    margin-top: 15px;
+    background: #f5f3ff;
+    border: 1px solid #ddd6fe;
+    border-radius: 12px;
+    padding: 12px 18px;
+  }
+  
+  .size-box ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .size-box li {
+    color: #5b21b6;
+    font-size: 15px;
+    padding: 3px 0;
+  }
+  
+  /* 💰 ตารางราคา */
+  .price-box {
+    margin-top: 20px;
+  }
+  
+  .price-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #faf5ff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(109, 40, 217, 0.08);
+  }
+  
+  .price-table th {
+    background: #e9d5ff;
+    color: #4c1d95;
+    padding: 10px;
+    text-align: center;
+    font-size: 14px;
+  }
+  
+  .price-table td {
+    text-align: center;
+    padding: 10px;
+    border-top: 1px solid #ddd6fe;
+    color: #3b0764;
+    font-size: 14px;
+  }
+  
+  .price-table tr:hover {
+    background: #f3e8ff;
+    transition: 0.3s;
+  }
+  

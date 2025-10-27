@@ -56,14 +56,6 @@ enum ProductPrice_status {
   solo_shoe          @map("รองเท้าเดี่ยว")
 }
 
-// ประเภทของการแจ้งเตือน
-enum Notification_status {
-  ORDER     @map("คำสั่งซื้อ")
-  PAYMENT   @map("การชำระเงิน")
-  REVIEW    @map("รีวิว")
-  PROMOTION @map("โปรโมชั่น")
-}
-
 // =======================
 // USER & PROFILE SECTION
 // =======================
@@ -91,8 +83,6 @@ model Customer {
   age          Int?
   rentals      Rentals[]
   cart         Cart[]
-  chats        Chat[]
-  notification Notification[]
   orders       Orders[]
   proportion   Proportion?
   reviews      Review[]
@@ -141,7 +131,6 @@ model Product {
 
   images    ProductImage[]
   prices    ProductPrice[]
-  reports   Report[]
   reviews   Review[]
   favorites Favorite[]
 
@@ -231,18 +220,14 @@ model Orders {
   order_code            String?     @unique @db.VarChar(20)
   total_price           Decimal     @db.Decimal(10, 2)
   deposit_amount        Decimal?    @db.Decimal(10, 2)
-  promotionPromotion_id Int?
   created_at            DateTime    @default(now())
   OrderItem             OrderItem[]
   customer              Customer    @relation(fields: [customerId], references: [customer_id])
-  Promotion             Promotion?  @relation(fields: [promotionPromotion_id], references: [promotion_id])
-  payments              Payment[]
   shippings             Shipping[]
   Rentals               Rentals[]
   ReturnBox             ReturnBox[]
 
   @@index([customerId], map: "fk_order_customer_idx")
-  @@index([promotionPromotion_id], map: "Orders_promotionPromotion_id_fkey")
 }
 
 // สินค้าแต่ละรายการในคำสั่งซื้อ
@@ -273,28 +258,6 @@ model Favorite {
   @@unique([customerId, productId])
 }
 
-// การชำระเงินของคำสั่งซื้อ
-model Payment {
-  payment_id      Int            @id @default(autoincrement())
-  orderId         Int
-  methodId        Int
-  omise_charge_id String         @db.VarChar(100)
-  payment_date    DateTime?      @default(now()) @db.DateTime(0)
-  payment_amount  Decimal        @db.Decimal(10, 2)
-  method          Payment_method @relation(fields: [methodId], references: [payment_method_id])
-  order           Orders         @relation(fields: [orderId], references: [order_id])
-
-  @@index([orderId], map: "fk_payment_order_idx")
-  @@index([methodId], map: "fk_payment_pmt_idx")
-}
-
-// ช่องทางการชำระเงิน
-model Payment_method {
-  payment_method_id   Int       @id @default(autoincrement())
-  payment_method_name String?   @db.VarChar(45)
-  payments            Payment[]
-}
-
 model PaymentSlip {
   slip_id       Int      @id @default(autoincrement())
   rentalId      Int // ✅ ผูกกับสินค้าเช่าตัวนั้นโดยตรง
@@ -303,19 +266,6 @@ model PaymentSlip {
   uploaded_at   DateTime @default(now())
 
   rental Rentals @relation(fields: [rentalId], references: [rental_id], onDelete: Cascade)
-}
-
-// โปรโมชั่นส่วนลด
-model Promotion {
-  promotion_id Int      @id @default(autoincrement())
-  code         String   @unique @db.VarChar(50)
-  description  String?  @db.Text
-  discount     Decimal  @db.Decimal(10, 2)
-  start_date   DateTime
-  end_date     DateTime
-  is_active    Boolean  @default(true)
-  created_at   DateTime @default(now())
-  orders       Orders[]
 }
 
 // =======================
@@ -422,7 +372,6 @@ model Rentals {
   customer        Customer                @relation(fields: [customerId], references: [customer_id])
   product         Product                 @relation(fields: [productId], references: [product_id])
   order           Orders?                 @relation(fields: [orderId], references: [order_id], onDelete: Cascade, onUpdate: Cascade)
-  reports         Report[]
   Review          Review[]
   ReceiveImages   RentalReceiveImage[]
   ReturnBoxItem   ReturnBoxItem[]
@@ -444,58 +393,9 @@ model DelaySetting {
   updated_at           DateTime @default(now()) @updatedAt
 }
 
-// รายงานความเสียหายหรือปัญหาระหว่างการเช่า
-model Report {
-  report_id       Int           @id @default(autoincrement())
-  productId       Int
-  rentalId        Int
-  report_topics   String        @db.Text
-  report_detail   String?       @db.Text
-  report_fine     Decimal?      @db.Decimal(10, 2)
-  report_datetime DateTime?     @default(now()) @db.DateTime(0)
-  product         Product       @relation(fields: [productId], references: [product_id])
-  rental          Rentals       @relation(fields: [rentalId], references: [rental_id])
-  images          ReportImage[]
-
-  @@index([productId], map: "fk_report_product_idx")
-  @@index([rentalId], map: "fk_report_rental_idx")
-}
-
-// รูปภาพประกอบรายงาน
-model ReportImage {
-  reportimage_id Int    @id @default(autoincrement())
-  image_url      String @db.VarChar(255)
-  cloudinary_id  String @db.VarChar(255)
-  reportId       Int
-  report         Report @relation(fields: [reportId], references: [report_id])
-
-  @@index([reportId], map: "fk_reportimage_report_idx")
-}
-
 // =======================
 // COMMUNICATION & REVIEW SECTION
 // =======================
-
-// ห้องแชทระหว่างลูกค้าและร้าน
-model Chat {
-  chat_id       Int       @id @default(autoincrement())
-  customerId    Int
-  created_at    DateTime  @default(now())
-
-  // ความสัมพันธ์
-  customer      Customer  @relation(fields: [customerId], references: [customer_id])
-  messages      Message[]
-}
-
-model Message {
-  message_id    Int       @id @default(autoincrement())
-  chatId        Int
-  sender_role   String    // 'CUSTOMER' หรือ 'ADMIN'
-  content       String
-  sent_at       DateTime  @default(now())
-
-  chat          Chat      @relation(fields: [chatId], references: [chat_id])
-}
 
 model Review {
   review_id     Int        @id @default(autoincrement())
@@ -525,24 +425,6 @@ model RentalReceiveImage {
   uploadedAt DateTime @default(now())
 
   rental Rentals @relation(fields: [rentalId], references: [rental_id], onDelete: Cascade)
-}
-
-// =======================
-// NOTIFICATION SECTION
-// =======================
-
-// การแจ้งเตือนลูกค้า (เช่น คำสั่งซื้อ, การชำระเงิน, โปรโมชั่น)
-model Notification {
-  notification_id Int                 @id @default(autoincrement())
-  customerId      Int
-  title           String              @db.VarChar(100)
-  description     String              @db.Text
-  type            Notification_status
-  is_read         Boolean             @default(false)
-  created_at      DateTime            @default(now())
-  user            Customer            @relation(fields: [customerId], references: [customer_id])
-
-  @@index([customerId], map: "Notification_customerId_fkey")
 }
 
 // =======================

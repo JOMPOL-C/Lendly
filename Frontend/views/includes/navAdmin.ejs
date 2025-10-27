@@ -1,0 +1,48 @@
+<nav class="admin-nav">
+    <div class="logo">🪞 Lendly Admin</div>
+    <ul>
+        <li><a href="/admin/dashboard">แดชบอร์ด</a></li>
+        <li><a href="/admin/products">สินค้า</a></li>
+        <li><a href="/admin/rentals">สินค้ารายืนยัน</a></li>
+        <li><a href="/admin/tracking">สินค้ารอส่ง</a></li>
+        <li><a href="/admin/return">การคืนสินค้า</a></li>
+        <li><a href="/admin/chat">แชท</a></li>
+        <li><a href="/">กลับหน้าหลัก</a></li>
+    </ul>
+</nav>
+
+<style>
+    .admin-nav {
+        background: linear-gradient(90deg, #a78bfa, #c4b5fd);
+        padding: 15px 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        color: white;
+        font-family: 'Prompt', sans-serif;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .admin-nav .logo {
+        font-weight: 700;
+        font-size: 20px;
+    }
+
+    .admin-nav ul {
+        list-style: none;
+        display: flex;
+        gap: 25px;
+        margin: 0;
+    }
+
+    .admin-nav ul li a {
+        color: white;
+        text-decoration: none;
+        font-weight: 500;
+        transition: opacity 0.2s;
+    }
+
+    .admin-nav ul li a:hover {
+        opacity: 0.8;
+    }
+</style>

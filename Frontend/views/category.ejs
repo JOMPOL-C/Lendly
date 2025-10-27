@@ -23,10 +23,23 @@
                   <% } %>
         </section>
 
+        <form action="/category" method="get" class="filter-form">
+          <input type="hidden" name="categoryId" value="<%= selectedCategory %>">
+          <input type="text" name="search" placeholder="ค้นหาชื่อสินค้า" value="<%= searchTerm %>">
+
+          <div class="size-filter">
+            <input type="number" name="chest" placeholder="อก (cm)" value="<%= chest || '' %>" step="0.1">
+            <input type="number" name="waist" placeholder="เอว (cm)" value="<%= waist || '' %>" step="0.1">
+            <input type="number" name="hips" placeholder="สะโพก (cm)" value="<%= hips || '' %>" step="0.1">
+            <button type="submit">กรอง</button>
+          </div>
+        </form>
+
         <!-- 🛍 สินค้าทั้งหมด -->
         <section id="all_product" class="section-p1 product1">
           <h2>ชุดทั้งหมด</h2>
           <p>สามารถดูแต่ละหมวดหมู่ได้ที่หมวดหมู่</p>
+
 
           <div class="pro-container">
             <% if (products && products.length> 0) { %>

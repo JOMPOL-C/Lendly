@@ -20,7 +20,7 @@
 .index-category-box {
     width: 160px;
     height: 160px;
-    background-color: rgb(252, 238, 255);
+    background-color: #fceeff;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -36,7 +36,7 @@
 }
 
 .index-category-box:hover {
-    background-color: rgb(246, 181, 255);
+    background-color: #f6b5ff;
     cursor: pointer;
     transition: 0.1s;
 }
@@ -121,7 +121,7 @@
 }
 
 .btn-filter {
-    background: linear-gradient(135deg, #c084fc, #8b5cf6);
+    background: linear-gradient(135deg, #fceeff, #eecef6);
     color: #fff;
     font-weight: 600;
     border: none;
@@ -154,4 +154,72 @@
     border-color: #8b5cf6;
     box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
     transform: translateY(-2px);
+}
+
+/* 🎀 ฟอร์มกรองสัดส่วน */
+.filter-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    background: linear-gradient(135deg, #fceeff, #f3cbfc);
+    padding: 25px 35px;
+    margin: 30px auto 40px;
+    width: 70%;
+    border-radius: 20px;
+    box-shadow: 0 6px 16px rgba(109, 40, 217, 0.15);
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+.filter-form input[type="text"],
+.filter-form input[type="number"] {
+    border: 1.5px solid #d8b4fe;
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 15px;
+    color: #4b0082;
+    background: #f9f5ff;
+    width: 150px;
+    transition: all 0.3s ease;
+}
+
+.filter-form input:focus {
+    outline: none;
+    border-color: #a855f7;
+    box-shadow: 0 0 8px rgba(168, 85, 247, 0.3);
+}
+
+.size-filter {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.filter-form button {
+    background: linear-gradient(90deg, #a855f7, #8b5cf6);
+    border: none;
+    color: white;
+    font-weight: 600;
+    padding: 10px 25px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.filter-form button:hover {
+    background: linear-gradient(90deg, #7e22ce, #6d28d9);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }

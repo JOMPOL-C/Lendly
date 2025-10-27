@@ -406,7 +406,8 @@ exports.getProductById = async (req, res) => {
       include: {
         images: true,
         prices: true,
-        category: true
+        category: true,
+        size: true
       }
     });
 

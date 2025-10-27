@@ -44,45 +44,32 @@ exports.renderEditProduct = async (req, res) => {
     }
 };
 
-
 // ✅ โชว์สินค้าในหน้า category พร้อมกรองด้วยหมวดหมู่, สัดส่วน, ชื่อสินค้า
 exports.renderProductsPage = async (req, res) => {
     try {
-      const { categoryId, sizeId, search } = req.query;
-      const user = req.user; // จาก middleware auth ถ้ามี
+      const { categoryId, search, chest, waist, hips } = req.query;
+      const user = req.user;
   
-      // 📂 ดึงหมวดหมู่ทั้งหมด
       const categories = await prisma.category.findMany({
         orderBy: { category_name: "asc" },
       });
   
-      // 📏 ดึงสัดส่วนทั้งหมด
-      const proportions = await prisma.proportion_product.findMany({
-        orderBy: { proportion_product_id: "asc" },
-      });
-  
-      // 🧍 ถ้ามีผู้ใช้ล็อกอิน ให้ใช้สัดส่วนของเขาเป็นค่าเริ่มต้น
-      let defaultSize = "";
-      if (user) {
-        const customer = await prisma.customer.findUnique({
-          where: { customer_id: user.customer_id },
-          include: { proportion: true },
-        });
-        defaultSize = customer?.proportion?.proportion_product_id || "";
-      }
-  
-      // 🔍 เงื่อนไขการกรองสินค้า
+      // สร้างเงื่อนไข where หลัก
       const whereClause = {
         ...(categoryId ? { categoryId } : {}),
-        ...(sizeId
-          ? { ppId: parseInt(sizeId) }
-          : defaultSize
-          ? { ppId: parseInt(defaultSize) }
+        ...(search ? { product_name: { contains: search } } : {}),
+        ...(chest || waist || hips
+          ? {
+              size: {
+                // 🔍 เทียบค่ากับสัดส่วนสินค้า (±5 cm)
+                chest: chest ? { gte: parseFloat(chest) - 5, lte: parseFloat(chest) + 5 } : undefined,
+                waist: waist ? { gte: parseFloat(waist) - 5, lte: parseFloat(waist) + 5 } : undefined,
+                hips: hips ? { gte: parseFloat(hips) - 5, lte: parseFloat(hips) + 5 } : undefined,
+              },
+            }
           : {}),
-        ...(search ? { product_name: { contains: search } } : {}), // ✅ ลบ mode ออก
       };
   
-      // 📦 ดึงสินค้าพร้อมข้อมูลที่เกี่ยวข้อง
       const products = await prisma.product.findMany({
         where: whereClause,
         include: {
@@ -94,20 +81,22 @@ exports.renderProductsPage = async (req, res) => {
         orderBy: { product_id: "desc" },
       });
   
-      // 🖼️ ส่งข้อมูลไปหน้า category
       res.render("category", {
         categories,
-        proportions,
         products,
         selectedCategory: categoryId || "",
-        selectedSize: sizeId || defaultSize || "",
+        selectedSize: "",  // ✅ เพิ่มบรรทัดนี้ ป้องกัน EJS error
         searchTerm: search || "",
+        chest,
+        waist,
+        hips,
       });
     } catch (err) {
       console.error("❌ Error renderProductsPage:", err);
       res.status(500).send("โหลดสินค้าล้มเหลว");
     }
   };
+  
   
 
 
