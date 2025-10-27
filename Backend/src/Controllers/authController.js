@@ -30,10 +30,10 @@ exports.login = async (req, res) => {
     }
 
     const token = jwt.sign(
-      { 
-        id: user.customer_id, 
-        username: user.username, 
-        role: user.role 
+      {
+        id: user.customer_id,
+        username: user.username,
+        role: user.role
       },
       process.env.JWT_SECRET,
       { expiresIn: "7d" }
@@ -92,45 +92,36 @@ exports.editprofile = async (req, res) => {
       id_card_number,
       chest,
       waist,
-      hips
+      hips,
+      province,
+      district,
+      sub_district,
+      postal_code
     } = req.body;
 
-    // ดึงไฟล์จาก multer (memoryStorage)
     const profileFile = req.files?.profile_image?.[0];
     const idCardFile = req.files?.id_card_image?.[0];
 
-    // อัปโหลดไป Cloudinary
     let profileUpload = null;
     let idCardUpload = null;
 
     if (profileFile) {
       const fileUri = bufferToDataUri(profileFile);
-      profileUpload = await cloudinary.uploader.upload(fileUri, {
-        folder: "lendly_profiles",
-      });
+      profileUpload = await cloudinary.uploader.upload(fileUri, { folder: "lendly_profiles" });
     }
-
     if (idCardFile) {
       const fileUri = bufferToDataUri(idCardFile);
-      idCardUpload = await cloudinary.uploader.upload(fileUri, {
-        folder: "lendly_id_cards",
-      });
+      idCardUpload = await cloudinary.uploader.upload(fileUri, { folder: "lendly_id_cards" });
     }
 
-    // ดึงข้อมูลเก่ามาเพื่อลบรูปเก่า (ถ้ามี)
     const oldUser = await prisma.Customer.findUnique({
       where: { customer_id: parseInt(id) },
       select: { profile_public_id: true, id_card_public_id: true },
     });
 
-    if (oldUser?.profile_public_id && profileUpload) {
-      await cloudinary.uploader.destroy(oldUser.profile_public_id);
-    }
-    if (oldUser?.id_card_public_id && idCardUpload) {
-      await cloudinary.uploader.destroy(oldUser.id_card_public_id);
-    }
+    if (oldUser?.profile_public_id && profileUpload) await cloudinary.uploader.destroy(oldUser.profile_public_id);
+    if (oldUser?.id_card_public_id && idCardUpload) await cloudinary.uploader.destroy(oldUser.id_card_public_id);
 
-    // ✅ อัปเดตข้อมูลลูกค้าแบบปลอดภัย (ไม่แตะ id_card_number ถ้าไม่ได้ส่งมา)
     const updateData = {};
 
     if (customer_email?.trim()) updateData.customer_email = customer_email.trim();
@@ -138,7 +129,36 @@ exports.editprofile = async (req, res) => {
     if (name?.trim()) updateData.name = name.trim();
     if (last_name?.trim()) updateData.last_name = last_name.trim();
     if (address?.trim()) updateData.address = address.trim();
-    if (id_card_number?.trim()) updateData.id_card_number = id_card_number.trim();
+    if (province?.trim()) updateData.province = province.trim();
+    if (district?.trim()) updateData.district = district.trim();
+    if (sub_district?.trim()) updateData.sub_district = sub_district.trim();
+    if (postal_code?.trim()) updateData.postal_code = postal_code.trim();
+
+    if (id_card_number?.trim()) {
+      const newIdCard = id_card_number.trim();
+
+      // 🔍 ตรวจว่ามีคนอื่นใช้เลขนี้อยู่ไหม
+      const existingUser = await prisma.Customer.findFirst({
+        where: {
+          id_card_number: newIdCard,
+          NOT: { customer_id: parseInt(id) }  // ยกเว้นตัวเอง
+        }
+      });
+
+      if (existingUser) {
+        console.log("⚠️ มีผู้ใช้อื่นใช้เลขบัตรนี้แล้ว");
+        return res.status(400).render("profile", {
+          user: await prisma.Customer.findUnique({
+            where: { customer_id: parseInt(id) },
+            include: { proportion: true },
+          }),
+          error: "เลขบัตรประชาชนนี้ถูกใช้แล้วในบัญชีอื่น",
+        });
+      }
+
+      updateData.id_card_number = newIdCard;
+    }
+
 
     if (profileUpload) {
       updateData.profile_image_url = profileUpload.secure_url;
@@ -154,7 +174,6 @@ exports.editprofile = async (req, res) => {
       data: updateData,
     });
 
-    // อัปเดตหรือสร้าง Proportion
     await prisma.Proportion.upsert({
       where: { customerId: parseInt(id) },
       update: {
@@ -170,7 +189,7 @@ exports.editprofile = async (req, res) => {
       },
     });
 
-    res.redirect("/profile");
+    res.redirect("/profile?success=1");
   } catch (err) {
     console.error("❌ editprofile error:", err);
     res.status(500).send("อัปเดตไม่สำเร็จ");

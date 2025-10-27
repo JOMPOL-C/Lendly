@@ -121,7 +121,7 @@ app.get("/register", PageRender.renderRegister);
 // ============================
 // 👤 CUSTOMER PAGES (ล็อกอินเท่านั้น)
 // ============================
-app.get("/favorites", requireUser, PageRender.renderFav);
+app.get("/favorites", requireUser, productControllerPage.renderFavoritesPage);
 app.get("/cart", requireUser, cartController.getCart);
 app.get("/my_rentals", requireUser, rentalsController.renderMy_rentals);
 app.get("/write_review", authMiddleware, reviewController.renderWriteReview);

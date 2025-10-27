@@ -61,9 +61,8 @@ exports.renderAdminDashboard = async (req, res) => {
     try {
         const rentals = await prisma.rentals.findMany({
             include: {
-                order: {
-                    include: { payments: true },
-                },
+                PaymentSlip: true, // ✅ ดึงสลิปที่แนบกับ rental โดยตรง
+                order: true,
             },
         });
 
@@ -72,9 +71,10 @@ exports.renderAdminDashboard = async (req, res) => {
         const activeRentals = rentals.filter(r => r.rental_status === 'RENTED').length;
         const cancelledRentals = rentals.filter(r => r.rental_status === 'CANCELLED').length;
 
+        // ✅ รวมยอดจาก total_price ใน Rentals (หรือจะเอาจาก order.total_price ก็ได้)
         const totalRevenue = rentals.reduce((sum, r) => {
-            const payment = r.order?.payments?.[0];
-            return sum + (payment ? Number(payment.payment_amount) : 0);
+            const amount = r.total_price ? Number(r.total_price) : 0;
+            return sum + amount;
         }, 0);
 
         const monthlyRevenue = Array(12).fill(0);
@@ -82,8 +82,8 @@ exports.renderAdminDashboard = async (req, res) => {
 
         rentals.forEach(r => {
             const m = new Date(r.rental_date || new Date()).getMonth();
-            const payment = r.order?.payments?.[0];
-            if (payment) monthlyRevenue[m] += Number(payment.payment_amount);
+            const amount = r.total_price ? Number(r.total_price) : 0;
+            monthlyRevenue[m] += amount;
         });
 
         const statusCounts = [
@@ -111,8 +111,8 @@ exports.renderAdminDashboard = async (req, res) => {
 
 exports.getTopStats = async (req, res) => {
     try {
-      // ✅ Top 5 สินค้าถูกเช่ามากที่สุด
-      const topProducts = await prisma.$queryRaw`
+        // ✅ Top 5 สินค้าถูกเช่ามากที่สุด
+        const topProducts = await prisma.$queryRaw`
         SELECT p.product_name, COUNT(r.rental_id) AS count
         FROM Rentals r
         JOIN Product p ON r.product_id = p.product_id
@@ -120,9 +120,9 @@ exports.getTopStats = async (req, res) => {
         ORDER BY count DESC
         LIMIT 5;
       `;
-  
-      // ✅ Top 5 หมวดหมู่ยอดนิยม
-      const topCategories = await prisma.$queryRaw`
+
+        // ✅ Top 5 หมวดหมู่ยอดนิยม
+        const topCategories = await prisma.$queryRaw`
         SELECT c.category_name, COUNT(r.rental_id) AS count
         FROM Rentals r
         JOIN Product p ON r.product_id = p.product_id
@@ -131,13 +131,13 @@ exports.getTopStats = async (req, res) => {
         ORDER BY count DESC
         LIMIT 5;
       `;
-  
-      res.json({ topProducts, topCategories });
+
+        res.json({ topProducts, topCategories });
     } catch (err) {
-      console.error("❌ getTopStats error:", err);
-      res.status(500).json({ error: "ไม่สามารถดึงข้อมูลยอดนิยมได้" });
+        console.error("❌ getTopStats error:", err);
+        res.status(500).json({ error: "ไม่สามารถดึงข้อมูลยอดนิยมได้" });
     }
-  };
-  
+};
+
 
 module.exports = exports;
