@@ -6,7 +6,7 @@
     </head>
 
     <body>
-        <%- include('includes/nav') %>
+        <%- include('includes/navAdmin') %>
             <main>
                 <section class="index">
                     <h2>แก้ไขสินค้า</h2>
@@ -47,7 +47,7 @@
                                             style="position:relative; display:inline-block;">
                                             <img src="<%= img.image_url %>" alt="Product Image"
                                                 style="max-width:150px; border-radius:10px;">
-                                            <button type="button" class="remove-btn" >×</button>
+                                            <button type="button" class="remove-btn">×</button>
                                         </div>
                                         <% }) %>
                                 </div>
@@ -142,7 +142,13 @@
                         <div id="pricePryExtra" class="price-field">
                             <label>ราคาเพิ่มสำหรับไพร</label>
                             <input type="number" name="price_pry_extra"
-                                value="<%= product.prices.find(p => p.type === 'addon_prop')?.price_test || '' %>">
+                                value="<%= product.prices.find(p => p.price_pry_extra)?.price_pry_extra || '' %>">
+                        </div>
+
+                        <div class="form-group">
+                            <label>ราคามัดจำสินค้า (บาท)</label>
+                            <input type="number" name="deposit" value="<%= product.prices[0]?.Deposit || '' %>" <p
+                                class="note">** ราคามัดจำจะคืนให้เมื่อสินค้าคืนตามสภาพ **</p>
                         </div>
 
                         <div class="form-group">
@@ -160,32 +166,32 @@
                 </section>
             </main>
 
-            <%- include('includes/footer') %>
-                <script src="/js/script.js"></script>
-                <script src="/js/add_product.js"></script>
-                <script>
-                    document.addEventListener("DOMContentLoaded", () => {
-                        const oldImages = document.querySelectorAll(".image-box");
-                        const removedContainer = document.getElementById("removed-container");
 
-                        oldImages.forEach(box => {
-                            const btn = box.querySelector(".remove-btn");
-                            btn.addEventListener("click", () => {
-                                const imageId = box.getAttribute("data-id");
+            <script src="/js/script.js"></script>
+            <script src="/js/add_product.js"></script>
+            <script>
+                document.addEventListener("DOMContentLoaded", () => {
+                    const oldImages = document.querySelectorAll(".image-box");
+                    const removedContainer = document.getElementById("removed-container");
 
-                                // สร้าง hidden input เพื่อส่ง id ของรูปที่จะลบ
-                                const input = document.createElement("input");
-                                input.type = "hidden";
-                                input.name = "removeImages";
-                                input.value = imageId;
-                                removedContainer.appendChild(input);
+                    oldImages.forEach(box => {
+                        const btn = box.querySelector(".remove-btn");
+                        btn.addEventListener("click", () => {
+                            const imageId = box.getAttribute("data-id");
 
-                                // ลบรูปออกจากหน้า (ไม่ reload)
-                                box.remove();
-                            });
+                            // สร้าง hidden input เพื่อส่ง id ของรูปที่จะลบ
+                            const input = document.createElement("input");
+                            input.type = "hidden";
+                            input.name = "removeImages";
+                            input.value = imageId;
+                            removedContainer.appendChild(input);
+
+                            // ลบรูปออกจากหน้า (ไม่ reload)
+                            box.remove();
                         });
                     });
-                </script>
+                });
+            </script>
 
     </body>
 

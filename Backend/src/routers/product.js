@@ -2,14 +2,16 @@ const express = require('express');
 const router = express.Router();
 const productController = require('../Controllers/productController');
 const productControllerPage = require('../Controllers/productControllerPage');
+const { requireAdmin } = require('../middlewares/roleMiddleware');
 
 // render ฟอร์มเพิ่มสินค้า
-router.get("/add-product", productController.renderAddProduct);
+router.get("/add-product",requireAdmin, productController.renderAddProduct);
 
 
 // เพิ่มสินค้า
 router.post(
   "/products",
+  requireAdmin,
   productController.upload,
   productController.createProduct
 );
@@ -17,12 +19,14 @@ router.post(
 // อัปเดตสินค้า
 router.post(
   "/products/:id/update",
+  requireAdmin,
   productController.upload,
   productController.updateProduct
 );
 
 // ลบสินค้า
-router.delete("/products/:id/delete", productController.deleteProduct);
+router
+  .delete("/products/:id/delete", requireAdmin, productController.deleteProduct);
 
 
 router.get("/products/:id/edit", productControllerPage.renderEditProduct);

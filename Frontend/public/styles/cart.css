@@ -1,111 +1,180 @@
-/* rental.css */
+/* 🎀 cart.css – Lendly Pastel Theme */
 
+body {
+  background: #f9f8ff;
+  font-family: 'Prompt', sans-serif;
+  color: #333;
+}
+
+/* 🧺 กล่องสินค้าแต่ละชิ้น */
 .rental-card {
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    padding: 20px;
-    margin-bottom: 20px;
-    display: flex;
-    align-items: center;
-    gap: 20px;
+  background: #fff;
+  border: 1px solid #e5d4ff;
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  box-shadow: 0 4px 12px rgba(109, 40, 217, 0.08);
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
+}
+
+.rental-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(109, 40, 217, 0.15);
+}
+
+.rental-card img {
+  width: 160px;
+  height: 160px;
+  object-fit: cover;
+  border-radius: 12px;
+  border: 3px solid #f3e8ff;
+}
+
+/* 📦 รายละเอียดสินค้า */
+.rental-info {
+  flex: 1;
+}
+
+.rental-info h3 {
+  margin: 0 0 8px 0;
+  font-size: 22px;
+}
+
+.rental-info p {
+  margin: 4px 0;
+  font-size: 16px;
+  color: #555;
+}
+
+.rental-info a {
+  text-decoration: none;
+  color: #6d28d9;
+  font-size: 20px;
+  font-weight: 600;
+  transition: color 0.2s ease;
+}
+
+.rental-info a:hover {
+  color: #a855f7;
+}
+
+/* 🗑️ ปุ่มลบ */
+.remove-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 22px;
+  color: #a78bfa;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.remove-btn:hover {
+  transform: scale(1.15);
+  color: #7c3aed;
+}
+
+/* ✅ ปุ่มเช่าสินค้าที่เลือก */
+.cart-actions {
+  text-align: right;
+  margin-top: 25px;
+}
+
+.btn-rent {
+  background-color: #8b5cf6;
+  color: #fff;
+  padding: 12px 25px;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: background-color 0.25s ease, transform 0.15s ease, box-shadow 0.25s ease;
+}
+
+.btn-rent:hover {
+  background-color: #6d28d9;
+  transform: scale(1.05);
+  box-shadow: 0 6px 15px rgba(109, 40, 217, 0.3);
+}
+
+/* 🔘 Checkbox */
+#selectAll {
+  transform: scale(1.3);
+  accent-color: #8b5cf6;
+}
+
+input[type='checkbox'] {
+  accent-color: #8b5cf6;
+}
+
+/* 📱 Responsive */
+@media (max-width: 477px) {
+  .rental-card {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 15px;
   }
-  
+
   .rental-card img {
-    width: 200px;
-    height: 200px;
-    object-fit: cover;
-    border-radius: 8px;
+    width: 100%;
+    height: auto;
   }
-  
-  .rental-info {
-    flex: 1;
-  }
-  
-  .rental-info h3 {
-    margin: 0 0 10px 0;
-    font-size: 22px;
-  }
-  
-  .rental-info p {
-    margin: 5px 0;
-    font-size: 16px;
-  }
-  
+
   .rental-info a {
-    text-decoration: none;
-    color: #000;
-    font-size: 20px;
-    font-weight: 600;
-    transition: color 0.2s ease;
+    font-size: 18px;
   }
-  
-  .rental-info a:hover {
-    color: #bf8bfe;
-  }
-  
-  .rental-info .btn {
-    display: inline-block;
-    margin-top: 10px;
-    padding: 10px 15px;
-    background-color: #bf8bfe;
-    color: white;
-    text-decoration: none;
-    border-radius: 5px;
-    transition: background-color 0.2s ease;
-  }
-  
-  .rental-info .btn:hover {
-    background-color: rgb(159, 20, 252);
-  }
-  
-  .tab-content {
-    display: none;
-  }
-  
-  i {
-    font-size: 24px;
-    font-weight: 600;
-  }
-  
-  .cart-actions {
-    text-align: right;
-    margin-top: 20px;
-  }
-  
-  .btn-rent {
-    background-color: #5a67d8;
-    color: #fff;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    font-size: 1rem;
-    transition: background-color 0.2s ease, transform 0.15s ease;
-  }
-  
-  .btn-rent:hover {
-    background-color: #434190;
-    transform: scale(1.05);
-  }
-  
-  /* แก้ selector เดิมให้ถูกต้อง */
-  .bx-cart:hover {
-    transform: scale(1.15);
-  }
-  
-  @media (max-width: 477px) {
-    .rental-card {
-      flex-direction: column;
-      align-items: flex-start;
-    }
-  
-    .rental-card img {
-      width: 100%;
-      height: auto;
-    }
-  }
-  #selectAll {
-    transform: scale(1.2);
-    accent-color: #5a67d8;
-  }
-  
+}
+/* ✅ Checkbox ตรงกลางสมบูรณ์แบบ */
+input[type='checkbox'] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 24px;
+  height: 24px;
+  border: 2px solid #c4b5fd;
+  border-radius: 8px;
+  background: #fff;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.25s ease;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+input[type='checkbox']:hover {
+  box-shadow: 0 0 0 4px rgba(167, 139, 250, 0.15);
+}
+
+input[type='checkbox']:checked {
+  background-color: #8b5cf6;
+  border-color: #8b5cf6;
+  box-shadow: 0 0 6px rgba(139, 92, 246, 0.3);
+  animation: pop 0.25s ease-out;
+}
+
+/* 🎯 เครื่องหมายถูกตรงกลางเป๊ะ */
+input[type='checkbox']::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 7px;
+  height: 12px;
+  border-right: 3px solid #fff;
+  border-bottom: 3px solid #fff;
+  transform: translate(-50%, -50%) scale(0) rotate(45deg);
+  transform-origin: center;
+  transition: transform 0.25s ease-out;
+}
+
+input[type='checkbox']:checked::after {
+  transform: translate(-50%, -50%) scale(1) rotate(45deg);
+}
+
+@keyframes pop {
+  0% { transform: scale(0.9); }
+  50% { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}

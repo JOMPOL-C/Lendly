@@ -1,0 +1,254 @@
+#chat-widget {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    z-index: 999;
+    font-family: 'Prompt', sans-serif;
+}
+
+#chat-toggle {
+    background: #6d28d9;
+    color: #fff;
+    border: none;
+    padding: 12px 18px;
+    border-radius: 50px;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+#chat-box {
+    width: 320px;
+    height: 420px;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    flex-direction: column;
+    overflow: hidden;
+    position: absolute;
+    bottom: 60px;
+    left: 0;
+
+    /* 🎬 เริ่มซ่อนพร้อม transition */
+    display: none;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.25s ease;
+}
+
+/* ✅ แสดงพร้อมเอฟเฟกต์นุ่ม ๆ */
+#chat-box.active {
+    display: flex;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+#chat-box:not(.hidden) {
+    display: flex;
+    /* ✅ เปิดเมื่อไม่มี hidden */
+}
+
+.hidden {
+    display: none;
+}
+
+#chat-messages {
+    flex: 1;
+    padding: 10px;
+    overflow-y: auto;
+    background: #f9fafb;
+}
+
+/* ===== 🎨 Bubble แชท แยกฝั่ง ===== */
+.msg {
+    display: flex;
+    flex-direction: column;
+    margin: 8px 0;
+    max-width: 75%;
+    padding: 10px 14px;
+    border-radius: 16px;
+    line-height: 1.4;
+    word-wrap: break-word;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+/* 🟣 แอดมิน (ชิดขวา) */
+.msg.me {
+    align-self: flex-end;
+    background: #8b5cf6;
+    color: #fff;
+    border-top-right-radius: 0;
+}
+
+/* ⚪ ลูกค้า (ชิดซ้าย) */
+.msg.user {
+    align-self: flex-start;
+    background: #f3f4f6;
+    color: #111827;
+    border-top-left-radius: 0;
+}
+
+/* 🕒 เวลาในแต่ละข้อความ */
+.msg small {
+    margin-top: 4px;
+    font-size: 11px;
+    color: #d1d5db;
+    text-align: right;
+}
+
+/* 🏷️ ชื่อผู้ส่ง */
+.sender-name {
+    font-weight: 600;
+    font-size: 13px;
+    margin-bottom: 4px;
+}
+
+
+#chat-form {
+    display: flex;
+    border-top: 1px solid #ddd;
+}
+
+#chat-input {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    outline: none;
+}
+
+#chat-form button {
+    background: #6d28d9;
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    cursor: pointer;
+}
+
+#chat-toggle {
+    position: relative;
+    background: #6d28d9;
+    color: #fff;
+    border: none;
+    padding: 12px 18px;
+    border-radius: 50px;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.sender-name {
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 4px;
+    display: block;
+}
+
+/* 🪩 แอนิเมชันเด้งของปุ่ม 💬 */
+@keyframes bounceButton {
+    0% {
+        transform: scale(1);
+    }
+
+    25% {
+        transform: scale(1.1);
+    }
+
+    50% {
+        transform: scale(0.95);
+    }
+
+    75% {
+        transform: scale(1.05);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+#chat-toggle.bounce {
+    animation: bounceButton 0.6s ease;
+}
+
+/* ===== 🌈 กล่องข้อความแชท ===== */
+.msg {
+    max-width: 70%;
+    margin: 8px 0;
+    padding: 10px 14px;
+    border-radius: 14px;
+    line-height: 1.4;
+    word-wrap: break-word;
+    display: inline-block;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* ฝั่งลูกค้า */
+.msg.user {
+    background: #f3f4f6;
+    /* เทาอ่อน */
+    color: #111827;
+    align-self: flex-start;
+    border-top-left-radius: 0;
+}
+
+/* ฝั่งแอดมิน */
+.msg.me {
+    background: #8b5cf6;
+    /* ม่วงเข้ม */
+    color: #fff;
+    align-self: flex-end;
+    border-top-right-radius: 0;
+}
+
+/* เวลา */
+.msg small {
+    display: block;
+    font-size: 11px;
+    color: #d1d5db;
+    margin-top: 4px;
+    text-align: right;
+}
+
+/* ===== 🧍 รายชื่อผู้ใช้ในแถบด้านซ้าย ===== */
+.chat-item {
+    transition: background 0.2s ease, transform 0.1s ease;
+}
+
+.chat-item:hover {
+    background: #ede9fe;
+    transform: scale(1.02);
+}
+
+/* ===== 🧭 ส่วนหัวแชท ===== */
+#chat-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #e1d0fd;
+    color: white;
+    padding: 12px 16px;
+    font-weight: 500;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+/* ===== ✏️ กล่องพิมพ์ข้อความ ===== */
+#chat-input {
+    flex: 1;
+    padding: 10px 12px;
+    border: none;
+    outline: none;
+    font-size: 15px;
+    border-top: 1px solid #ddd;
+}
+
+#chat-form button {
+    background: #6d28d9;
+    border: none;
+    color: #fff;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background 0.2s ease;
+}
+
+#chat-form button:hover {
+    background: #7c3aed;
+}

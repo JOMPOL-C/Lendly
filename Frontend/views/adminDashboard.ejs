@@ -1,0 +1,119 @@
+<%- include('includes/head') %>
+<link rel="stylesheet" href="/styles/adminDashboard.css">
+</head>
+<body>
+  <%- include('includes/navAdmin') %>
+
+  <main class="dashboard-container">
+    <h2>แดชบอร์ดสถิติระบบ Lendly</h2>
+
+    <section class="stats-summary">
+      <div class="card">
+        <h3>คำสั่งเช่าทั้งหมด</h3>
+        <p><%= totalRentals %></p>
+      </div>
+      <div class="card">
+        <h3>กำลังเช่าอยู่</h3>
+        <p><%= activeRentals %></p>
+      </div>
+      <div class="card">
+        <h3>รออนุมัติ</h3>
+        <p><%= waitingRentals %></p>
+      </div>
+      <div class="card">
+        <h3>ยกเลิกแล้ว</h3>
+        <p><%= cancelledRentals %></p>
+      </div>
+      <div class="card highlight">
+        <h3>รายได้รวม</h3>
+        <p><%= totalRevenue.toLocaleString() %> บาท</p>
+      </div>
+    </section>
+
+    <!-- 📊 กราฟรายได้รายเดือน
+    <section class="chart-section">
+      <h3>รายได้รายเดือน</h3>
+      <canvas id="revenueChart" width="400" height="200"></canvas>
+    </section>
+
+    <section class="chart-section">
+        <h3>วิเคราะห์ข้อมูลยอดนิยม</h3>
+        <div style="text-align:center; margin-bottom:15px;">
+          <button onclick="loadTopStats()">📊 ดูสินค้ายอดนิยม</button>
+        </div>
+        <div id="top-stats"></div>
+      </section> -->
+      
+
+  <!-- ✅ โหลด Chart.js หลัง DOM -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+  <script defer>
+    document.addEventListener('DOMContentLoaded', () => {
+      const monthLabels = <%- JSON.stringify(monthLabels) %>;
+      const monthlyRevenue = <%- JSON.stringify(monthlyRevenue) %>;
+      const statusCounts = <%- JSON.stringify(statusCounts) %>;
+
+      const ctx1 = document.getElementById('revenueChart').getContext('2d');
+      new Chart(ctx1, {
+        type: 'line',
+        data: {
+          labels: monthLabels,
+          datasets: [{
+            label: 'รายได้รายเดือน (บาท)',
+            data: monthlyRevenue,
+            borderColor: '#8b5cf6',
+            backgroundColor: 'rgba(139,92,246,0.2)',
+            tension: 0.3,
+            fill: true,
+            pointRadius: 4,
+            pointHoverRadius: 6
+          }]
+        },
+        options: {
+          plugins: { legend: { display: false } },
+          scales: {
+            y: { beginAtZero: true, ticks: { callback: v => v.toLocaleString() } }
+          }
+        }
+      });
+
+      const ctx2 = document.getElementById('rentalStatusChart').getContext('2d');
+      new Chart(ctx2, {
+        type: 'doughnut',
+        data: {
+          labels: ['รออนุมัติ', 'กำลังเช่า', 'คืนแล้ว', 'ยกเลิก'],
+          datasets: [{
+            data: statusCounts,
+            backgroundColor: ['#fde68a','#a5b4fc','#bbf7d0','#fecaca']
+          }]
+        },
+        options: {
+          plugins: { legend: { position: 'bottom' } }
+        }
+      });
+    });
+  </script>
+
+<script>
+    async function loadTopStats() {
+      const res = await fetch('/admin/top-stats');
+      const data = await res.json();
+    
+      const html = `
+        <div class="top-box">
+          <h4>🛍️ สินค้าที่ถูกเช่ามากที่สุด</h4>
+          <ul>
+            ${data.topProducts.map(p => `<li>${p.product_name} - ${p.count} ครั้ง</li>`).join('')}
+          </ul>
+          <h4>🏷️ หมวดหมู่ยอดนิยม</h4>
+          <ul>
+            ${data.topCategories.map(c => `<li>${c.category_name} - ${c.count} ครั้ง</li>`).join('')}
+          </ul>
+        </div>
+      `;
+      document.getElementById('top-stats').innerHTML = html;
+    }
+    </script>
+    
+</body>
+</html>

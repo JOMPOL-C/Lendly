@@ -1,8 +1,10 @@
-/* Base */
+/* =============================
+   🌸 LENDLY PROFILE STYLE (Pastel Theme)
+   ============================= */
 body {
   font-family: "Prompt", "Spartan", sans-serif;
   margin: 0;
-  background: #f9f9fb;
+  background: linear-gradient(180deg, #f8f4ff 0%, #fdfbff 100%);
   color: #333;
 }
 
@@ -11,13 +13,13 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #ede3f3; /* สีเดียวกับ header ใน stylemain.css */
+  background: #ede3f3;
   padding: 12px 30px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
 }
 
 .navbar .logo img {
-  height: 100px;
+  height: 90px;
 }
 
 .navbar nav a {
@@ -34,141 +36,57 @@ body {
 
 /* Profile Container */
 .container {
-  max-width: 800px;
-  margin: 40px auto;
+  max-width: 780px;
+  margin: 50px auto;
   padding: 20px;
 }
 
+/* Heading */
 h1 {
   text-align: center;
-  color: #45269b;
-  margin-bottom: 30px;
+  color: #5d36c8;
+  font-weight: 700;
+  margin-bottom: 35px;
+  letter-spacing: 0.5px;
 }
 
 /* Profile Card */
 .profile-card {
   background: #fff;
-  border-radius: 16px;
-  padding: 40px 20px;
-  text-align: center;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-}
-
-.profile-card .profile-icon {
-  font-size: 100px;
-  color: #7d4dff;
-  margin-bottom: 15px;
-}
-
-.profile-card h2 {
-  font-size: 24px;
-  color: #222;
-  margin-bottom: 10px;
-}
-
-.profile-card p {
-  font-size: 15px;
-  color: #555;
-  margin: 6px 0;
-}
-
-/* Buttons */
-.profile-actions {
-  margin-top: 25px;
-}
-
-.btn {
-  display: inline-block;
-  padding: 10px 20px;
-  margin: 5px;
-  border: none;
-  border-radius: 8px;
-  font-weight: 600;
-  font-size: 0.95rem;
-  cursor: pointer;
-  text-decoration: none;
-  transition: 0.2s;
-}
-
-.btn-primary {
-  background: #7d4dff;
-  color: #fff;
-}
-
-.btn-primary:hover {
-  background: #5a35d1;
-}
-
-.btn-danger {
-  background: crimson;
-  color: #fff;
-}
-
-.btn-danger:hover {
-  background: #b2122e;
-}
-
-
-/* Responsive */
-@media (max-width: 600px) {
-  .profile-card {
-    padding: 20px 15px;
-  }
-
-  .profile-card h2 {
-    font-size: 20px;
-  }
-
-  .profile-card p {
-    font-size: 14px;
-  }
-}
-.form-group {
+  border-radius: 20px;
+  padding: 35px 25px;
   text-align: left;
-  margin: 15px 0;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  transition: 0.3s ease;
 }
 
-.form-group label {
-  font-weight: 600;
-  color: #333;
-  margin-bottom: 6px;
-  display: block;
+.profile-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
 }
 
-.form-group input {
-  width: 100%;
-  padding: 10px 12px;
-  border: 2px solid rgba(0,0,0,.2);
-  border-radius: 8px;
-  font-size: 1rem;
-  transition: border-color 0.2s;
-}
-
-.form-group input:focus {
-  border-color: #7d4dff;
-  box-shadow: 0 0 0 3px rgba(125,77,255,.15);
-  outline: none;
-}
+/* Profile Picture */
 .profile-pic-wrapper {
   position: relative;
   width: 120px;
   height: 120px;
-  margin: 0 auto 20px;
+  margin: 0 auto 25px;
 }
 
 .profile-pic-label {
   cursor: pointer;
-  display: block;
   width: 100%;
   height: 100%;
   border-radius: 50%;
   overflow: hidden;
   position: relative;
+  border: 3px solid #cbb7ff;
+  box-shadow: 0 4px 8px rgba(125, 77, 255, 0.15);
 }
 
 .profile-icon {
   font-size: 120px;
-  color: #9c9c9c;
+  color: #c1b2ff;
 }
 
 .profile-pic {
@@ -182,13 +100,207 @@ h1 {
   position: absolute;
   bottom: 5px;
   right: 5px;
-  background: white;
+  background: #fff;
   border-radius: 50%;
-  padding: 5px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  padding: 6px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
 .camera-icon i {
   font-size: 18px;
-  color: #666;
+  color: #6c4edf;
+}
+
+/* Form Groups */
+.form-group {
+  text-align: left;
+  margin: 15px 0;
+}
+
+.form-group label {
+  font-weight: 600;
+  color: #4b2db8;
+  margin-bottom: 6px;
+  display: block;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 2px solid rgba(125, 77, 255, 0.25);
+  border-radius: 10px;
+  font-size: 1rem;
+  transition: 0.25s;
+  background: #fafaff;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  border-color: #7d4dff;
+  box-shadow: 0 0 0 3px rgba(125, 77, 255, 0.15);
+  outline: none;
+}
+
+.form-group select {
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,<svg fill='%237d4dff' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 16px;
+}
+
+/* Buttons */
+.profile-actions {
+  margin-top: 30px;
+  text-align: center;
+}
+
+.btn {
+  display: inline-block;
+  padding: 10px 25px;
+  margin: 8px;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  text-decoration: none;
+  transition: 0.25s;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #7d4dff, #9e77ff);
+  color: #fff;
+  box-shadow: 0 3px 8px rgba(125, 77, 255, 0.3);
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, #6d3dee, #8d68ff);
+  transform: translateY(-1px);
+}
+
+.btn-danger {
+  background: #f44336;
+  color: #fff;
+  box-shadow: 0 3px 8px rgba(244, 67, 54, 0.3);
+}
+
+.btn-danger:hover {
+  background: #d32f2f;
+  transform: translateY(-1px);
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .profile-card {
+    padding: 20px 15px;
+  }
+
+  h1 {
+    font-size: 1.5rem;
+  }
+
+  .btn {
+    width: 100%;
+  }
+}
+
+/* ✅ Toast Notification */
+.toast-success {
+  position: fixed;
+  top: 25px;
+  right: 25px;
+  background: linear-gradient(135deg, #7d4dff, #9e77ff);
+  color: white;
+  padding: 14px 24px;
+  border-radius: 12px;
+  font-weight: 500;
+  font-size: 1rem;
+  box-shadow: 0 4px 12px rgba(125, 77, 255, 0.4);
+  z-index: 1000;
+  opacity: 0;
+  transform: translateY(-20px);
+  animation: fadeIn 0.6s forwards;
+}
+
+.toast-success.hide {
+  animation: fadeOut 0.6s forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  to {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+}
+
+.hidden {
+  display: none;
+}
+
+/* ✅ แสดงรูปบัตรประชาชนในโปรไฟล์ */
+.idcard-preview {
+  margin-top: 8px;
+  text-align: center;
+}
+
+.idcard-preview img.idcard-thumb {
+  width: 200px;
+  height: auto;
+  border-radius: 10px;
+  border: 2px solid #cbb7ff;
+  box-shadow: 0 4px 10px rgba(125, 77, 255, 0.2);
+  transition: transform 0.25s ease;
+}
+
+.idcard-preview img.idcard-thumb:hover {
+  transform: scale(1.05);
+}
+
+.hint {
+  color: #777;
+  font-size: 0.85rem;
+  margin-top: 6px;
+}
+.toast-error {
+  position: fixed;
+  top: 90px;
+  right: 30px;
+  background-color: #fee2e2;
+  color: #b91c1c;
+  padding: 12px 20px;
+  border-radius: 8px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+  font-family: "Prompt", sans-serif;
+  font-weight: 500;
+  opacity: 0;
+  transform: translateY(-10px);
+  animation: fadeInOut 4s ease forwards;
+  z-index: 9999;
+}
+
+@keyframes fadeInOut {
+  0% { opacity: 0; transform: translateY(-10px); }
+  10%, 90% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-10px); }
 }

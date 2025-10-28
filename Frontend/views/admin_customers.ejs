@@ -1,0 +1,158 @@
+<%- include('includes/head') %>
+<link rel="stylesheet" href="/styles/admin.css">
+<link rel="stylesheet" href="/styles/admin_customers.css">
+</head>
+<body>
+  <%- include('includes/navAdmin') %>
+
+  <main class="section-p1">
+    <h2>รายชื่อลูกค้าทั้งหมด</h2>
+
+    <div class="table-container">
+      <table class="rental-table">
+        <thead>
+          <tr>
+            <th>รหัส</th>
+            <th>ชื่อ-สกุล</th>
+            <th>อีเมล</th>
+            <th>เบอร์โทร</th>
+            <th>ที่อยู่</th>
+            <th>สัดส่วน</th>
+            <th>จำนวนออเดอร์</th>
+            <th>รายละเอียด</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% customers.forEach(c => { %>
+            <tr>
+              <td><%= c.customer_id %></td>
+              <td><%= c.name %> <%= c.last_name %></td>
+              <td><%= c.customer_email || '-' %></td>
+              <td><%= c.customer_phone || '-' %></td>
+              <td>
+                <div class="address-block">
+                  <%= c.address || '' %><br>
+                  <%= c.sub_district || '' %> 
+                  <%= c.district || '' %> 
+                  <%= c.province || '' %> 
+                  <%= c.postal_code || '' %>
+                </div>
+              </td>
+              <td>
+                <% if (c.proportion) { %>
+                  อก <%= c.proportion.chest || '-' %> |
+                  เอว <%= c.proportion.waist || '-' %> |
+                  สะโพก <%= c.proportion.hips || '-' %>
+                <% } else { %>
+                  -
+                <% } %>
+              </td>
+              <td><%= c.orders.length %></td>
+              <td>
+                <button class="btn-save toggle-btn" data-id="<%= c.customer_id %>">ดูประวัติ</button>
+              </td>
+            </tr>
+
+            <!-- 🔽 ตารางย่อยแสดงประวัติ -->
+            <tr class="order-history hidden" id="orders-<%= c.customer_id %>">
+              <td colspan="8" style="background:#faf5ff;">
+                <% if (c.orders.length === 0) { %>
+                  <p class="empty-state">ไม่มีประวัติคำสั่งซื้อ</p>
+                <% } else { %>
+                  <div class="order-history-box">
+                    <% c.orders.forEach(o => { %>
+                      <div class="order-card">
+                        <div class="order-header">
+                          <span class="order-code">🧾 รหัสออเดอร์: <b><%= o.order_id %></b></span>
+                          <span class="order-date"><%= new Date(o.created_at || c.customer_datetime).toLocaleDateString() %></span>
+                        </div>
+                        <div class="order-body">
+                          <p><b>ยอดรวม:</b> <%= o.total_price %>฿</p>
+                          <ul>
+                            <% o.Rentals.forEach(r => { %>
+                              <li>
+                                <span class="prod-name"><%= r.product?.product_name %></span>
+                                <span class="status-tag <%= r.rental_status.toLowerCase() %>">
+                                  <%= r.rental_status %>
+                                </span>
+                              </li>
+                            <% }) %>
+                          </ul>
+                        </div>
+                      </div>
+                    <% }) %>
+                  </div>
+                <% } %>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <script>
+    document.querySelectorAll('.toggle-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.dataset.id;
+        const target = document.getElementById(`orders-${id}`);
+        target.classList.toggle('hidden');
+      });
+    });
+  </script>
+
+  <style>
+    .hidden { display: none; }
+    .order-history td {
+      background: #faf5ff;
+      border-top: 1px solid #ddd;
+    }
+    .order-history-box {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+    .order-card {
+      background: white;
+      border-radius: 10px;
+      padding: 12px 16px;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.08);
+      width: 300px;
+    }
+    .order-header {
+      display: flex;
+      justify-content: space-between;
+      font-weight: 600;
+      color: #4c1d95;
+      margin-bottom: 6px;
+    }
+    .order-body p {
+      margin: 4px 0;
+      color: #555;
+    }
+    .order-body ul {
+      padding-left: 18px;
+      margin: 0;
+    }
+    .order-body li {
+      font-size: 14px;
+      margin-bottom: 4px;
+      color: #333;
+    }
+    .status-tag {
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: 8px;
+      font-size: 12px;
+      color: white;
+      margin-left: 6px;
+    }
+    .status-tag.waiting_confirm { background: #fbbf24; }
+    .status-tag.waiting_payment { background: #f97316; }
+    .status-tag.waiting_deliver { background: #60a5fa; }
+    .status-tag.rented { background: #10b981; }
+    .status-tag.returned { background: #8b5cf6; }
+    .status-tag.cancelled { background: #ef4444; }
+  </style>
+</body>
+</html>

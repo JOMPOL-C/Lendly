@@ -1,11 +1,9 @@
 <%- include('includes/head') %>
-    <link rel="stylesheet" href="/styles/rental.css">
-    <link rel="stylesheet" href="/styles/review.css">
     <link rel="stylesheet" href="/styles/add_product.css">
     </head>
 
     <body>
-        <%- include('includes/nav') %>
+        <%- include('includes/navAdmin') %>
             <main>
                 <section class="index">
                     <h2>เพิ่มสินค้า</h2>
@@ -132,6 +130,12 @@
                             <input type="number" name="price_pry_extra">
                         </div>
 
+                        <div id="depositField" class="price-field">
+                            <label>ราคามัดจำสินค้า (บาท)</label>
+                            <input type="number" name="deposit" min="0" step="0.01" placeholder="กรอกราคามัดจำ">
+                            <p class="note">** ราคามัดจำจะคืนให้เมื่อสินค้าคืนตามสภาพ **</p>
+                        </div>
+
                         <!-- สถานะสินค้า -->
                         <div class="form-group">
                             <label>สถานะสินค้า</label>
@@ -146,7 +150,6 @@
                 </section>
             </main>
 
-            <%- include('includes/footer') %>
                 <script src="/js/script.js"></script>
                 <script src="/js/add_product.js"></script>
     </body>

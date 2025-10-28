@@ -10,11 +10,13 @@ router
     .get("/rentals/me", authMiddleware, rentalController.getMyRentals)
     .get("/Detail_Ren", rentalController.getRentalDetailPage);
 
-// ร้านค้า/แอดมิน
+// แอดมิน
 router
     .get("/rentals", rentalController.getRentals)
     .delete("/rentals/:id", rentalController.deleteRental)
-    .get("/rentals/product/:productId", rentalController.getBookingsByProduct);
+    .get("/rentals/product/:productId", rentalController.getBookingsByProduct)
+    .put("/rentals/reject", rentalController.rejectRentals);
+
 
 
 router

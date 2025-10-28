@@ -143,6 +143,23 @@ async function setupCalendar(bookings = []) {
     });
   }
 
+  // ============================
+  // 🩶 Disable calendar จนกว่าจะเลือกของเช่า
+  // ============================
+  const calendarEl = document.querySelector("#calendar");
+
+  // ตั้งค่าเริ่มต้น: เทาและกดไม่ได้
+  calendarEl.classList.add("disabled-calendar");
+  calendarEl.style.pointerEvents = "none";
+  calendarEl.style.opacity = "0.5"; // สีจางๆหน่อย
+
+  // เมื่อผู้ใช้เลือกของเช่า → เปิดใช้งานปฏิทิน
+  document.querySelector("select[name=components]").addEventListener("change", () => {
+    calendarEl.classList.remove("disabled-calendar");
+    calendarEl.style.pointerEvents = "auto";
+    calendarEl.style.opacity = "1";
+  });
+
 
   // ============================
   // 🗓️ Flatpickr setup
@@ -193,6 +210,16 @@ async function setupCalendar(bookings = []) {
         const start = selectedDates[0];
         const daysDiff = Math.floor((start - today) / (1000 * 60 * 60 * 24));
 
+        const mode = document.querySelector("input[name=mode]:checked")?.value;
+        const component = document.querySelector("select[name=components]")?.value;
+
+        if (!component) {
+          showTooltip("กรุณาเลือกของเช่าก่อน");
+          instance.clear();
+          return;
+        }
+        
+
         // ✅ ห้ามจองเร็วเกินไป
         if (daysDiff < (delay.delay_ship_days + delay.delay_admin_days)) {
           alert(`⛔ ต้องเลือกวันเช่าที่ห่างจากวันนี้อย่างน้อย ${delay.delay_ship_days + delay.delay_admin_days} วัน`);
@@ -207,28 +234,35 @@ async function setupCalendar(bookings = []) {
           return;
         }
 
-        // ✅ ตั้งวันสิ้นสุดตามโหมด
-        // ✅ ตั้งวันสิ้นสุดตามจำนวนวันจริงจากฐานข้อมูล
         isSettingDate = true;
         const end = new Date(start);
 
-        // ใช้ข้อมูลวันจาก productPrices ตัวแรก
-        const firstPrice = productPrices?.[0] || {};
-        const rentalDays =
-          mode === "test"
-            ? (firstPrice.days_test || 1)
-            : (firstPrice.days_pri || 1);
+        const mapping = {
+          "suit": "suit",
+          "wig": "wig",
+          "set-wig": "suit_wig",
+          "set-wig-prop": "suit_wig_prop",
+          "set-wig-shoe": "suit_wig_shoe",
+          "set-wig-prop-shoe": "suit_wig_prop_shoe",
+          "prop": "solo_prop",
+          "shoe": "solo_shoe"
+        };
 
-        // บวกจำนวนวัน -1 เพราะวันเริ่มเช่านับเป็นวันแรกแล้ว
+        const dbType = mapping[component];
+        const selected = productPrices.find(p => p.type === dbType);
+
+        const rentalDays = mode === "test"
+          ? (selected?.days_test || 1)
+          : (selected?.days_pri || 1);
+
         end.setDate(start.getDate() + (rentalDays - 1));
-
         instance.setDate([start, end], true);
         isSettingDate = false;
 
-        console.log(`📅 โหมด: ${mode}, จำนวนวันเช่า: ${rentalDays}`);
-
+        console.log(`📅 โหมด: ${mode}, ของเช่า: ${component}, จำนวนวันเช่า: ${rentalDays}`);
       }
-    },
+    }
+
   });
 
 

@@ -1,0 +1,18 @@
+<!-- 🔹 Floating Chat Widget -->
+<link rel="stylesheet" href="/styles/chatWidget.css">
+<div id="chat-widget">
+  <button id="chat-toggle">💬 แชทกับแอดมิน</button>
+  <div id="chat-box" class="hidden">
+    <div id="chat-header">
+      <p>ฝ่ายบริการลูกค้า</p>
+      <span id="chat-close">&times;</span>
+    </div>
+    <div id="chat-messages"></div>
+    <form id="chat-form">
+      <input id="chat-input" type="text" placeholder="พิมพ์ข้อความ..." autocomplete="off" />
+      <button type="submit">ส่ง</button>
+    </form>
+  </div>
+</div>
+
+<script type="module" src="/js/chatWidget.js"></script>

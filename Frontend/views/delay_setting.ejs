@@ -1,12 +1,12 @@
 <%- include('includes/head') %>
 
     <body class="bg-zinc-50">
-        <%- include('includes/nav') %>
+        <%- include('includes/navAdmin') %>
 
             <main class="max-w-lg mx-auto py-10">
                 <h1 class="text-2xl font-bold mb-6">ตั้งค่าดีเลย์การจอง</h1>
 
-                <form action="/api/admin/delay-setting" method="POST">
+                <form action="/api/admin/delay_setting" method="POST">
                     <label class="block">
                         ส่งของล่วงหน้า (วัน)
                         <input type="number" name="delay_ship_days" value="<%= delay?.delay_ship_days || 3 %>"
@@ -37,9 +37,10 @@
                             class="border rounded p-2 w-full">
                     </label>
 
-                    <div class="form-group">
+                    <div class="form-group mt-4">
                         <label>รวมระยะเวลาทั้งหมด (วัน)</label>
-                        <input type="number" value="<%= delay.plus_delay_days %>" readonly>
+                        <input type="number" value="<%= delay.plus_delay_days %>" readonly
+                            class="border rounded p-2 w-full bg-gray-100 font-semibold text-center text-indigo-700">
                     </div>
 
 

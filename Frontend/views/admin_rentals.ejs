@@ -3,7 +3,7 @@
   </head>
 
   <body>
-    <%- include('includes/nav') %>
+    <%- include('includes/navAdmin') %>
 
       <main class="section-p1">
         <h2>คำสั่งเช่าที่รอยืนยัน</h2>
@@ -15,10 +15,13 @@
                 <th><input type="checkbox" id="selectAll"></th>
                 <th>รหัส</th>
                 <th>ลูกค้า</th>
+                <th>ที่อยู่</th>
+                <th>บัตรประชาชน</th>
                 <th>สินค้า</th>
                 <th>วันเช่า</th>
                 <th>วันคืน</th>
                 <th>สถานะ</th>
+                <th>สลีป</th>
               </tr>
             </thead>
             <tbody id="rentalBody"></tbody>
@@ -27,70 +30,158 @@
 
         <div class="actions">
           <button id="confirmSelectedBtn" class="btn-confirm">ยืนยันการจองที่เลือก</button>
+          <button id="rejectSelectedBtn" class="btn-cancel">ปฏิเสธคำสั่งซื้อ</button>
         </div>
       </main>
 
-      <%- include('includes/footer') %>
+      <!-- 🔹 Modal Popup -->
+      <div id="rejectModal" class="modal hidden">
+        <div class="modal-content">
+          <h3>ปฏิเสธคำสั่งซื้อ</h3>
+          <p>กรุณาเลือกเหตุผลที่ไม่สามารถจัดส่งสินค้าได้:</p>
 
-        <script>
-          document.addEventListener("DOMContentLoaded", async () => {
-            const res = await fetch("/api/rentals");
-            const rentals = await res.json();
-            const tbody = document.getElementById("rentalBody");
-            console.log("📦 rentals data:", rentals);
+          <select id="rejectReason">
+            <option value="">-- โปรดเลือกเหตุผล --</option>
+            <option value="สินค้าไม่พร้อมใช้งาน">สินค้าไม่พร้อมใช้งาน</option>
+            <option value="ข้อมูลหรือที่อยู่ลูกค้าไม่ถูกต้อง">ข้อมูลหรือที่อยู่ลูกค้าไม่ถูกต้อง</option>
+            <option value="ลูกค้าไม่มีความน่าเชื่อถือ">ลูกค้าไม่มีความน่าเชื่อถือ</option>
+            <option value="อื่นๆ">อื่นๆ โปรดระบุ...</option>
+          </select>
 
-            rentals
-              .filter(r => r.rental_status === "WAITING_CONFIRM")
-              .forEach(r => {
-                const tr = document.createElement("tr");
-                tr.innerHTML = `
-            <td><input type="checkbox" name="selected" value="${r.rental_id}"></td>
-            <td>${r.rental_id}</td>
-            <td>${r.customer ? `${r.customer.name} ${r.customer.last_name}` : "ไม่ระบุ"}</td>
-            <td>${r.product?.product_name}</td>
-            <td>${new Date(r.rental_date).toLocaleDateString()}</td>
-            <td>${new Date(r.rental_end_date).toLocaleDateString()}</td>
-            <td>${r.rental_status}</td>
-          `;
-                tbody.appendChild(tr);
-              });
+          <textarea id="rejectDetail" placeholder="ระบุเพิ่มเติม..." rows="3"></textarea>
 
-            // ✅ ติ๊กเลือกทั้งหมด
-            const selectAll = document.getElementById("selectAll");
-            selectAll?.addEventListener("change", e => {
-              document.querySelectorAll("input[name=selected]").forEach(chk => {
-                chk.checked = e.target.checked;
-              });
+          <div class="modal-actions">
+            <button id="confirmRejectBtn" class="btn-cancel">ยืนยัน</button>
+            <button id="cancelRejectBtn" class="btn-save">ยกเลิก</button>
+          </div>
+        </div>
+      </div>
+
+
+      <script>
+        document.addEventListener("DOMContentLoaded", async () => {
+          const res = await fetch("/api/rentals");
+          const rentals = await res.json();
+          const tbody = document.getElementById("rentalBody");
+          console.log("📦 rentals data:", rentals);
+
+          rentals
+            .filter(r => r.rental_status === "WAITING_CONFIRM")
+            .forEach(r => {
+              // ✅ ลิงก์ดูสลิป
+              const slipLink = r.PaymentSlip?.length
+                ? `<a href="${r.PaymentSlip[0].image_url}" target="_blank" class="slip-link">ดูสลิป</a>`
+                : `<span class="no-slip">ไม่มีสลิป</span>`;
+
+              // ✅ สร้าง HTML สำหรับที่อยู่
+              const addressInfo = r.customer
+                ? `
+                  <div class="address-block">
+                    <div>${r.customer.address || ''}</div>
+                    <div>${r.customer.sub_district || ''} ${r.customer.district || ''}</div>
+                    <div>${r.customer.province || ''} ${r.customer.postal_code || ''}</div>
+                  </div>
+                `
+                : "ไม่ระบุ";
+
+              // ✅ แสดงรูปบัตรประชาชน (thumbnail)
+              const idCard = r.customer?.id_card_image_url
+                ? `<a href="${r.customer.id_card_image_url}" target="_blank">
+                    <img src="${r.customer.id_card_image_url}" class="idcard-thumb" alt="บัตร ปชช.">
+                  </a>`
+                : `<span class="no-idcard">ไม่มีรูป</span>`;
+
+              // ✅ สร้างแถวตาราง
+              const tr = document.createElement("tr");
+              tr.innerHTML = `
+                <td><input type="checkbox" name="selected" value="${r.rental_id}"></td>
+                <td>${r.rental_id}</td>
+                <td>${r.customer ? `${r.customer.name} ${r.customer.last_name}` : "ไม่ระบุ"}</td>
+                <td>${addressInfo}</td>
+                <td>${idCard}</td>
+                <td>${r.product?.product_name || "ไม่พบสินค้า"}</td>
+                <td>${new Date(r.rental_date).toLocaleDateString()}</td>
+                <td>${new Date(r.rental_end_date).toLocaleDateString()}</td>
+                <td><span class="status-tag waiting">รอยืนยัน</span></td>
+                <td>${slipLink}</td>
+              `;
+              tbody.appendChild(tr);
             });
 
-            // ✅ ปุ่มยืนยันการจองที่เลือก
-            document.getElementById("confirmSelectedBtn").addEventListener("click", async () => {
-              const selected = Array.from(document.querySelectorAll("input[name=selected]:checked"))
-                .map(chk => parseInt(chk.value));
-
-              if (!selected.length) return alert("กรุณาเลือกรายการที่จะยืนยัน");
-
-              try {
-                const res = await fetch("/api/rentals/confirm-batch", {
-                  method: "PUT",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({ rentalIds: selected })
-                });
-
-                const data = await res.json();
-                console.log("📨 server response =", data);
-
-                if (!res.ok) throw new Error(data.message || "เกิดข้อผิดพลาด");
-
-                alert(data.message);
-                location.reload();
-              } catch (err) {
-                console.error("❌ fetch error:", err);
-                alert(err.message);
-              }
+          // ✅ ติ๊กเลือกทั้งหมด
+          const selectAll = document.getElementById("selectAll");
+          selectAll?.addEventListener("change", e => {
+            document.querySelectorAll("input[name=selected]").forEach(chk => {
+              chk.checked = e.target.checked;
             });
           });
-        </script>
+
+          // ✅ ปุ่มยืนยันการจองที่เลือก
+          document.getElementById("confirmSelectedBtn").addEventListener("click", async () => {
+            const selected = Array.from(document.querySelectorAll("input[name=selected]:checked"))
+              .map(chk => parseInt(chk.value));
+
+            if (!selected.length) return alert("กรุณาเลือกรายการที่จะยืนยัน");
+
+            try {
+              const res = await fetch("/api/rentals/confirm-batch", {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ rentalIds: selected })
+              });
+
+              const data = await res.json();
+              if (!res.ok) throw new Error(data.message || "เกิดข้อผิดพลาด");
+              alert(data.message);
+              location.reload();
+            } catch (err) {
+              console.error("❌ fetch error:", err);
+              alert(err.message);
+            }
+          });
+        });
+
+        // ✅ ปุ่มปฏิเสธ
+        const rejectBtn = document.getElementById("rejectSelectedBtn");
+        const modal = document.getElementById("rejectModal");
+        const confirmRejectBtn = document.getElementById("confirmRejectBtn");
+        const cancelRejectBtn = document.getElementById("cancelRejectBtn");
+
+        rejectBtn.addEventListener("click", () => {
+          const selected = Array.from(document.querySelectorAll("input[name=selected]:checked"))
+            .map(chk => parseInt(chk.value));
+
+          if (!selected.length) return alert("กรุณาเลือกรายการที่จะปฏิเสธ");
+
+          modal.classList.remove("hidden");
+          confirmRejectBtn.dataset.ids = JSON.stringify(selected);
+        });
+
+        cancelRejectBtn.addEventListener("click", () => modal.classList.add("hidden"));
+
+        confirmRejectBtn.addEventListener("click", async () => {
+          const ids = JSON.parse(confirmRejectBtn.dataset.ids || "[]");
+          const reason = document.getElementById("rejectReason").value;
+          const detail = document.getElementById("rejectDetail").value;
+
+          if (!reason) return alert("กรุณาเลือกเหตุผล");
+
+          try {
+            const res = await fetch("/api/rentals/reject", {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ rentalIds: ids, reason, detail }),
+            });
+            const data = await res.json();
+            alert(data.message || "ดำเนินการสำเร็จ");
+            location.reload();
+          } catch (err) {
+            console.error("❌ reject error:", err);
+            alert("เกิดข้อผิดพลาดในการปฏิเสธคำสั่งซื้อ");
+          }
+        });
+
+      </script>
 
   </body>
 

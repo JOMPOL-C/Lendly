@@ -1,6 +1,6 @@
 <%- include('includes/head') %>
   <link rel="stylesheet" href="/styles/profile.css">
-
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600;700&display=swap" rel="stylesheet">
   </head>
 
   <body>
@@ -9,92 +9,116 @@
       <main class="container">
         <h1>แก้ไขโปรไฟล์</h1>
 
+        <% if (typeof error !== 'undefined' && error) { %>
+          <div id="toast-error" class="toast-error"><%= error %></div>
+        <% } else { %>
+          <div id="toast-error" class="toast-error hidden"></div>
+        <% } %>
+
+        <div id="toast-success" class="toast-success hidden">
+          บันทึกข้อมูลโปรไฟล์เรียบร้อยแล้ว
+        </div>
+
         <% if (user) { %>
           <form class="profile-card" method="POST" action="/api/profile/update/<%= user.customer_id %>"
             enctype="multipart/form-data">
             <div class="profile-pic-wrapper">
-              <!-- input file ซ่อน -->
               <input type="file" id="profile_image" name="profile_image" accept="image/*" style="display:none;"
                 onchange="previewProfile(event)">
-
-              <!-- วงกลมโปรไฟล์ -->
               <label for="profile_image" class="profile-pic-label">
-                <% if (user && user.profile_image_url) { %>
+                <% if (user.profile_image_url) { %>
                   <img id="profilePreview" src="<%= user.profile_image_url %>" alt="Profile" class="profile-pic"
                     style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover;">
                   <% } else { %>
                     <i id="profilePreviewIcon" class='bx bxs-user-circle profile-icon'></i>
                     <% } %>
               </label>
-
-
-
-
-              <!-- icon กล้อง overlay -->
-              <div class="camera-icon">
-                <i class='bx bxs-camera'></i>
-              </div>
-              </label>
+              <div class="camera-icon"><i class='bx bxs-camera'></i></div>
             </div>
 
-
-            <!-- username -->
             <div class="form-group">
               <h4>ชื่อผู้ใช้</h4>
               <%= user.username %>
             </div>
 
-            <!-- email -->
             <div class="form-group">
-              <label for="email">อีเมล</label>
-              <input type="email" id="email" name="customer_email" value="<%= user.customer_email || "" %>">
+              <label>อีเมล</label>
+              <input type="email" name="customer_email" value="<%= user.customer_email || '' %>">
             </div>
 
-            <!-- phone -->
             <div class="form-group">
-              <label for="phone">เบอร์โทรศัพท์</label>
-              <input type="text" id="phone" name="customer_phone" value="<%= user.customer_phone || "" %>">
+              <label>เบอร์โทรศัพท์</label>
+              <input type="text" name="customer_phone" value="<%= user.customer_phone || '' %>">
             </div>
 
-            <!-- name -->
             <div class="form-group">
-              <label for="name">ชื่อ</label>
-              <input type="text" id="name" name="name" value="<%= user.name || "" %>">
+              <label>ชื่อ</label>
+              <input type="text" name="name" value="<%= user.name || '' %>">
             </div>
 
-            <!-- last name -->
             <div class="form-group">
-              <label for="last_name">นามสกุล</label>
-              <input type="text" id="last_name" name="last_name" value="<%= user.last_name || "" %>">
+              <label>นามสกุล</label>
+              <input type="text" name="last_name" value="<%= user.last_name || '' %>">
             </div>
 
+            <!-- ✅ เพิ่ม dropdown จังหวัด/อำเภอ/ตำบล -->
+            <div class="form-group">
+              <label>จังหวัด</label>
+              <select id="province" name="province" required></select>
+            </div>
 
-            <!-- proportions -->
+            <div class="form-group">
+              <label>อำเภอ</label>
+              <select id="district" name="district" required></select>
+            </div>
+
+            <div class="form-group">
+              <label>ตำบล</label>
+              <select id="sub_district" name="sub_district" required></select>
+            </div>
+
+            <div class="form-group">
+              <label>รหัสไปรษณีย์</label>
+              <input type="text" id="postal_code" name="postal_code" value="<%= user.postal_code || '' %>" readonly>
+            </div>
+
+            <div class="form-group">
+              <label>บ้านเลขที่ / ถนน / ซอย</label>
+              <textarea id="address" name="address"><%= user.address || '' %></textarea>
+            </div>
+
+            <!-- สัดส่วน -->
             <div class="form-group">
               <label>สัดส่วน (ซม.)</label>
               <div style="display:flex; gap:10px;">
-                <input type="number" name="chest" placeholder="อก" value="<%= user.proportion?.chest || "" %>">
-                <input type="number" name="waist" placeholder="เอว" value="<%= user.proportion?.waist || "" %>">
-                <input type="number" name="hips" placeholder="สะโพก" value="<%= user.proportion?.hips || "" %>">
+                <input type="number" name="chest" placeholder="อก" value="<%= user.proportion?.chest || '' %>">
+                <input type="number" name="waist" placeholder="เอว" value="<%= user.proportion?.waist || '' %>">
+                <input type="number" name="hips" placeholder="สะโพก" value="<%= user.proportion?.hips || '' %>">
               </div>
             </div>
 
-            <!-- address -->
             <div class="form-group">
-              <label for="address">ที่อยู่</label>
-              <textarea id="address" name="address"><%= user.address || "" %></textarea>
+              <label>เลขบัตรประชาชน</label>
+              <input type="text" id="id_card_number" name="id_card_number" value="<%= user.id_card_number || '' %>">
             </div>
 
-            <!-- ID card image -->
+            <!-- บัตรประชาชน -->
             <div class="form-group">
-              <label for="id_card_image">รูปบัตรประชาชน</label>
-              <input type="file" id="id_card_image" name="id_card_image" accept="image/*">
-            </div>
+              <label>รูปบัตรประชาชน</label>
 
-            <!-- ID card number -->
-            <div class="form-group">
-              <label for="id_card_number">รหัสบัตรประชาชน</label>
-              <input type="text" id="id_card_number" name="id_card_number" value="<%= user.id_card_number || "" %>">
+              <% if (user.id_card_image_url) { %>
+                <div class="idcard-preview">
+                  <a href="<%= user.id_card_image_url %>" target="_blank">
+                    <img src="<%= user.id_card_image_url %>" alt="บัตรประชาชน" class="idcard-thumb">
+                  </a>
+                  <p class="hint">บัตรประชาชนปัจจุบัน (คลิกเพื่อดูขนาดเต็ม)</p>
+                </div>
+                <% } else { %>
+                  <p class="hint">ยังไม่ได้อัปโหลดบัตรประชาชน</p>
+                  <% } %>
+
+                    <!-- input file สำหรับอัปโหลดใหม่ -->
+                    <input type="file" id="id_card_image" name="id_card_image" accept="image/*">
             </div>
 
             <div class="profile-actions">
@@ -110,31 +134,168 @@
       </main>
 
       <%- include('includes/footer') %>
-        <script src="/js/script.js"></script>
-        <script>
-          function previewProfile(event) {
-            const file = event.target.files[0];
-            if (file) {
-              const reader = new FileReader();
-              reader.onload = function (e) {
-                let img = document.getElementById("profilePreview");
-                let icon = document.getElementById("profilePreviewIcon");
+        <%- include('includes/chatWidget') %>
+          <script src="/js/script.js"></script>
 
-                if (img) {
-                  img.src = e.target.result;
-                } else if (icon) {
-                  // ถ้ายังไม่มี img ให้แทนที่ icon ด้วย img
-                  const newImg = document.createElement("img");
-                  newImg.id = "profilePreview";
-                  newImg.src = e.target.result;
-                  newImg.className = "profile-pic";
-                  icon.replaceWith(newImg);
-                }
-              };
-              reader.readAsDataURL(file);
+          <script>
+            function previewProfile(event) {
+              const file = event.target.files[0];
+              if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                  let img = document.getElementById("profilePreview");
+                  let icon = document.getElementById("profilePreviewIcon");
+                  if (img) img.src = e.target.result;
+                  else if (icon) {
+                    const newImg = document.createElement("img");
+                    newImg.id = "profilePreview";
+                    newImg.src = e.target.result;
+                    newImg.className = "profile-pic";
+                    icon.replaceWith(newImg);
+                  }
+                };
+                reader.readAsDataURL(file);
+              }
             }
-          }
-        </script>
+
+            // ✅ โหลดจังหวัด / อำเภอ / ตำบล พร้อม preload ค่าเดิม
+            document.addEventListener('DOMContentLoaded', async () => {
+              const provinceSelect = document.getElementById('province');
+              const districtSelect = document.getElementById('district');
+              const subDistrictSelect = document.getElementById('sub_district');
+              const postalInput = document.getElementById('postal_code');
+
+              const userProvince = "<%= user.province || '' %>";
+              const userDistrict = "<%= user.district || '' %>";
+              const userSubDistrict = "<%= user.sub_district || '' %>";
+
+              // โหลดจังหวัดทั้งหมด
+              const provinces = await fetch('/api/provinces').then(r => r.json());
+              provinceSelect.innerHTML = '<option value="">-- เลือกจังหวัด --</option>';
+              let selectedProvinceId = null;
+
+              provinces.forEach(p => {
+                const opt = document.createElement('option');
+                opt.value = p.name_th;
+                opt.textContent = p.name_th;
+                opt.dataset.id = p.id;
+                if (p.name_th === userProvince) {
+                  opt.selected = true;
+                  selectedProvinceId = p.id;
+                }
+                provinceSelect.appendChild(opt);
+              });
+
+              // โหลดอำเภอของจังหวัดที่เลือกไว้
+              if (selectedProvinceId) {
+                const districts = await fetch(`/api/districts/${selectedProvinceId}`).then(r => r.json());
+                districtSelect.innerHTML = '<option value="">-- เลือกอำเภอ --</option>';
+                let selectedDistrictId = null;
+
+                districts.forEach(d => {
+                  const opt = document.createElement('option');
+                  opt.value = d.name_th;
+                  opt.textContent = d.name_th;
+                  opt.dataset.id = d.id;
+                  if (d.name_th === userDistrict) {
+                    opt.selected = true;
+                    selectedDistrictId = d.id;
+                  }
+                  districtSelect.appendChild(opt);
+                });
+
+                // โหลดตำบลของอำเภอที่เลือกไว้
+                if (selectedDistrictId) {
+                  const subdistricts = await fetch(`/api/subdistricts/${selectedDistrictId}`).then(r => r.json());
+                  subDistrictSelect.innerHTML = '<option value="">-- เลือกตำบล --</option>';
+
+                  subdistricts.forEach(s => {
+                    const opt = document.createElement('option');
+                    opt.value = s.name_th;
+                    opt.textContent = s.name_th;
+                    opt.dataset.zip = s.zip_code;
+                    if (s.name_th === userSubDistrict) {
+                      opt.selected = true;
+                      postalInput.value = s.zip_code;
+                    }
+                    subDistrictSelect.appendChild(opt);
+                  });
+                }
+              }
+
+              // --- Event listeners ---
+              provinceSelect.addEventListener('change', async e => {
+                const provinceId = provinceSelect.options[provinceSelect.selectedIndex].dataset.id;
+                if (!provinceId) return;
+                const districts = await fetch(`/api/districts/${provinceId}`).then(r => r.json());
+                districtSelect.innerHTML = '<option value="">-- เลือกอำเภอ --</option>';
+                subDistrictSelect.innerHTML = '<option value="">-- เลือกตำบล --</option>';
+                districts.forEach(d => {
+                  const opt = document.createElement('option');
+                  opt.value = d.name_th;
+                  opt.textContent = d.name_th;
+                  opt.dataset.id = d.id;
+                  districtSelect.appendChild(opt);
+                });
+              });
+
+              districtSelect.addEventListener('change', async e => {
+                const districtId = districtSelect.options[districtSelect.selectedIndex].dataset.id;
+                if (!districtId) return;
+                const subdistricts = await fetch(`/api/subdistricts/${districtId}`).then(r => r.json());
+                subDistrictSelect.innerHTML = '<option value="">-- เลือกตำบล --</option>';
+                subdistricts.forEach(s => {
+                  const opt = document.createElement('option');
+                  opt.value = s.name_th;
+                  opt.textContent = s.name_th;
+                  opt.dataset.zip = s.zip_code;
+                  subDistrictSelect.appendChild(opt);
+                });
+              });
+
+              subDistrictSelect.addEventListener('change', e => {
+                const selected = subDistrictSelect.options[subDistrictSelect.selectedIndex];
+                postalInput.value = selected.dataset.zip || '';
+              });
+            });
+
+            document.addEventListener("DOMContentLoaded", () => {
+              const params = new URLSearchParams(window.location.search);
+              if (params.get("success") === "1") {
+                const toast = document.getElementById("toast-success");
+                toast.classList.remove("hidden");
+                setTimeout(() => {
+                  toast.classList.add("hide");
+                }, 3500);
+                setTimeout(() => {
+                  toast.remove();
+                  // ลบ query string ออกจาก URL
+                  window.history.replaceState({}, document.title, "/profile");
+                }, 4000);
+              }
+            });
+
+            document.addEventListener("DOMContentLoaded", () => {
+              // ✅ success toast
+              const params = new URLSearchParams(window.location.search);
+              if (params.get("success") === "1") {
+                const toast = document.getElementById("toast-success");
+                toast.classList.remove("hidden");
+                setTimeout(() => toast.classList.add("hide"), 3500);
+                setTimeout(() => {
+                  toast.remove();
+                  window.history.replaceState({}, document.title, "/profile");
+                }, 4000);
+              }
+
+              // ❌ error toast
+              const errorToast = document.getElementById("toast-error");
+              if (errorToast && !errorToast.classList.contains("hidden")) {
+                setTimeout(() => errorToast.remove(), 4000);
+              }
+            });
+
+          </script>
 
   </body>
 

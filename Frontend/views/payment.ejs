@@ -1,0 +1,191 @@
+<%- include('includes/head') %>
+    <link rel="stylesheet" href="/styles/payment.css">
+    </head>
+
+    <body>
+        <%- include('includes/nav') %>
+
+            <main class="payment-container">
+                <section class="payment-card">
+                    <h2>สรุปรายการเช่า</h2>
+
+                    <div class="items-list">
+                        <% cartItems.forEach(item=> { %>
+                            <div class="item">
+                                <span>
+                                    <%= item.product.product_name %>
+                                </span>
+                                <span>
+                                    <%= item.numericPrice || item.product.price %> บาท
+                                </span>
+                            </div>
+                            <% }) %>
+                    </div>
+
+                    <div class="total-box">
+                        <p><strong>สรุปรายการชำระเงิน</strong></p>
+
+                        <div class="price-line">
+                            <span>💸 ค่าเช่ารวม</span>
+                            <span>
+                                <%= totalRent.toFixed(2) %> บาท
+                            </span>
+                        </div>
+
+                        <div class="price-line">
+                            <span>🔒 มัดจำสินค้า</span>
+                            <span>
+                                <%= totalDeposit.toFixed(2) %> บาท
+                            </span>
+                        </div>
+
+                        <hr>
+
+                        <div class="price-line total">
+                            <span><strong>ยอดรวมทั้งหมด (ต้องชำระ)</strong></span>
+                            <span><strong>
+                                    <%= total.toFixed(2) %> บาท
+                                </strong></span>
+                        </div>
+
+                        <small style="color:#666;">*ยอดรวมนี้รวมมัดจำสินค้าแล้ว</small>
+                    </div>
+
+
+                    <hr class="divider">
+
+                    <h2 style=" font-size: 34px; ">ชำระเงินผ่านพร้อมเพย์</h2>
+
+                    <div class="qr-box">
+                        <img id="qrImage" alt="PromptPay QR">
+                    </div>
+
+                    <p class="note">สแกน QR นี้เพื่อชำระเงินตามยอดรวมข้างต้น</p>
+                </section>
+
+                <!-- ✅ ฟอร์มอัปโหลดสลิป -->
+                <form id="slipForm" enctype="multipart/form-data" class="slip-form">
+                    <label for="slip">📎 แนบรูปสลิปชำระเงิน (จำเป็น)</label>
+                    <input type="file" id="slip" name="slip" accept="image/*" required>
+                    <div id="preview-container" class="preview-container"></div>
+
+                    <button type="submit" id="confirmBtn" class="btn-confirm">ยืนยันการชำระเงิน</button>
+                </form>
+
+                <!-- ✅ หน้าหลังอัปโหลดสำเร็จ -->
+                <div id="successBox" class="success-box" style="display:none;">
+                    <h2>✅ สั่งซื้อสำเร็จ!</h2>
+                    <p>เราจะตรวจสอบการชำระเงินของคุณ</p>
+                    <p>กรุณารอการยืนยันจากแอดมิน</p>
+                    <a href="/my_rentals" class="btn-goto">ดูคำสั่งเช่าของฉัน</a>
+                </div>
+            </main>
+
+            <%- include('includes/footer') %>
+
+                <script>
+                    const orderId = <%- JSON.stringify(orderId) %>;
+                    const total = <%- JSON.stringify(total) %>;
+
+                    async function loadQR() {
+                        const res = await fetch('/api/payment/generate-qr', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ amount: total })
+                        });
+                        const data = await res.json();
+                        if (data.qrImage) {
+                            document.getElementById('qrImage').src = data.qrImage;
+                        }
+                    }
+                    loadQR();
+
+                    // ✅ เมื่อกดยืนยันการชำระเงิน
+                    document.getElementById("slipForm").addEventListener("submit", async e => {
+                        e.preventDefault();
+                        const fileInput = document.getElementById("slip");
+                        const confirmBtn = document.getElementById("confirmBtn");
+
+                        if (!fileInput.files.length) {
+                            alert("กรุณาแนบรูปสลิปก่อนยืนยัน");
+                            return;
+                        }
+
+                        confirmBtn.disabled = true;
+                        confirmBtn.textContent = "กำลังอัปโหลด...";
+
+                        try {
+                            const formData = new FormData();
+                            formData.append("slip", fileInput.files[0]);
+                            formData.append("orderId", orderId);
+                            console.log("🧾 formData", [...formData.entries()]);
+
+                            const res = await fetch("/api/orders/upload-slip", {
+                                method: "POST",
+                                body: formData,
+                            });
+
+                            const text = await res.text(); // อ่าน body ครั้งเดียว
+                            let data;
+                            try {
+                                data = JSON.parse(text);
+                            } catch {
+                                throw new Error("Response ไม่ใช่ JSON: " + text.slice(0, 100));
+                            }
+
+                            if (!res.ok) throw new Error(data.message || "Upload failed");
+
+                            console.log("✅ Upload success:", data);
+                            alert("อัปโหลดสำเร็จ");
+
+                            // ✅ แสดงหน้าสำเร็จ
+                            document.getElementById("slipForm").style.display = "none";
+                            document.getElementById("successBox").style.display = "block";
+
+                        } catch (err) {
+                            console.error("❌ Upload error:", err);
+                            alert("เกิดข้อผิดพลาด: " + err.message);
+                            confirmBtn.disabled = false;
+                            confirmBtn.textContent = "ยืนยันการชำระเงิน";
+                        }
+                    });
+
+
+                    // ✅ พรีวิวรูปสลิปก่อนอัปโหลด
+                    const input = document.getElementById("slip");
+                    const previewContainer = document.getElementById("preview-container");
+
+                    if (input && previewContainer) {
+                        input.addEventListener("change", () => {
+                            previewContainer.innerHTML = "";
+                            Array.from(input.files).forEach((file, index) => {
+                                const reader = new FileReader();
+                                reader.onload = (e) => {
+                                    const div = document.createElement("div");
+                                    div.classList.add("preview-item");
+                                    div.innerHTML = `
+              <img src="${e.target.result}" alt="preview-${index}">
+              <button type="button" data-index="${index}">✕</button>
+            `;
+                                    div.querySelector("button").addEventListener("click", () => {
+                                        removeFile(index);
+                                        div.remove();
+                                    });
+                                    previewContainer.appendChild(div);
+                                };
+                                reader.readAsDataURL(file);
+                            });
+                        });
+
+                        function removeFile(removeIndex) {
+                            const dt = new DataTransfer();
+                            Array.from(input.files).forEach((file, idx) => {
+                                if (idx !== removeIndex) dt.items.add(file);
+                            });
+                            input.files = dt.files;
+                        }
+                    }
+                </script>
+    </body>
+
+    </html>

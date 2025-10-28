@@ -1,0 +1,317 @@
+/* 🎨 พื้นหลังและฟอนต์ */
+body {
+    background: #f9fafb;
+    font-family: 'Prompt', sans-serif;
+    color: #333;
+    margin: 0;
+}
+
+/* 🌈 กล่องรวมทั้งหมด */
+.payment-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 40px 20px;
+    max-width: 480px;
+    margin: 0 auto;
+    gap: 25px;
+}
+
+/* 💳 การ์ดสรุปรายการ */
+.payment-card {
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+    padding: 30px 25px;
+    width: 100%;
+    text-align: center;
+    animation: fadeIn 0.5s ease;
+}
+
+.payment-card h2 {
+    color: #6d28d9;
+    font-weight: 700;
+    margin-bottom: 12px;
+}
+
+/* 💰 กล่องยอดรวม */
+.amount-box {
+    background: #ede9fe;
+    border-radius: 12px;
+    padding: 10px 0;
+    margin: 15px 0;
+}
+
+.amount-box p {
+    margin: 0;
+    font-size: 14px;
+    color: #4c1d95;
+}
+
+.amount-box h3 {
+    margin: 5px 0 0;
+    font-size: 18px;
+    color: #5b21b6;
+    font-weight: 600;
+}
+
+.payment-card h3 {
+    margin: 0;
+    font-size: 20px;
+    color: #4b0082;
+    font-weight: 700;
+}
+
+/* 🧾 กล่อง QR */
+.qr-box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #f5f3ff;
+    border-radius: 16px;
+    padding: 15px;
+    margin: 15px auto;
+    box-shadow: 0 3px 8px rgba(109, 40, 217, 0.1);
+}
+
+.qr-box img {
+    width: 200px;
+    height: 200px;
+    object-fit: contain;
+    background: #fff;
+    border-radius: 12px;
+    padding: 6px;
+}
+
+/* 📎 ฟอร์มอัปโหลดสลิป */
+.slip-form {
+    width: 100%;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    padding: 25px 20px;
+    text-align: center;
+}
+
+.slip-form label {
+    display: block;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 8px;
+}
+
+.slip-form input[type="file"] {
+    display: block;
+    margin: 0 auto 12px;
+    padding: 8px;
+    border: 1px solid #ddd6fe;
+    border-radius: 10px;
+    background: #f5f3ff;
+}
+
+/* ✅ ปุ่มยืนยันการชำระเงิน */
+.btn-confirm {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    background: #4f46e5;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-confirm:hover {
+    background: #4338ca;
+    transform: translateY(-1px);
+}
+
+/* 🌟 กล่องสำเร็จ */
+.success-box {
+    text-align: center;
+    margin-top: 2em;
+    background: #ecfdf5;
+    border: 1px solid #6ee7b7;
+    border-radius: 12px;
+    padding: 2em;
+    animation: fadeIn 0.3s ease;
+}
+
+.btn-goto {
+    display: inline-block;
+    margin-top: 1em;
+    padding: 10px 20px;
+    background: #10b981;
+    color: #fff;
+    border-radius: 6px;
+    text-decoration: none;
+}
+
+.btn-goto:hover {
+    background: #059669;
+}
+
+/* 📸 พรีวิวสลิป */
+.preview-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.preview-item {
+    position: relative;
+    width: 90px;
+    height: 90px;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid #ddd;
+    background: #f9fafb;
+}
+
+.preview-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    background: #f3f4f6;
+}
+
+.preview-item button {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    background: rgba(0, 0, 0, 0.6);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 22px;
+    height: 22px;
+    cursor: pointer;
+    font-weight: bold;
+    line-height: 1;
+}
+
+.preview-item button:hover {
+    background: rgba(220, 38, 38, 0.9);
+}
+
+/* 🔍 Modal ดูสลิปเต็ม */
+.slip-modal {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.75);
+    justify-content: center;
+    align-items: center;
+    animation: fadeIn 0.2s ease;
+}
+
+.slip-modal img {
+    max-width: 90%;
+    max-height: 90%;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    animation: zoomIn 0.25s ease;
+}
+
+.close-btn {
+    position: absolute;
+    top: 25px;
+    right: 40px;
+    color: white;
+    font-size: 36px;
+    font-weight: bold;
+    cursor: pointer;
+    text-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+    transition: 0.2s;
+}
+
+.close-btn:hover {
+    color: #f87171;
+    transform: scale(1.1);
+}
+
+.price-line {
+    display: flex;
+    justify-content: space-between;
+    margin: 4px 0;
+    font-size: 16px;
+}
+
+.price-line.total {
+    font-size: 18px;
+    margin-top: 10px;
+    color: #4a148c;
+}
+
+
+/* เอฟเฟกต์เปิด */
+@keyframes zoomIn {
+    from {
+        transform: scale(0.8);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* 💫 Animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 📱 Responsive: QR และปุ่มย่อบนมือถือ */
+@media (max-width: 480px) {
+    .qr-box img {
+        width: 160px;
+        height: 160px;
+    }
+
+    .payment-card {
+        padding: 25px 20px;
+    }
+}
+
+/* 🔧 Override ให้แน่ใจว่ารูปพรีวิวใหญ่ขึ้นจริง */
+#preview-container img {
+    width: 500px !important;
+    height: 500px !important;
+    object-fit: contain;
+    border-radius: 10px;
+    background: #f3f4f6;
+}
+
+
+
+#preview-container .preview-item button {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 26px;
+    height: 26px;
+    font-size: 14px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.6);
+    color: white;
+    border: none;
+    cursor: pointer;
+}

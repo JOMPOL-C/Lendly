@@ -1,70 +1,38 @@
 <%- include('includes/head') %>
-    <link rel="stylesheet" href="/styles/favorites.css">
-    </head>
+<link rel="stylesheet" href="/styles/favorites.css">
+</head>
 
-    <body>
-        <%- include('includes/nav') %>
-            <main>
-                <section id="banner" class="section-p1">
-                    <h4>banner</h4>
-                </section>
+<body>
+  <%- include('includes/nav') %>
+  <main>
+    <section id="banner" class="section-p1">
+      <video autoplay muted loop playsinline id="banner-video">
+        <source src="/videos/banner-bg.mp4" type="video/mp4">
+      </video>
+      <h2>LENDLY</h2>
+      <p>Welcome to my website</p>
+    </section>
 
-                <!-- ชุดมาใหม่ (โชว์ 4 ชิ้นล่าสุด) -->
-                <section id="new_product" class="section-p1 product1">
-                    <h2>ชุดที่มี</h2>
-                    <p>สามารถดูแต่ละหมวดหมู่ได้ที่หมวดหมู่</p>
+    <section id="new_product" class="section-p1 product1">
+      <h2>ชุดที่มี</h2>
+      <p>สามารถดูแต่ละหมวดหมู่ได้ที่หมวดหมู่</p>
 
-                    <div class="pro-container">
-                        <% products.slice(0,4).forEach(product=> { %>
-                            <div class="pro">
-                                <a href="/api/products/<%= product.product_id %>">
-                                    <% if (product.images.length> 0) { %>
-                                        <img src="<%= product.images[0].image_url %>" alt="<%= product.product_name %>">
-                                        <% } else { %>
-                                            <img src="/images/no-image.png" alt="no image">
-                                            <% } %>
-                                </a>
+      <div class="pro-container">
+        <% if (products && products.length > 0) { %>
+          <% products.slice(0,4).forEach(product => { %>
+            <%- include('includes/productCard', { product }) %>
+          <% }) %>
+        <% } else { %>
+          <p>ยังไม่มีสินค้าในระบบ</p>
+        <% } %>
+      </div>
+    </section>
+  </main>
 
-                                <div class="des">
-                                    <span>
-                                        <%= product.story_name %>
-                                    </span>
-                                    <h5>
-                                        <%= product.product_name %>
-                                    </h5>
-                                    <% if (product.prices.length> 0) { %>
-                                        <h4>
-                                            <%= product.prices[0].price_test %>฿ / <%= product.prices[0].price_pri %>฿
-                                        </h4>
-                                        <% } %>
-                                </div>
+  <%- include('includes/footer') %>
+  <%- include('includes/chatWidget') %>
 
-                                <!-- ✅ ปุ่มหัวใจ + รถเข็นอยู่ข้างในกล่องสินค้า -->
-                                <div class="btn-pro">
-                                    <a href="#">
-                                        <i class='bx bx-heart btn' data-id="<%= product.product_id %>"></i>
-
-                                    </a>
-
-                                    <a href="#" class="btn-add-cart" data-id="<%= product.product_id %>">
-                                        <i class="bx bx-cart btn"></i>
-                                    </a>
-                                </div>
-
-                            </div>
-                            <% }) %>
-                    </div>
-                </section>
-
-
-
-
-                </div>
-                </section>
-            </main>
-            <%- include('includes/footer') %>
-                <script src="/js/script.js"></script>
-                <script src="/js/heart-toggle.js"></script>
-    </body>
-
-    </html>
+  <script src="/js/script.js"></script>
+  <script src="/js/heart-toggle.js"></script>
+</body>
+</html>

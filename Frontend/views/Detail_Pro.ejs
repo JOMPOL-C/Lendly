@@ -2,195 +2,241 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
   <link rel="stylesheet" href="/styles/review.css">
+  <link rel="stylesheet" href="/styles/detailProduct.css">
   </head>
 
   <body>
     <%- include('includes/nav') %>
+
       <main>
         <section id="prodetails" class="section-p1">
-          <div class="single-pro-image">
-            <% if (product.images && product.images.length> 0) { %>
-              <img src="<%= product.images[0].image_url %>" width="100%" id="MainImg" alt="<%= product.product_name %>">
-              <% } else { %>
-                <img src="/images/no-image.png" width="100%" id="MainImg" alt="no image">
+
+          <!-- 🔹 ครึ่งบน: ภาพสินค้า + ตัวเลือกเช่า -->
+          <div class="top-section">
+            <div class="image-gallery">
+              <% if (product.images && product.images.length> 0) { %>
+                <img src="<%= product.images[0].image_url %>" id="MainImg" alt="<%= product.product_name %>"
+                  class="main-image">
+                <% } else { %>
+                  <img src="/images/no-image.png" id="MainImg" alt="no image" class="main-image">
+                  <% } %>
+
+                    <div class="thumbnail-row">
+                      <% product.images.forEach((img, index)=> { %>
+                        <img src="<%= img.image_url %>" class="thumb <%= index === 0 ? 'active' : '' %>"
+                          alt="thumb <%= index %>">
+                        <% }) %>
+                    </div>
+            </div>
+
+            <div class="rent-options">
+              <h6>
+                <%= product.category ? product.category.category_name : 'ไม่ระบุหมวดหมู่' %>
+              </h6>
+              <h4>
+                <%= product.product_name %>
+              </h4>
+
+              <% if (product.prices[0].Deposit && product.prices[0].Deposit> 0) { %>
+                <p>มัดจำสินค้า: <%= product.prices[0].Deposit %>฿</p>
                 <% } %>
 
-                  <div class="small-img-group">
-                    <% if (product.images && product.images.length> 1) { %>
-                      <% product.images.forEach((img, index)=> { %>
-                        <div class="small-img-col">
-                          <img src="<%= img.image_url %>" width="100%" class="small-img" alt="image <%= index %>">
-                        </div>
-                        <% }) %>
-                          <% } %>
+                  <h2 id="priceDisplay">กรุณาเลือกของเช่าและโหมดก่อน</h2>
+
+                  <% const firstPrice=product.prices && product.prices.length> 0 ? product.prices[0] : null; %>
+                  <div class="mode-box">
+                    <% const hasTest = product.prices.some(p => p.days_test && p.days_test > 0); %>
+                    <% const hasPri  = product.prices.some(p => p.days_pri && p.days_pri > 0); %>
+                  
+                    <% if (hasTest) { %>
+                      <label>
+                        <input type="radio" name="mode" value="test" checked>
+                        เทส (<%= firstPrice?.days_test %> วัน)
+                      </label>
+                    <% } %>
+                  
+                    <% if (hasPri) { %>
+                      <label>
+                        <input type="radio" name="mode" value="pri" <%= !hasTest ? 'checked' : '' %>>
+                        ไพร (<%= firstPrice?.days_pri %> วัน)
+                      </label>
+                    <% } %>
                   </div>
+                  
+
+                    <select name="components">
+                      <option value="" disabled selected>เลือกของเช่า</option>
+                      <option value="suit">ชุด</option>
+                      <option value="wig">วิก</option>
+                      <option value="set-wig">ชุด + วิก</option>
+                      <option value="set-wig-prop">ชุด + วิก + พร็อพ</option>
+                      <option value="set-wig-shoe">ชุด + วิก + รองเท้า</option>
+                      <option value="set-wig-prop-shoe">ชุด + วิก + พร็อพ + รองเท้า</option>
+                      <option value="prop">พร็อพเดี่ยว</option>
+                      <option value="shoe">รองเท้าเดี่ยว</option>
+                    </select>
+
+                    <div id="calendar" data-product-id="<%= product.product_id %>"></div>
+
+                    <button id="addToCartBtn" class="btn-cart">เพิ่มลงตะกร้า</button>
+            </div>
           </div>
 
-          <div class="single-pro-details">
-            <h6>
-              <%= product.category ? product.category.category_name : 'ไม่ระบุหมวดหมู่' %>
-            </h6>
-            <h4>
-              <%= product.product_name %>
-            </h4>
+          <!-- 🔹 ครึ่งล่าง: รายละเอียดสินค้า -->
+          <div class="bottom-section">
+            <div class="product-info">
+              <h3>รายละเอียดสินค้า</h3>
 
-            <h2 id="priceDisplay">กรุณาเลือกของเช่าและโหมดก่อน</h2>
+              <p><strong>ชื่อเรื่อง:</strong>
+                <%= product.story_name || "ไม่มีข้อมูล" %>
+              </p>
+              <p><strong>ข้อมูลการจัดส่ง:</strong>
+                <%= product.shipping_info || "ไม่มีข้อมูลการจัดส่ง" %>
+              </p>
+              <p><strong>สถานะสินค้า:</strong>
+                <%= product.product_status ? "พร้อมให้เช่า ✅" : "ไม่พร้อมให้เช่า ❌" %>
+              </p>
 
-            <!-- โหมดเช่า -->
-            <% const firstPrice=product.prices && product.prices.length> 0 ? product.prices[0] : null;
-              %>
+              <% if (product.size) { %>
+                <p><strong>สัดส่วนสินค้า:</strong>
+                  <%= product.size.proportion_name %>
+                    (<%= product.size.bust %> / <%= product.size.waist %> / <%= product.size.hip %>)
+                </p>
+                <% } %>
 
-              <label>
-                <input type="radio" name="mode" value="test" checked>
-                เทส (<%= firstPrice?.days_test %> วัน)
-              </label>
-              <label>
-                <input type="radio" name="mode" value="pri">
-                ไพร (<%= firstPrice?.days_pri %> วัน)
-              </label>
+                  <% if (product.category) { %>
+                    <p><strong>หมวดหมู่:</strong>
+                      <%= product.category.category_name %>
+                    </p>
+                    <% } %>
 
-
-              <!-- ตัวเลือกการเช่า -->
-              <select name="components" id="">
-                <option value="" disabled selected>เลือกของเช่า</option>
-                <option value="suit">ชุด</option>
-                <option value="wig">วิก</option>
-                <option value="set-wig">ชุด + วิก</option>
-                <option value="set-wig-prop">ชุด + วิก + พร็อพ</option>
-                <option value="set-wig-shoe">ชุด + วิก + รองเท้า</option>
-                <option value="set-wig-prop-shoe">ชุด + วิก + พร็อพ + รองเท้า</option>
-                <option value="prop">พร็อพเดี่ยว</option>
-                <option value="shoe">รองเท้าเดี่ยว</option>
-              </select>
-
-              <!-- ปฏิทิน -->
-              <div id="calendar" data-product-id="<%= product.product_id %>"></div>
-
-              <button id="addToCartBtn" class="btn-cart">เพิ่มลงตะกร้า</button>
+                      <p><strong>อัปเดตล่าสุด:</strong>
+                        <%= new Date(product.product_update).toLocaleDateString("th-TH") %>
+                      </p>
+            </div>
           </div>
         </section>
       </main>
 
       <%- include('includes/footer') %>
-        <script src="/js/script.js"></script>
-        <script src="/js/booking.js"></script>
+        <%- include('includes/chatWidget') %>
 
-        <script>
-          // ✅ ราคาจากฐานข้อมูล
-          const productPrices = <%- JSON.stringify(product.prices || []) %>;
-          console.log("💰 productPrices:", productPrices);
+          <script src="/js/script.js"></script>
+          <script src="/js/booking.js"></script>
 
-          const priceDisplay = document.getElementById("priceDisplay");
-          const componentSelect = document.querySelector("select[name=components]");
-          const modeRadios = document.querySelectorAll("input[name=mode]");
+          <script>
+            // ✅ ราคาจากฐานข้อมูล
+            const productPrices = <%- JSON.stringify(product.prices || []) %>;
+            console.log("💰 productPrices:", productPrices);
 
-          // ✅ Mapping: ตัวเลือกหน้าเว็บ → type ในฐานข้อมูลจริง
-          const mapping = {
-            "suit": "suit",
-            "wig": "wig",
-            "set-wig": "suit_wig",
-            "set-wig-prop": "suit_wig_prop",
-            "set-wig-shoe": "suit_wig_shoe",
-            "set-wig-prop-shoe": "suit_wig_prop_shoe",
-            "prop": "solo_prop",
-            "shoe": "solo_shoe"
-          };
+            const priceDisplay = document.getElementById("priceDisplay");
+            const componentSelect = document.querySelector("select[name=components]");
+            const modeRadios = document.querySelectorAll("input[name=mode]");
 
-          // ✅ เก็บ productPriceId ที่เลือกไว้ใช้ตอนเพิ่มตะกร้า
-          let selectedPriceId = null;
+            // ✅ Mapping: ตัวเลือกหน้าเว็บ → type ในฐานข้อมูลจริง
+            const mapping = {
+              "suit": "suit",
+              "wig": "wig",
+              "set-wig": "suit_wig",
+              "set-wig-prop": "suit_wig_prop",
+              "set-wig-shoe": "suit_wig_shoe",
+              "set-wig-prop-shoe": "suit_wig_prop_shoe",
+              "prop": "solo_prop",
+              "shoe": "solo_shoe"
+            };
 
-          // ✅ อัปเดตราคาเมื่อเลือกโหมดหรือของเช่า
-          function updatePrice() {
-            const selectedMode = document.querySelector("input[name=mode]:checked")?.value;
-            const selectedComponent = componentSelect?.value;
+            // ✅ เก็บ productPriceId ที่เลือกไว้ใช้ตอนเพิ่มตะกร้า
+            let selectedPriceId = null;
 
-            if (!selectedMode || !selectedComponent) {
-              priceDisplay.textContent = "กรุณาเลือกของเช่าและโหมดก่อน";
-              selectedPriceId = null;
-              return;
-            }
+            // ✅ อัปเดตราคาเมื่อเลือกโหมดหรือของเช่า
+            function updatePrice() {
+              const selectedMode = document.querySelector("input[name=mode]:checked")?.value;
+              const selectedComponent = componentSelect?.value;
 
-            const dbType = mapping[selectedComponent];
-            const priceObj = productPrices.find(p => p.type === dbType);
+              if (!selectedMode || !selectedComponent) {
+                priceDisplay.textContent = "กรุณาเลือกของเช่าและโหมดก่อน";
+                selectedPriceId = null;
+                return;
+              }
 
-            if (!priceObj) {
-              priceDisplay.textContent = "ไม่มีราคาสำหรับตัวเลือกนี้ในระบบ";
-              selectedPriceId = null;
-              return;
-            }
+              const dbType = mapping[selectedComponent];
+              const priceObj = productPrices.find(p => p.type === dbType);
 
-            selectedPriceId = priceObj.productPrice_id; // 👈 เก็บ id จริง
-            const price = selectedMode === "test" ? priceObj.price_test : priceObj.price_pri;
+              if (!priceObj) {
+                priceDisplay.textContent = "ไม่มีราคาสำหรับตัวเลือกนี้ในระบบ";
+                selectedPriceId = null;
+                return;
+              }
 
-            // ✅ ใช้ค่าจำนวนวันจริงจากฐานข้อมูล
-            const rentalDays =
-              selectedMode === "test"
+              selectedPriceId = priceObj.productPrice_id;
+              const price = selectedMode === "test" ? priceObj.price_test : priceObj.price_pri;
+
+              const rentalDays = selectedMode === "test"
                 ? (priceObj.days_test || 1)
                 : (priceObj.days_pri || 1);
 
-            const label = selectedMode === "test"
-              ? `เทส (${rentalDays} วัน)`
-              : `ไพร (${rentalDays} วัน)`;
+              const label = selectedMode === "test"
+                ? `เทส (${rentalDays} วัน)`
+                : `ไพร (${rentalDays} วัน)`;
 
-            priceDisplay.textContent = `ราคาเช่า: ${price} บาท (${label})`;
-
-          }
-
-          componentSelect.addEventListener("change", updatePrice);
-          modeRadios.forEach(r => r.addEventListener("change", updatePrice));
-
-          // ✅ สลับภาพหลัก
-          const MainImg = document.getElementById("MainImg");
-          const smallimg = document.getElementsByClassName("small-img");
-          for (let i = 0; i < smallimg.length; i++) {
-            smallimg[i].onclick = function () {
-              MainImg.src = smallimg[i].src;
-            };
-          }
-
-          // ✅ เพิ่มลงตะกร้า
-          document.getElementById("addToCartBtn").addEventListener("click", async () => {
-            const mode = document.querySelector("input[name=mode]:checked")?.value;
-            const component = document.querySelector("select[name=components]")?.value;
-            const range = document.querySelector("#calendar")._flatpickr.selectedDates;
-
-            if (!mode) return alert("กรุณาเลือกโหมด เทส หรือ ไพร");
-            if (!component) return alert("กรุณาเลือกของเช่า");
-            if (!range || range.length < 2) return alert("กรุณาเลือกวันที่เช่าให้ครบ");
-            if (!selectedPriceId) return alert("กรุณาเลือกของเช่าให้มีราคาก่อน");
-
-            function fixDate(d) {
-              const local = new Date(d.getTime() - d.getTimezoneOffset() * 60000);
-              return local.toISOString().split("T")[0];
+              priceDisplay.textContent = `ราคาเช่า: ${price} บาท (${label})`;
             }
 
-            const start = fixDate(range[0]);
-            const end = fixDate(range[1]);
+            componentSelect.addEventListener("change", updatePrice);
+            modeRadios.forEach(r => r.addEventListener("change", updatePrice));
 
+            // ✅ สลับภาพหลัก
+            const MainImg = document.getElementById("MainImg");
+            const smallimg = document.getElementsByClassName("thumb");
+            for (let i = 0; i < smallimg.length; i++) {
+              smallimg[i].onclick = function () {
+                MainImg.src = smallimg[i].src;
+                document.querySelectorAll(".thumb").forEach(t => t.classList.remove("active"));
+                smallimg[i].classList.add("active");
+              };
+            }
 
-            const productId = "<%= product.product_id %>";
+            // ✅ เพิ่มลงตะกร้า
+            document.getElementById("addToCartBtn").addEventListener("click", async () => {
+              const mode = document.querySelector("input[name=mode]:checked")?.value;
+              const component = document.querySelector("select[name=components]")?.value;
+              const range = document.querySelector("#calendar")._flatpickr.selectedDates;
 
-            const res = await fetch("/api/cart/add", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                productId,
-                productPriceId: selectedPriceId,
-                mode,
-                start,
-                end,  // ✅ ส่งวันเริ่ม-คืนไปกับ body
-              }),
+              if (!mode) return alert("กรุณาเลือกโหมด เทส หรือ ไพร");
+              if (!component) return alert("กรุณาเลือกของเช่า");
+              if (!range || range.length < 2) return alert("กรุณาเลือกวันที่เช่าให้ครบ");
+              if (!selectedPriceId) return alert("กรุณาเลือกของเช่าให้มีราคาก่อน");
+
+              function fixDate(d) {
+                const local = new Date(d.getTime() - d.getTimezoneOffset() * 60000);
+                return local.toISOString().split("T")[0];
+              }
+
+              const start = fixDate(range[0]);
+              const end = fixDate(range[1]);
+              const productId = "<%= product.product_id %>";
+
+              const res = await fetch("/api/cart/add", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  productId,
+                  productPriceId: selectedPriceId,
+                  mode,
+                  start,
+                  end,
+                }),
+              });
+
+              const data = await res.json();
+              if (res.ok) {
+                alert("เพิ่มสินค้าลงตะกร้าเรียบร้อยแล้ว!");
+                window.location.href = "/cart";
+              } else {
+                alert(data.message || "ไม่สามารถเพิ่มสินค้าได้");
+              }
             });
-
-            const data = await res.json();
-            if (res.ok) {
-              alert("เพิ่มสินค้าลงตะกร้าเรียบร้อยแล้ว!");
-              window.location.href = "/cart";
-            } else {
-              alert(data.message || "ไม่สามารถเพิ่มสินค้าได้");
-            }
-          });
-        </script>
+          </script>
   </body>
 
   </html>

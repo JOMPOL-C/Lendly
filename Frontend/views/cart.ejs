@@ -10,8 +10,6 @@
       <div id="cart">
         <% if (cart && cart.items.length > 0) { %>
           <form id="rentalForm">
-
-            <!-- ✅ Checkbox เลือกทั้งหมด -->
             <div style="display:flex; align-items:center; gap:10px; margin-bottom:15px;">
               <input type="checkbox" id="selectAll" />
               <label for="selectAll" style="font-weight:600;">เลือกสินค้าทั้งหมด</label>
@@ -21,22 +19,19 @@
               <div class="rental-card">
                 <input type="checkbox" name="selected" value="<%= item.cartItem_id %>" />
                 <img src="<%= item.product.images[0]?.image_url %>" alt="Product Image"
-                  style="width:150px; border-radius:10px;">
+                     style="width:150px; border-radius:10px;">
                 <div class="rental-info">
-                  <a href="/api/products/<%= item.product.product_id %>">
-                    <%= item.product.product_name %>
-                  </a>
+                  <a href="/api/products/<%= item.product.product_id %>"><%= item.product.product_name %></a>
                   <p>ราคาค่าเช่า: <%= item.displayPrice %></p>
                   <p>วันที่เช่า: <%= item.startDate ? item.startDate.toISOString().split('T')[0] : '-' %></p>
                   <p>วันที่คืน: <%= item.endDate ? item.endDate.toISOString().split('T')[0] : '-' %></p>
                 </div>
-                <button class="remove-btn" data-id="<%= item.cartItem_id %>">
+                <button type="button" class="remove-btn" data-id="<%= item.cartItem_id %>">
                   <i class='bx bx-trash'></i>
                 </button>
               </div>
             <% }) %>
 
-            <!-- ✅ ปุ่มเช่าสินค้าที่เลือก -->
             <div class="cart-actions">
               <button type="button" id="rentSelectedBtn" class="btn-rent">เช่าสินค้าที่เลือก</button>
             </div>
@@ -49,6 +44,7 @@
   </main>
 
   <%- include('includes/footer') %>
+  <%- include('includes/chatWidget') %>
   <script src="/js/script.js"></script>
 
   <script>
@@ -58,8 +54,8 @@
         const id = e.currentTarget.dataset.id;
         const res = await fetch(`/api/cart/${id}`, { method: 'DELETE' });
         const data = await res.json();
-        alert(data.message);
-        location.reload();
+        showTooltip(data.message || "ลบสินค้าออกจากตะกร้าแล้ว", "success");
+        setTimeout(() => location.reload());
       });
     });
 
@@ -68,24 +64,36 @@
       const selected = Array.from(document.querySelectorAll("input[name=selected]:checked"))
         .map(chk => parseInt(chk.value));
 
-      if (!selected.length) return alert("กรุณาเลือกสินค้าที่ต้องการเช่า");
+      if (!selected.length)
+        return showTooltip("กรุณาเลือกสินค้าที่ต้องการเช่า", "warning");
 
-      const res = await fetch("/api/orders", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ selectedItems: selected })
-      });
+      try {
+        const res = await fetch("/api/orders", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ selectedItems: selected }),
+        });
 
-      const data = await res.json();
-      if (res.ok) {
-        alert("สร้างคำสั่งเช่าสำเร็จ! รอร้านยืนยัน");
-        window.location.href = `/my_rentals`;
-      } else {
-        alert(data.message || "เกิดข้อผิดพลาด");
+        const data = await res.json();
+
+        if (!res.ok) {
+          showTooltip(data.message || "กรุณาแก้ไขโปรไฟล์ก่อนเช่าสินค้า", "warning");
+          if (data.message?.includes("โปรไฟล์ของคุณยังไม่สมบูรณ์")) {
+            setTimeout(() => window.location.href);
+          }
+          return;
+        }
+
+        const orderId = data.order.order_id;
+        showTooltip("สร้างคำสั่งเช่าสำเร็จ กำลังไปหน้าชำระเงิน...", "success");
+        setTimeout(() => window.location.href = `/payment?orderId=${orderId}`);
+      } catch (err) {
+        console.error("❌ สร้างคำสั่งซื้อไม่สำเร็จ:", err);
+        showTooltip("เกิดข้อผิดพลาดในการสร้างคำสั่งซื้อ", "error");
       }
     });
 
-    // ✅ ฟังก์ชันเลือก/ยกเลิกเลือกทั้งหมด
+    // ✅ Checkbox เลือกทั้งหมด
     const selectAll = document.getElementById("selectAll");
     if (selectAll) {
       selectAll.addEventListener("change", () => {
@@ -93,7 +101,6 @@
         allItems.forEach(chk => chk.checked = selectAll.checked);
       });
 
-      // ถ้าผู้ใช้ติ๊กบางอัน → ยกเลิก selectAll อัตโนมัติ
       document.querySelectorAll("input[name='selected']").forEach(chk => {
         chk.addEventListener("change", () => {
           const all = document.querySelectorAll("input[name='selected']");

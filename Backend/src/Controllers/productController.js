@@ -30,7 +30,8 @@ exports.createProduct = async (req, res) => {
       price_prop_addon,
       price_shoe_addon,
       days_suit_test,
-      days_suit_pri
+      days_suit_pri,
+      deposit
     } = req.body;
 
     const files = req.files || [];
@@ -38,6 +39,8 @@ exports.createProduct = async (req, res) => {
 
     // ✅ helper แปลงค่าให้เป็นตัวเลข ป้องกัน NaN
     const toNum = v => (v && !isNaN(parseFloat(v)) ? parseFloat(v) : 0);
+
+    const depositValue = toNum(deposit);
 
     // ✅ 1) อัปโหลดรูปทั้งหมดขึ้น Cloudinary
     const uploadPromises = files.map(file =>
@@ -75,8 +78,10 @@ exports.createProduct = async (req, res) => {
         type: "suit",
         price_test: suit,
         price_pri: suit + pryExtra,
+        price_pry_extra: pryExtra,
         days_test: testDays,
-        days_pri: priDays
+        days_pri: priDays,
+        Deposit: depositValue
       });
     }
 
@@ -86,8 +91,10 @@ exports.createProduct = async (req, res) => {
         type: "wig",
         price_test: wig,
         price_pri: wig + pryExtra,
+        price_pry_extra: pryExtra,
         days_test: testDays,
-        days_pri: priDays
+        days_pri: priDays,
+        Deposit: depositValue
       });
     }
 
@@ -97,8 +104,10 @@ exports.createProduct = async (req, res) => {
         type: "solo_prop",
         price_test: prop,
         price_pri: prop + pryExtra,
+        price_pry_extra: pryExtra,
         days_test: testDays,
-        days_pri: priDays
+        days_pri: priDays,
+        Deposit: depositValue
       });
     }
 
@@ -108,8 +117,10 @@ exports.createProduct = async (req, res) => {
         type: "solo_shoe",
         price_test: shoe,
         price_pri: shoe + pryExtra,
+        price_pry_extra: pryExtra,
         days_test: testDays,
-        days_pri: priDays
+        days_pri: priDays,
+        Deposit: depositValue
       });
     }
 
@@ -119,8 +130,10 @@ exports.createProduct = async (req, res) => {
         type: "addon_prop",
         price_test: addonProp,
         price_pri: addonProp + pryExtra,
+        price_pry_extra: pryExtra,
         days_test: testDays,
-        days_pri: priDays
+        days_pri: priDays,
+        Deposit: depositValue
       });
     }
 
@@ -130,8 +143,10 @@ exports.createProduct = async (req, res) => {
         type: "addon_shoe",
         price_test: addonShoe,
         price_pri: addonShoe + pryExtra,
+        price_pry_extra: pryExtra,
         days_test: testDays,
-        days_pri: priDays
+        days_pri: priDays,
+        Deposit: depositValue
       });
     }
 
@@ -141,8 +156,10 @@ exports.createProduct = async (req, res) => {
         type: "suit_wig",
         price_test: suitWig,
         price_pri: suitWig + pryExtra,
+        price_pry_extra: pryExtra,
         days_test: testDays,
-        days_pri: priDays
+        days_pri: priDays,
+        Deposit: depositValue
       });
 
       // ✅ เฉพาะกรณีที่มี suit_wig ด้วย
@@ -151,8 +168,10 @@ exports.createProduct = async (req, res) => {
           type: "suit_wig_prop",
           price_test: suitWig + addonProp,
           price_pri: suitWig + addonProp + pryExtra,
+          price_pry_extra: pryExtra,
           days_test: testDays,
-          days_pri: priDays
+          days_pri: priDays,
+          Deposit: depositValue
         });
       }
 
@@ -161,8 +180,10 @@ exports.createProduct = async (req, res) => {
           type: "suit_wig_shoe",
           price_test: suitWig + addonShoe,
           price_pri: suitWig + addonShoe + pryExtra,
+          price_pry_extra: pryExtra,
           days_test: testDays,
-          days_pri: priDays
+          days_pri: priDays,
+          Deposit: depositValue
         });
       }
 
@@ -171,8 +192,10 @@ exports.createProduct = async (req, res) => {
           type: "suit_wig_prop_shoe",
           price_test: suitWig + addonProp + addonShoe,
           price_pri: suitWig + addonProp + addonShoe + pryExtra,
+          price_pry_extra: pryExtra,
           days_test: testDays,
-          days_pri: priDays
+          days_pri: priDays,
+          Deposit: depositValue
         });
       }
     }
@@ -229,45 +252,40 @@ exports.updateProduct = async (req, res) => {
       price_shoe_addon,
       days_suit_test,
       days_suit_pri,
-      removeImages // 👈 มาจาก hidden input ด้านหน้าเว็บ
+      removeImages,
+      deposit
     } = req.body;
 
     const files = req.files || [];
     const toNum = v => (v && !isNaN(parseFloat(v)) ? parseFloat(v) : 0);
+    const depositValue = toNum(deposit);
 
-    // โหลดข้อมูลเก่า
+    // ✅ โหลดข้อมูลสินค้าเดิม
     const product = await prisma.Product.findUnique({
       where: { product_id: parseInt(id) },
-      include: { images: true, size: true },
+      include: { images: true, size: true, prices: true },
     });
     if (!product) return res.status(404).send("ไม่พบสินค้า");
 
-    // ✅ ถ้ามีการลบรูปบางรูป (มาจากหน้าเว็บ)
+    // ✅ ลบรูปเก่าตามที่เลือก
     if (removeImages) {
       const ids = Array.isArray(removeImages) ? removeImages : [removeImages];
       for (const imgId of ids) {
         const img = await prisma.ProductImage.findUnique({
           where: { image_id: parseInt(imgId) },
         });
-        if (img?.cloudinary_id) {
-          await cloudinary.uploader.destroy(img.cloudinary_id);
-        }
-        await prisma.ProductImage.delete({
-          where: { image_id: parseInt(imgId) },
-        });
+        if (img?.cloudinary_id) await cloudinary.uploader.destroy(img.cloudinary_id);
+        await prisma.ProductImage.delete({ where: { image_id: parseInt(imgId) } });
       }
     }
 
-    // ✅ ถ้ามีรูปใหม่ให้เพิ่ม
+    // ✅ เพิ่มรูปใหม่ถ้ามี
     if (files.length > 0) {
-      const uploadPromises = files.map(file =>
-        cloudinary.uploader.upload(bufferToDataUri(file), {
-          folder: "lendly_products",
-        })
+      const uploadResults = await Promise.all(
+        files.map(file =>
+          cloudinary.uploader.upload(bufferToDataUri(file), { folder: "lendly_products" })
+        )
       );
-      const uploadResults = await Promise.all(uploadPromises);
-
-      // เพิ่มรูปใหม่ในฐานข้อมูล (ไม่ลบของเก่า)
       await prisma.ProductImage.createMany({
         data: uploadResults.map(r => ({
           productId: parseInt(id),
@@ -277,7 +295,7 @@ exports.updateProduct = async (req, res) => {
       });
     }
 
-    // ✅ อัปเดตสัดส่วน (size)
+    // ✅ อัปเดตสัดส่วน
     if (product.ppId) {
       await prisma.Proportion_product.update({
         where: { proportion_product_id: product.ppId },
@@ -289,7 +307,7 @@ exports.updateProduct = async (req, res) => {
       });
     }
 
-    // ✅ เตรียมข้อมูลราคาใหม่
+    // ✅ เตรียมราคาที่แก้ไข
     const suit = toNum(price_costume);
     const wig = toNum(price_wig);
     const suitWig = toNum(price_suit_wig);
@@ -302,71 +320,51 @@ exports.updateProduct = async (req, res) => {
     const testDays = days_suit_test ? parseInt(days_suit_test) : null;
     const priDays = days_suit_pri ? parseInt(days_suit_pri) : null;
 
-    const priceData = [];
+    const priceData = [
+      { type: "suit", val: suit },
+      { type: "wig", val: wig },
+      { type: "suit_wig", val: suitWig },
+      { type: "solo_prop", val: prop },
+      { type: "solo_shoe", val: shoe },
+      { type: "addon_prop", val: addonProp },
+      { type: "addon_shoe", val: addonShoe },
+    ].filter(p => p.val > 0);
 
-    if (suit > 0) {
-      priceData.push({
-        type: "suit",
-        price_test: suit,
-        price_pri: suit + pryExtra,
-        days_test: testDays,
-        days_pri: priDays,
-      });
-    }
-    if (wig > 0) {
-      priceData.push({
-        type: "wig",
-        price_test: wig,
-        price_pri: wig + pryExtra,
-        days_test: testDays,
-        days_pri: priDays,
-      });
-    }
-    if (suitWig > 0) {
-      priceData.push({
-        type: "suit_wig",
-        price_test: suitWig,
-        price_pri: suitWig + pryExtra,
-        days_test: testDays,
-        days_pri: priDays,
-      });
-    }
-    if (prop > 0) {
-      priceData.push({
-        type: "solo_prop",
-        price_test: prop,
-        price_pri: prop + pryExtra,
-        days_test: testDays,
-        days_pri: priDays,
-      });
-    }
-    if (shoe > 0) {
-      priceData.push({
-        type: "solo_shoe",
-        price_test: shoe,
-        price_pri: shoe + pryExtra,
-        days_test: testDays,
-        days_pri: priDays,
-      });
-    }
-    if (addonProp > 0) {
-      priceData.push({
-        type: "addon_prop",
-        price_test: addonProp,
-        price_pri: addonProp + pryExtra,
-      });
-    }
-    if (addonShoe > 0) {
-      priceData.push({
-        type: "addon_shoe",
-        price_test: addonShoe,
-        price_pri: addonShoe + pryExtra,
-      });
+    // ✅ อัปเดตราคา (แบบ upsert)
+    for (const price of priceData) {
+      const existing = product.prices.find(p => p.type === price.type);
+
+      if (existing) {
+        // มีอยู่แล้ว → update
+        await prisma.ProductPrice.update({
+          where: { productPrice_id: existing.productPrice_id },
+          data: {
+            price_test: price.val,
+            price_pri: price.val + pryExtra,
+            price_pry_extra: pryExtra,
+            days_test: testDays,
+            days_pri: priDays,
+            Deposit: depositValue,
+          },
+        });
+      } else {
+        // ยังไม่มี → create ใหม่
+        await prisma.ProductPrice.create({
+          data: {
+            productId: parseInt(id),
+            type: price.type,
+            price_test: price.val,
+            price_pri: price.val + pryExtra,
+            price_pry_extra: pryExtra,
+            days_test: testDays,
+            days_pri: priDays,
+            Deposit: depositValue,
+          },
+        });
+      }
     }
 
-    // ✅ ลบข้อมูลราคาเก่าแล้วใส่ใหม่
-    await prisma.ProductPrice.deleteMany({ where: { productId: parseInt(id) } });
-
+    // ✅ อัปเดตข้อมูลสินค้าอื่น ๆ
     await prisma.Product.update({
       where: { product_id: parseInt(id) },
       data: {
@@ -374,7 +372,6 @@ exports.updateProduct = async (req, res) => {
         story_name,
         shipping_info,
         category: { connect: { category_id: categoryId } },
-        prices: { create: priceData },
       },
     });
 
@@ -406,7 +403,8 @@ exports.getProductById = async (req, res) => {
       include: {
         images: true,
         prices: true,
-        category: true
+        category: true,
+        size: true
       }
     });
 

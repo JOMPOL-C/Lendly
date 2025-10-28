@@ -1,0 +1,30 @@
+<div class="pro">
+    <a href="/api/products/<%= product.product_id %>">
+      <% if (product.images && product.images.length > 0) { %>
+        <img src="<%= product.images[0].image_url %>" alt="<%= product.product_name %>">
+      <% } else { %>
+        <img src="/images/no-image.png" alt="no image">
+      <% } %>
+    </a>
+  
+    <div class="des">
+      <span><%= product.category ? product.category.category_name : '' %></span>
+      <h5><%= product.product_name %></h5>
+      <% if (product.prices && product.prices.length > 0) { %>
+        <h4><%= product.prices[0].price_test %>฿ / <%= product.prices[0].price_pri %>฿</h4>
+      <% } else { %>
+        <h4>ไม่มีราคา</h4>
+      <% } %>
+    </div>
+  
+    <div class="btn-pro">
+      <a href="#">
+        <i 
+          class='bx <%= likedIds && likedIds.includes(product.product_id) ? "bxs-heart" : "bx-heart" %> btn' 
+          data-id="<%= product.product_id %>" 
+          style="<%= likedIds && likedIds.includes(product.product_id) ? 'color: crimson;' : '' %>">
+        </i>
+      </a>
+    </div>
+  </div>
+  

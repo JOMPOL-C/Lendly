@@ -1,11 +1,18 @@
 <%- include('includes/head') %>
 <link rel="stylesheet" href="/styles/admin.css">
+<link rel="stylesheet" href="/styles/adminReturn.css">
 </head>
 <body>
-  <%- include('includes/nav') %>
+  <%- include('includes/navAdmin') %>
 
   <main class="admin-page">
     <h2>สินค้ากำลังคืน</h2>
+
+    <!-- 🟣 กล่องสรุปจำนวน -->
+    <div class="summary-box">
+      <p>จำนวนสินค้าที่กำลังคืนอยู่ตอนนี้:</p>
+      <h3 id="return-count">0 รายการ</h3>
+    </div>
 
     <table class="admin-table">
       <thead>
@@ -21,14 +28,18 @@
     </table>
   </main>
 
-  <%- include('includes/footer') %>
   <script>
     async function loadReturning() {
       const res = await fetch('/api/rentals');
       const data = await res.json();
       const tbody = document.getElementById('returning-list');
+      const countBox = document.getElementById('return-count');
       tbody.innerHTML = '';
-      data.filter(r => r.rental_status === 'RETURNING').forEach(r => {
+
+      const returning = data.filter(r => r.rental_status === 'RETURNING');
+      countBox.textContent = `${returning.length} รายการ`;
+
+      returning.forEach(r => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
           <td>${r.rental_id}</td>
@@ -36,7 +47,7 @@
           <td>${r.customer?.name || '-'}</td>
           <td>${r.rental_status}</td>
           <td>
-            <button onclick="markReturned(${r.rental_id})">✅ ได้รับคืนแล้ว</button>
+            <button onclick="markReturned(${r.rental_id})">ได้รับคืนแล้ว</button>
           </td>
         `;
         tbody.appendChild(tr);

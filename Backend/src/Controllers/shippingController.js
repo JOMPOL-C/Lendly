@@ -3,6 +3,8 @@ const prisma = require('../../prisma/prisma');
 const cloudinary = require('cloudinary').v2;
 const multer = require('multer');
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
+const { notifyUserEmail, notifyAdminEmail } = require("../utils/emailNotify");
+
 
 // 📦 Config multer สำหรับอัปโหลดรูปบิล
 const storage = new CloudinaryStorage({
@@ -143,6 +145,44 @@ exports.addBox = async (req, res) => {
             `🚚 อัปเดตสถานะ rental เป็น WAITING_RECEIVE จำนวน ${updated.count} รายการ`
         );
 
+        try {
+            const order = await prisma.orders.findUnique({
+                where: { order_id: orderId },
+                include: {
+                    customer: true,
+                    Rentals: {
+                        include: { product: true },
+                    },
+                },
+            });
+
+            if (order?.customer?.customer_email) {
+                const productList = order.Rentals
+                    .filter((r) => productIds.includes(r.productId))
+                    .map((r) => `• ${r.product.product_name}`)
+                    .join("<br>");
+
+                await notifyUserEmail(
+                    order.customer.customer_email,
+                    `
+                🚚 ร้านได้จัดส่งสินค้าของคุณแล้ว!<br><br>
+                หมายเลขพัสดุ: <b>${tracking_code.toUpperCase()}</b><br><br>
+                รายการสินค้าที่จัดส่ง:<br>
+                ${productList}<br><br>
+                ขอบคุณที่ใช้บริการ Lendly 💜
+                `,
+                    "📦 Lendly แจ้งจัดส่งสินค้าเรียบร้อยแล้ว"
+                );
+            }
+
+            // 🔔 แจ้งแอดมินด้วย (optional)
+            await notifyAdminEmail(`
+              ✅ เพิ่มกล่องพัสดุใหม่ ${tracking_code.toUpperCase()} สำหรับคำสั่งซื้อ #${orderId}
+            `);
+        } catch (mailErr) {
+            console.error("⚠️ ส่งอีเมลแจ้งเตือนการจัดส่งล้มเหลว:", mailErr.message);
+        }
+
         // ✅ ตอบกลับ
         res.json({
             message: `เพิ่มกล่องพัสดุ ${tracking_code.toUpperCase()} สำเร็จ (ผูกสินค้า ${productIds.length} ชิ้น)`,
@@ -155,8 +195,6 @@ exports.addBox = async (req, res) => {
             .json({ message: "เกิดข้อผิดพลาดในระบบ", error: err.message });
     }
 };
-
-
 
 // ===================================================
 // ดึงสถานะพัสดุ (Thai Post API)
@@ -362,19 +400,19 @@ exports.getPendingShipments = async (req, res) => {
             orderBy: { rental_id: 'desc' },
         });
 
-        // ✅ กรองสินค้าเฉพาะตัวที่ยังไม่มี tracking_code
+        // ✅ กรองเฉพาะสินค้าที่ "ยังไม่ได้ผูกกับกล่องพัสดุ"
         const pending = rentals.filter((r) => {
             const boxes = r.order?.shippings?.flatMap(s => s.boxes) || [];
 
-            // มีสินค้าใน orderItem ที่ตรงกับสินค้านี้หรือยัง
             const matchedBox = boxes.find(b =>
-                b.ShippingBoxItem?.some(item =>
-                    item.orderItemId === r.order?.OrderItem?.find(i => i.productId === r.product.product_id)?.orderItem_id
+                b.items?.some(item =>
+                    item.orderItemId ===
+                    r.order?.OrderItem?.find(i => i.productId === r.product.product_id)?.orderItem_id
                 )
             );
+
             console.log("🧩 Rental:", r.product.product_name, "Boxes:", boxes.map(b => b.tracking_code));
 
-            // ✅ ถ้า matchedBox ไม่มี (หมายถึงสินค้านี้ยังไม่อยู่ในกล่องไหนเลย)
             return !matchedBox;
         });
 
@@ -389,6 +427,7 @@ exports.getPendingShipments = async (req, res) => {
         res.status(500).send('Server error');
     }
 };
+
 
 // ===================================================
 // ดึงกล่องพัสดุของ order
@@ -450,35 +489,41 @@ exports.getOrderBoxes = async (req, res) => {
 exports.confirmReceived = async (req, res) => {
     try {
         const { rental_id } = req.body;
-        const files = req.files; // อาจอัปได้หลายรูป
-        if (!rental_id) return res.status(400).json({ message: "ต้องระบุ rental_id" });
+        const files = req.files;
+
+        if (!rental_id)
+            return res.status(400).json({ message: "ต้องระบุ rental_id" });
 
         const rental = await prisma.rentals.findUnique({
             where: { rental_id: parseInt(rental_id) },
+            include: { customer: true, product: true },
         });
-        if (!rental) return res.status(404).json({ message: "ไม่พบข้อมูลการเช่า" });
+
+        if (!rental)
+            return res.status(404).json({ message: "ไม่พบข้อมูลการเช่า" });
         if (rental.rental_status !== "WAITING_RECEIVE")
             return res.status(400).json({ message: "สถานะนี้ไม่สามารถกดยืนยันได้" });
 
         // ✅ อัปโหลดรูปขึ้น Cloudinary
         const uploadedImages = [];
         for (const file of files || []) {
-            uploadedImages.push({ rental_id: rental.rental_id, image_url: file.path });
+            uploadedImages.push({ rentalId: rental.rental_id, image_url: file.path }); // ✅ แก้ตรงนี้
         }
 
-        // ✅ เก็บรูปในตารางใหม่ (RentalReceiveImage)
-        if (uploadedImages.length > 0) {
+        if (uploadedImages.length > 0)
             await prisma.rentalReceiveImage.createMany({ data: uploadedImages });
-        }
 
         // ✅ อัปเดตสถานะ + เวลารับสินค้า
         await prisma.rentals.update({
             where: { rental_id: rental.rental_id },
-            data: {
-                rental_status: "RENTED",
-                received_at: new Date(),
-            },
+            data: { rental_status: "RENTED", received_at: new Date() },
         });
+
+        // ✉️ แจ้งแอดมินด้วย
+        await notifyAdminEmail(`
+        📦 ลูกค้า ${rental.customer.name} ${rental.customer.last_name}  
+        ยืนยันได้รับสินค้าแล้ว (${rental.product.product_name})
+      `);
 
         res.json({ message: "ยืนยันได้รับสินค้าแล้ว", images: uploadedImages });
     } catch (err) {
@@ -486,6 +531,7 @@ exports.confirmReceived = async (req, res) => {
         res.status(500).json({ message: "เกิดข้อผิดพลาดในระบบ" });
     }
 };
+
 
 exports.createReturnBox = async (req, res) => {
     try {
@@ -522,7 +568,7 @@ exports.createReturnBox = async (req, res) => {
             where: { rental_id: { in: rental_ids.map(Number) } },
             data: { return_tracking_code: tracking_code.toUpperCase() },
         });
-        
+
         if (file) {
             await prisma.returnBox.update({
                 where: { box_id: newBox.box_id },

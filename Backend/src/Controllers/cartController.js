@@ -76,7 +76,7 @@ exports.getCart = async (req, res) => {
                         product: { include: { images: true } },
                         price: true,
                         startDate: true,
-                        endDate: true,    
+                        endDate: true,
                         mode: true,
                     },
                 },
@@ -84,15 +84,18 @@ exports.getCart = async (req, res) => {
         });
 
         const itemsWithDisplay = cart?.items.map(item => {
-            let priceLabel = "N/A";
+            let displayPrice = "N/A";
+            let numericPrice = 0;
 
             if (item.mode === "test" && item.price?.price_test !== undefined) {
-                priceLabel = `${item.price.price_test}฿ (เทส)`;
+                numericPrice = Number(item.price.price_test);
+                displayPrice = `${numericPrice}฿ (เทส)`;
             } else if (item.mode === "pri" && item.price?.price_pri !== undefined) {
-                priceLabel = `${item.price.price_pri}฿ (ไพร)`;
+                numericPrice = Number(item.price.price_pri);
+                displayPrice = `${numericPrice}฿ (ไพร)`;
             }
 
-            return { ...item, displayPrice: priceLabel };
+            return { ...item, displayPrice, numericPrice };
         }) || [];
 
         res.render("cart", { cart: { ...cart, items: itemsWithDisplay } });
