@@ -15,6 +15,8 @@
                 <th><input type="checkbox" id="selectAll"></th>
                 <th>รหัส</th>
                 <th>ลูกค้า</th>
+                <th>ที่อยู่</th>
+                <th>บัตรประชาชน</th>
                 <th>สินค้า</th>
                 <th>วันเช่า</th>
                 <th>วันคืน</th>
@@ -31,72 +33,90 @@
         </div>
       </main>
 
-        <script>
-          document.addEventListener("DOMContentLoaded", async () => {
-            const res = await fetch("/api/rentals");
-            const rentals = await res.json();
-            const tbody = document.getElementById("rentalBody");
-            console.log("📦 rentals data:", rentals);
+      <script>
+        document.addEventListener("DOMContentLoaded", async () => {
+          const res = await fetch("/api/rentals");
+          const rentals = await res.json();
+          const tbody = document.getElementById("rentalBody");
+          console.log("📦 rentals data:", rentals);
 
-            rentals
-              .filter(r => r.rental_status === "WAITING_CONFIRM")
-              .forEach(r => {
-                const slipLink = r.PaymentSlip?.length
-                  ? `<a href="${r.PaymentSlip[0].image_url}" target="_blank" class="slip-link">ดูสลิป</a>`
-                  : `<span class="no-slip">ไม่มีสลิป</span>`;
+          rentals
+            .filter(r => r.rental_status === "WAITING_CONFIRM")
+            .forEach(r => {
+              // ✅ ลิงก์ดูสลิป
+              const slipLink = r.PaymentSlip?.length
+                ? `<a href="${r.PaymentSlip[0].image_url}" target="_blank" class="slip-link">ดูสลิป</a>`
+                : `<span class="no-slip">ไม่มีสลิป</span>`;
 
-                const tr = document.createElement("tr");
-                tr.innerHTML = `
-      <td><input type="checkbox" name="selected" value="${r.rental_id}"></td>
-      <td>${r.rental_id}</td>
-      <td>${r.customer ? `${r.customer.name} ${r.customer.last_name}` : "ไม่ระบุ"}</td>
-      <td>${r.product?.product_name}</td>
-      <td>${new Date(r.rental_date).toLocaleDateString()}</td>
-      <td>${new Date(r.rental_end_date).toLocaleDateString()}</td>
-      <td>${r.rental_status}</td>
-      <td>${slipLink}</td>
-    `;
-                tbody.appendChild(tr);
-              });
+              // ✅ สร้าง HTML สำหรับที่อยู่
+              const addressInfo = r.customer
+                ? `
+                  <div class="address-block">
+                    <div>${r.customer.address || ''}</div>
+                    <div>${r.customer.sub_district || ''} ${r.customer.district || ''}</div>
+                    <div>${r.customer.province || ''} ${r.customer.postal_code || ''}</div>
+                  </div>
+                `
+                : "ไม่ระบุ";
 
+              // ✅ แสดงรูปบัตรประชาชน (thumbnail)
+              const idCard = r.customer?.id_card_image_url
+                ? `<a href="${r.customer.id_card_image_url}" target="_blank">
+                    <img src="${r.customer.id_card_image_url}" class="idcard-thumb" alt="บัตร ปชช.">
+                  </a>`
+                : `<span class="no-idcard">ไม่มีรูป</span>`;
 
-            // ✅ ติ๊กเลือกทั้งหมด
-            const selectAll = document.getElementById("selectAll");
-            selectAll?.addEventListener("change", e => {
-              document.querySelectorAll("input[name=selected]").forEach(chk => {
-                chk.checked = e.target.checked;
-              });
+              // ✅ สร้างแถวตาราง
+              const tr = document.createElement("tr");
+              tr.innerHTML = `
+                <td><input type="checkbox" name="selected" value="${r.rental_id}"></td>
+                <td>${r.rental_id}</td>
+                <td>${r.customer ? `${r.customer.name} ${r.customer.last_name}` : "ไม่ระบุ"}</td>
+                <td>${addressInfo}</td>
+                <td>${idCard}</td>
+                <td>${r.product?.product_name || "ไม่พบสินค้า"}</td>
+                <td>${new Date(r.rental_date).toLocaleDateString()}</td>
+                <td>${new Date(r.rental_end_date).toLocaleDateString()}</td>
+                <td><span class="status-tag waiting">รอยืนยัน</span></td>
+                <td>${slipLink}</td>
+              `;
+              tbody.appendChild(tr);
             });
 
-            // ✅ ปุ่มยืนยันการจองที่เลือก
-            document.getElementById("confirmSelectedBtn").addEventListener("click", async () => {
-              const selected = Array.from(document.querySelectorAll("input[name=selected]:checked"))
-                .map(chk => parseInt(chk.value));
-
-              if (!selected.length) return alert("กรุณาเลือกรายการที่จะยืนยัน");
-
-              try {
-                const res = await fetch("/api/rentals/confirm-batch", {
-                  method: "PUT",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({ rentalIds: selected })
-                });
-
-                const data = await res.json();
-                console.log("📨 server response =", data);
-
-                if (!res.ok) throw new Error(data.message || "เกิดข้อผิดพลาด");
-
-                alert(data.message);
-                location.reload();
-              } catch (err) {
-                console.error("❌ fetch error:", err);
-                alert(err.message);
-              }
+          // ✅ ติ๊กเลือกทั้งหมด
+          const selectAll = document.getElementById("selectAll");
+          selectAll?.addEventListener("change", e => {
+            document.querySelectorAll("input[name=selected]").forEach(chk => {
+              chk.checked = e.target.checked;
             });
           });
 
-        </script>
+          // ✅ ปุ่มยืนยันการจองที่เลือก
+          document.getElementById("confirmSelectedBtn").addEventListener("click", async () => {
+            const selected = Array.from(document.querySelectorAll("input[name=selected]:checked"))
+              .map(chk => parseInt(chk.value));
+
+            if (!selected.length) return alert("กรุณาเลือกรายการที่จะยืนยัน");
+
+            try {
+              const res = await fetch("/api/rentals/confirm-batch", {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ rentalIds: selected })
+              });
+
+              const data = await res.json();
+              if (!res.ok) throw new Error(data.message || "เกิดข้อผิดพลาด");
+              alert(data.message);
+              location.reload();
+            } catch (err) {
+              console.error("❌ fetch error:", err);
+              alert(err.message);
+            }
+          });
+        });
+      </script>
+
 
   </body>
 

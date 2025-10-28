@@ -149,7 +149,7 @@ exports.uploadSlip = [
 // ✅ สร้างคำสั่งซื้อใหม่
 exports.createOrder = async (req, res) => {
   try {
-    const customerId = req.user.id;
+    const customerId = req.user.customer_id;
     const { selectedItems } = req.body;
 
     if (!selectedItems?.length) {
@@ -314,7 +314,7 @@ exports.getMyOrders = async (req, res) => {
 
 exports.getMyRentals = async (req, res) => {
   try {
-    const customerId = req.user.id;
+    const customerId = req.user.customer_id;
 
     // ดึงคำสั่งซื้อทั้งหมดของลูกค้า
     const orders = await prisma.Orders.findMany({

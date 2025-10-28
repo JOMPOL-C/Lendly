@@ -31,18 +31,19 @@ exports.autoCancelExpiredPayments = async () => {
 // ✅ ดึงข้อมูลการเช่าทั้งหมด (Admin / ร้านค้า)
 exports.getRentals = async (req, res) => {
   try {
-    const rentals = await prisma.Rentals.findMany({
+    const rentals = await prisma.rentals.findMany({
       include: {
         customer: true,
         product: true,
         PaymentSlip: true,
       },
-      orderBy: { rental_id: "desc" },
+      orderBy: { rental_id: 'desc' },
     });
-    res.status(200).json(rentals);
+
+    res.json(rentals);
   } catch (err) {
     console.error("❌ getRentals error:", err);
-    res.status(500).json({ error: "Server error" });
+    res.status(500).json({ message: "ไม่สามารถดึงข้อมูลการเช่าได้" });
   }
 };
 

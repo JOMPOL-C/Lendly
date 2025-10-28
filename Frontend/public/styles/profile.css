@@ -257,3 +257,28 @@ h1 {
 .hidden {
   display: none;
 }
+
+/* ✅ แสดงรูปบัตรประชาชนในโปรไฟล์ */
+.idcard-preview {
+  margin-top: 8px;
+  text-align: center;
+}
+
+.idcard-preview img.idcard-thumb {
+  width: 200px;
+  height: auto;
+  border-radius: 10px;
+  border: 2px solid #cbb7ff;
+  box-shadow: 0 4px 10px rgba(125, 77, 255, 0.2);
+  transition: transform 0.25s ease;
+}
+
+.idcard-preview img.idcard-thumb:hover {
+  transform: scale(1.05);
+}
+
+.hint {
+  color: #777;
+  font-size: 0.85rem;
+  margin-top: 6px;
+}

@@ -91,15 +91,28 @@
               </div>
             </div>
 
-            <!-- บัตรประชาชน -->
-            <div class="form-group">
-              <label>รูปบัตรประชาชน</label>
-              <input type="file" id="id_card_image" name="id_card_image" accept="image/*">
-            </div>
-
             <div class="form-group">
               <label>เลขบัตรประชาชน</label>
               <input type="text" id="id_card_number" name="id_card_number" value="<%= user.id_card_number || '' %>">
+            </div>
+
+            <!-- บัตรประชาชน -->
+            <div class="form-group">
+              <label>รูปบัตรประชาชน</label>
+            
+              <% if (user.id_card_image_url) { %>
+                <div class="idcard-preview">
+                  <a href="<%= user.id_card_image_url %>" target="_blank">
+                    <img src="<%= user.id_card_image_url %>" alt="บัตรประชาชน" class="idcard-thumb">
+                  </a>
+                  <p class="hint">บัตรประชาชนปัจจุบัน (คลิกเพื่อดูขนาดเต็ม)</p>
+                </div>
+              <% } else { %>
+                <p class="hint">ยังไม่ได้อัปโหลดบัตรประชาชน</p>
+              <% } %>
+            
+              <!-- input file สำหรับอัปโหลดใหม่ -->
+              <input type="file" id="id_card_image" name="id_card_image" accept="image/*">
             </div>
 
             <div class="profile-actions">

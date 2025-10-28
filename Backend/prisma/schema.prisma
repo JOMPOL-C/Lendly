@@ -23,7 +23,7 @@ model Customer {
   password          String      @db.VarChar(255)
   customer_datetime DateTime    @default(now()) @db.DateTime(0)
   customer_update   DateTime    @default(now()) @updatedAt
-  
+
   profile_image_url String?     @db.VarChar(255)
   profile_public_id String?     @db.VarChar(255)
 
@@ -426,5 +426,5 @@ enum ProductPrice_status {
   addon_prop         @map("พร็อพเสริม")
   addon_shoe         @map("รองเท้า")
   solo_prop          @map("พร็อพเดี่ยว")
-  solo_shoe          @map("รองเ���้าเดี่ยว")
+  solo_shoe          @map("รองเท้าเดี่ยว")
 }
