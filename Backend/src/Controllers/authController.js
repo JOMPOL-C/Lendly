@@ -135,30 +135,29 @@ exports.editprofile = async (req, res) => {
     if (postal_code?.trim()) updateData.postal_code = postal_code.trim();
 
     if (id_card_number?.trim()) {
-      const newIdCard = id_card_number.trim();
+      const newIdCard = id_card_number.trim().replace(/\D/g, ""); // ✅ ลบขีด/ช่องว่าง
 
-      // 🔍 ตรวจว่ามีคนอื่นใช้เลขนี้อยู่ไหม
+      // ตรวจว่ามีคนอื่นใช้เลขนี้อยู่ไหม
       const existingUser = await prisma.Customer.findFirst({
         where: {
           id_card_number: newIdCard,
-          NOT: { customer_id: parseInt(id) }  // ยกเว้นตัวเอง
-        }
+          NOT: { customer_id: parseInt(id) },
+        },
       });
 
       if (existingUser) {
-        console.log("⚠️ มีผู้ใช้อื่นใช้เลขบัตรนี้แล้ว");
+        const currentUser = await prisma.Customer.findUnique({
+          where: { customer_id: parseInt(id) },
+          include: { proportion: true },
+        });
         return res.status(400).render("profile", {
-          user: await prisma.Customer.findUnique({
-            where: { customer_id: parseInt(id) },
-            include: { proportion: true },
-          }),
+          user: currentUser,
           error: "เลขบัตรประชาชนนี้ถูกใช้แล้วในบัญชีอื่น",
         });
       }
 
       updateData.id_card_number = newIdCard;
     }
-
 
     if (profileUpload) {
       updateData.profile_image_url = profileUpload.secure_url;
@@ -192,9 +191,24 @@ exports.editprofile = async (req, res) => {
     res.redirect("/profile?success=1");
   } catch (err) {
     console.error("❌ editprofile error:", err);
-    res.status(500).send("อัปเดตไม่สำเร็จ");
+
+    let errorMsg = "เกิดข้อผิดพลาดในการอัปเดตข้อมูล";
+
+    // ✅ ตรวจ Prisma code เฉพาะกรณี
+    if (err.code === "P2000" && err.meta?.column_name === "id_card_number") {
+      errorMsg = "เลขบัตรประชาชนยาวเกินกำหนด (ต้องเป็น 13 หลัก)";
+    }
+
+    // โหลดข้อมูลเดิมมา render พร้อม error
+    const user = await prisma.Customer.findUnique({
+      where: { customer_id: parseInt(req.params.id) },
+      include: { proportion: true },
+    });
+
+    return res.status(400).render("profile", { user, error: errorMsg });
   }
 };
+
 
 
 

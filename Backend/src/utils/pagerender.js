@@ -27,6 +27,7 @@ module.exports = {
     renderAdmin_tracking: redderPage('admin_tracking', 'Admin Tracking Page'),
     renderAdmin_return: redderPage('admin_return', 'Admin Return Page'),
     renderAdmin_customers: redderPage('admin_customers', 'Admin Customers Page'),
+    redderAdmin_delay: redderPage('delay_setting', 'Admin Delay Page'),
     // payment
     renderPayment: redderPage('payment', 'Payment Page'),
     renderAdmin_chat: redderPage('admin_chat', 'Admin Chat Page'),

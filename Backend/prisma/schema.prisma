@@ -8,24 +8,24 @@ datasource db {
 }
 
 model Customer {
-  customer_id       Int         @id @default(autoincrement())
-  name              String      @db.VarChar(45)
-  last_name         String      @db.VarChar(45)
-  customer_email    String?     @unique(map: "customer_email_UNIQUE") @db.VarChar(45)
-  customer_phone    String?     @unique(map: "customer_phone_UNIQUE") @db.VarChar(10)
-  address           String?     @db.VarChar(255)
-  province          String?     @db.VarChar(100)
-  district          String?     @db.VarChar(100)
-  sub_district      String?     @db.VarChar(100)
-  postal_code       String?     @db.VarChar(5)
-  id_card_number    String?     @unique(map: "id_card_number_UNIQUE") @db.VarChar(13)
-  username          String      @unique(map: "username_UNIQUE") @db.VarChar(30)
-  password          String      @db.VarChar(255)
-  customer_datetime DateTime    @default(now()) @db.DateTime(0)
-  customer_update   DateTime    @default(now()) @updatedAt
+  customer_id       Int      @id @default(autoincrement())
+  name              String   @db.VarChar(45)
+  last_name         String   @db.VarChar(45)
+  customer_email    String?  @unique(map: "customer_email_UNIQUE") @db.VarChar(45)
+  customer_phone    String?  @unique(map: "customer_phone_UNIQUE") @db.VarChar(10)
+  address           String?  @db.VarChar(255)
+  province          String?  @db.VarChar(100)
+  district          String?  @db.VarChar(100)
+  sub_district      String?  @db.VarChar(100)
+  postal_code       String?  @db.VarChar(5)
+  id_card_number    String?  @unique(map: "id_card_number_UNIQUE") @db.VarChar(13)
+  username          String   @unique(map: "username_UNIQUE") @db.VarChar(30)
+  password          String   @db.VarChar(255)
+  customer_datetime DateTime @default(now()) @db.DateTime(0)
+  customer_update   DateTime @default(now()) @updatedAt
 
-  profile_image_url String?     @db.VarChar(255)
-  profile_public_id String?     @db.VarChar(255)
+  profile_image_url String? @db.VarChar(255)
+  profile_public_id String? @db.VarChar(255)
 
   id_card_image_url String?     @db.VarChar(255)
   id_card_public_id String?     @db.VarChar(255)
@@ -107,11 +107,12 @@ model ProductPrice {
   price_test      Decimal             @db.Decimal(10, 2)
   days_test       Int?
   days_pri        Int?
+  price_pry_extra Decimal?            @db.Decimal(10, 2)
   createdAt       DateTime            @default(now())
   Deposit         Decimal?            @db.Decimal(10, 2)
   CartItem        CartItem[]
   OrderItem       OrderItem[]
-  product         Product             @relation(fields: [productId], references: [product_id])
+  product         Product             @relation(fields: [productId], references: [product_id], onDelete: Cascade)
 
   @@index([productId], map: "fk_Product_ProductPrice_idx")
 }
@@ -137,9 +138,9 @@ model CartItem {
   endDate        DateTime?     @db.DateTime(0)
   mode           String?       @db.VarChar(10)
   startDate      DateTime?     @db.DateTime(0)
-  cart           Cart          @relation(fields: [cartId], references: [cart_id])
-  product        Product       @relation(fields: [productId], references: [product_id])
-  price          ProductPrice? @relation(fields: [productPriceId], references: [productPrice_id])
+  cart           Cart          @relation(fields: [cartId], references: [cart_id], onDelete: Cascade)
+  product        Product       @relation(fields: [productId], references: [product_id], onDelete: Cascade)
+  price          ProductPrice? @relation(fields: [productPriceId], references: [productPrice_id], onDelete: Cascade)
 
   @@index([cartId], map: "fk_cartItem_cart_idx")
   @@index([productId], map: "fk_cartItem_product_idx")
@@ -167,9 +168,9 @@ model OrderItem {
   orderId         Int
   productId       Int
   productPriceId  Int
-  order           Orders            @relation(fields: [orderId], references: [order_id])
-  product         Product           @relation(fields: [productId], references: [product_id])
-  price           ProductPrice      @relation(fields: [productPriceId], references: [productPrice_id])
+  order           Orders            @relation(fields: [orderId], references: [order_id], onDelete: Cascade)
+  product         Product           @relation(fields: [productId], references: [product_id], onDelete: Cascade)
+  price           ProductPrice      @relation(fields: [productPriceId], references: [productPrice_id], onDelete: Cascade)
   ShippingBoxItem ShippingBoxItem[]
 
   @@index([orderId], map: "fk_orderItem_order_idx")
@@ -407,6 +408,7 @@ enum Calender_rental_status {
   RETURNING        @map("กำลังคืนสินค้า")
   RETURNED         @map("คืนแล้ว")
   CLEANING         @map("กำลังทำความสะอาด")
+  Deposit_Refunded @map("คืนมัดจำแล้ว")
   Not_Ready_Rental @map("ไม่พร้อมเช่า")
   CANCELLED        @map("ยกเลิกเช่า")
 }

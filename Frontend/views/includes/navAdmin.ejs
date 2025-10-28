@@ -8,6 +8,8 @@
         <li><a href="/admin/rentals">สินค้ารายืนยัน</a></li>
         <li><a href="/admin/tracking">สินค้ารอส่ง</a></li>
         <li><a href="/admin/return">การคืนสินค้า</a></li>
+        <li><a href="/admin/Deposit_refund"">รอคืนเงินมัดจำ</a></li>
+        <li><a href="/admin/delay_setting">ตั้งค่าดีเลย์การจอง</a></li>
         <li><a href="/admin/chat">แชท</a></li>
         <li><a href="/">กลับหน้าหลัก</a></li>
     </ul>
@@ -45,6 +47,19 @@
     }
 
     .admin-nav ul li a:hover {
-        opacity: 0.8;
+        background: rgba(255, 255, 255, 0.15);
+        padding: 6px 12px;
+        border-radius: 8px;
+        transition: all 0.2s ease;
     }
 </style>
+
+<script>
+    const current = window.location.pathname;
+    document.querySelectorAll('.admin-nav a').forEach(link => {
+        if (link.getAttribute('href') === current) {
+            link.style.textDecoration = 'underline';
+            link.style.fontWeight = '600';
+        }
+    });
+</script>

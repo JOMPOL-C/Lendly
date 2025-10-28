@@ -28,6 +28,7 @@ const rentalsController = require("./src/Controllers/rentalsController");
 const reviewController = require("./src/Controllers/reviewController");
 const adminController = require("./src/Controllers/adminController");
 const shippingController = require("./src/Controllers/shippingController");
+const delayController = require("./src/Controllers/delayController");
 
 const { autoCancelExpiredPayments } = require("./src/Controllers/rentalsController");
 
@@ -100,6 +101,7 @@ app.get("/admin/edit_product", PageRender.renderEdit_product);
 app.get("/admin/chat", PageRender.renderAdmin_chat);
 app.get("/admin/dashboard", adminController.renderAdminDashboard);
 app.get("/admin/customers", adminController.getAllCustomers);
+app.get("/admin/delay_setting", delayController.renderDelaySetting);
  
 
 // ============================
@@ -149,18 +151,25 @@ app.get("/payment", async (req, res) => {
 
     if (!order) return res.status(404).send("ไม่พบคำสั่งซื้อ");
 
-    const total = parseFloat(order.total_price);
+    // ✅ รวมค่าเช่าและมัดจำ
     const cartItems = order.OrderItem.map(i => ({
       product: i.product,
       numericPrice: parseFloat(i.price.price_pri || i.price.price_test),
+      deposit: parseFloat(i.price.Deposit || 0),
     }));
 
-    res.render("payment", { cartItems, total, orderId });
+    const totalRent = cartItems.reduce((sum, item) => sum + item.numericPrice, 0);
+    const totalDeposit = cartItems.reduce((sum, item) => sum + item.deposit, 0);
+    const total = totalRent + totalDeposit;
+
+    res.render("payment", { cartItems, totalRent, totalDeposit, total, orderId });
   } catch (err) {
     console.error("❌ payment page error:", err);
     res.status(500).send("Server Error");
   }
 });
+
+
 
 setInterval(autoCancelExpiredPayments, 60 * 1000);
 

@@ -305,4 +305,11 @@ body {
     background: #f3e8ff;
     transition: 0.3s;
   }
-  
+  /* ปฏิทินตอนยังเลือกของเช่าไม่ได้ */
+.disabled-calendar {
+  filter: grayscale(100%);
+  opacity: 0.5;
+  pointer-events: none;
+  user-select: none;
+  transition: opacity 0.3s ease, filter 0.3s ease;
+}

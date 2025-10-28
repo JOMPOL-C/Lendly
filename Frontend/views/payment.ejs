@@ -23,15 +23,39 @@
                     </div>
 
                     <div class="total-box">
-                        <p>ยอดรวมทั้งหมด</p>
-                        <h3>
-                            <%= total.toFixed(2) %> บาท
-                        </h3>
+                        <p><strong>สรุปรายการชำระเงิน</strong></p>
+
+                        <div class="price-line">
+                            <span>💸 ค่าเช่ารวม</span>
+                            <span>
+                                <%= totalRent.toFixed(2) %> บาท
+                            </span>
+                        </div>
+
+                        <div class="price-line">
+                            <span>🔒 มัดจำสินค้า</span>
+                            <span>
+                                <%= totalDeposit.toFixed(2) %> บาท
+                            </span>
+                        </div>
+
+                        <hr>
+
+                        <div class="price-line total">
+                            <span><strong>ยอดรวมทั้งหมด (ต้องชำระ)</strong></span>
+                            <span><strong>
+                                    <%= total.toFixed(2) %> บาท
+                                </strong></span>
+                        </div>
+
+                        <small style="color:#666;">*ยอดรวมนี้รวมมัดจำสินค้าแล้ว</small>
                     </div>
+
 
                     <hr class="divider">
 
-                    <h2>ชำระเงินผ่านพร้อมเพย์</h2>
+                    <h2 style=" font-size: 34px; ">ชำระเงินผ่านพร้อมเพย์</h2>
+
                     <div class="qr-box">
                         <img id="qrImage" alt="PromptPay QR">
                     </div>
@@ -66,7 +90,7 @@
                     async function loadQR() {
                         const res = await fetch('/api/payment/generate-qr', {
                             method: 'POST',
-                            headers: {'Content-Type': 'application/json'},
+                            headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ amount: total })
                         });
                         const data = await res.json();

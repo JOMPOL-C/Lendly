@@ -9,6 +9,12 @@
       <main class="container">
         <h1>แก้ไขโปรไฟล์</h1>
 
+        <% if (typeof error !== 'undefined' && error) { %>
+          <div id="toast-error" class="toast-error"><%= error %></div>
+        <% } else { %>
+          <div id="toast-error" class="toast-error hidden"></div>
+        <% } %>
+
         <div id="toast-success" class="toast-success hidden">
           บันทึกข้อมูลโปรไฟล์เรียบร้อยแล้ว
         </div>
@@ -99,7 +105,7 @@
             <!-- บัตรประชาชน -->
             <div class="form-group">
               <label>รูปบัตรประชาชน</label>
-            
+
               <% if (user.id_card_image_url) { %>
                 <div class="idcard-preview">
                   <a href="<%= user.id_card_image_url %>" target="_blank">
@@ -107,12 +113,12 @@
                   </a>
                   <p class="hint">บัตรประชาชนปัจจุบัน (คลิกเพื่อดูขนาดเต็ม)</p>
                 </div>
-              <% } else { %>
-                <p class="hint">ยังไม่ได้อัปโหลดบัตรประชาชน</p>
-              <% } %>
-            
-              <!-- input file สำหรับอัปโหลดใหม่ -->
-              <input type="file" id="id_card_image" name="id_card_image" accept="image/*">
+                <% } else { %>
+                  <p class="hint">ยังไม่ได้อัปโหลดบัตรประชาชน</p>
+                  <% } %>
+
+                    <!-- input file สำหรับอัปโหลดใหม่ -->
+                    <input type="file" id="id_card_image" name="id_card_image" accept="image/*">
             </div>
 
             <div class="profile-actions">
@@ -268,6 +274,27 @@
                 }, 4000);
               }
             });
+
+            document.addEventListener("DOMContentLoaded", () => {
+              // ✅ success toast
+              const params = new URLSearchParams(window.location.search);
+              if (params.get("success") === "1") {
+                const toast = document.getElementById("toast-success");
+                toast.classList.remove("hidden");
+                setTimeout(() => toast.classList.add("hide"), 3500);
+                setTimeout(() => {
+                  toast.remove();
+                  window.history.replaceState({}, document.title, "/profile");
+                }, 4000);
+              }
+
+              // ❌ error toast
+              const errorToast = document.getElementById("toast-error");
+              if (errorToast && !errorToast.classList.contains("hidden")) {
+                setTimeout(() => errorToast.remove(), 4000);
+              }
+            });
+
           </script>
 
   </body>

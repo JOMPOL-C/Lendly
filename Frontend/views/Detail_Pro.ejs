@@ -37,35 +37,48 @@
                 <%= product.product_name %>
               </h4>
 
-              <h2 id="priceDisplay">กรุณาเลือกของเช่าและโหมดก่อน</h2>
+              <% if (product.prices[0].Deposit && product.prices[0].Deposit> 0) { %>
+                <p>มัดจำสินค้า: <%= product.prices[0].Deposit %>฿</p>
+                <% } %>
 
-              <% const firstPrice=product.prices && product.prices.length> 0 ? product.prices[0] : null; %>
-                <div class="mode-box">
-                  <label>
-                    <input type="radio" name="mode" value="test" checked>
-                    เทส (<%= firstPrice?.days_test %> วัน)
-                  </label>
-                  <label>
-                    <input type="radio" name="mode" value="pri">
-                    ไพร (<%= firstPrice?.days_pri %> วัน)
-                  </label>
-                </div>
+                  <h2 id="priceDisplay">กรุณาเลือกของเช่าและโหมดก่อน</h2>
 
-                <select name="components">
-                  <option value="" disabled selected>เลือกของเช่า</option>
-                  <option value="suit">ชุด</option>
-                  <option value="wig">วิก</option>
-                  <option value="set-wig">ชุด + วิก</option>
-                  <option value="set-wig-prop">ชุด + วิก + พร็อพ</option>
-                  <option value="set-wig-shoe">ชุด + วิก + รองเท้า</option>
-                  <option value="set-wig-prop-shoe">ชุด + วิก + พร็อพ + รองเท้า</option>
-                  <option value="prop">พร็อพเดี่ยว</option>
-                  <option value="shoe">รองเท้าเดี่ยว</option>
-                </select>
+                  <% const firstPrice=product.prices && product.prices.length> 0 ? product.prices[0] : null; %>
+                  <div class="mode-box">
+                    <% const hasTest = product.prices.some(p => p.days_test && p.days_test > 0); %>
+                    <% const hasPri  = product.prices.some(p => p.days_pri && p.days_pri > 0); %>
+                  
+                    <% if (hasTest) { %>
+                      <label>
+                        <input type="radio" name="mode" value="test" checked>
+                        เทส (<%= firstPrice?.days_test %> วัน)
+                      </label>
+                    <% } %>
+                  
+                    <% if (hasPri) { %>
+                      <label>
+                        <input type="radio" name="mode" value="pri" <%= !hasTest ? 'checked' : '' %>>
+                        ไพร (<%= firstPrice?.days_pri %> วัน)
+                      </label>
+                    <% } %>
+                  </div>
+                  
 
-                <div id="calendar" data-product-id="<%= product.product_id %>"></div>
+                    <select name="components">
+                      <option value="" disabled selected>เลือกของเช่า</option>
+                      <option value="suit">ชุด</option>
+                      <option value="wig">วิก</option>
+                      <option value="set-wig">ชุด + วิก</option>
+                      <option value="set-wig-prop">ชุด + วิก + พร็อพ</option>
+                      <option value="set-wig-shoe">ชุด + วิก + รองเท้า</option>
+                      <option value="set-wig-prop-shoe">ชุด + วิก + พร็อพ + รองเท้า</option>
+                      <option value="prop">พร็อพเดี่ยว</option>
+                      <option value="shoe">รองเท้าเดี่ยว</option>
+                    </select>
 
-                <button id="addToCartBtn" class="btn-cart">เพิ่มลงตะกร้า</button>
+                    <div id="calendar" data-product-id="<%= product.product_id %>"></div>
+
+                    <button id="addToCartBtn" class="btn-cart">เพิ่มลงตะกร้า</button>
             </div>
           </div>
 
