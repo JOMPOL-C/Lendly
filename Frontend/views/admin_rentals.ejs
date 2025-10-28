@@ -30,8 +30,33 @@
 
         <div class="actions">
           <button id="confirmSelectedBtn" class="btn-confirm">ยืนยันการจองที่เลือก</button>
+          <button id="rejectSelectedBtn" class="btn-cancel">ปฏิเสธคำสั่งซื้อ</button>
         </div>
       </main>
+
+      <!-- 🔹 Modal Popup -->
+      <div id="rejectModal" class="modal hidden">
+        <div class="modal-content">
+          <h3>ปฏิเสธคำสั่งซื้อ</h3>
+          <p>กรุณาเลือกเหตุผลที่ไม่สามารถจัดส่งสินค้าได้:</p>
+
+          <select id="rejectReason">
+            <option value="">-- โปรดเลือกเหตุผล --</option>
+            <option value="สินค้าไม่พร้อมใช้งาน">สินค้าไม่พร้อมใช้งาน</option>
+            <option value="ข้อมูลหรือที่อยู่ลูกค้าไม่ถูกต้อง">ข้อมูลหรือที่อยู่ลูกค้าไม่ถูกต้อง</option>
+            <option value="ลูกค้าไม่มีความน่าเชื่อถือ">ลูกค้าไม่มีความน่าเชื่อถือ</option>
+            <option value="อื่นๆ">อื่นๆ โปรดระบุ...</option>
+          </select>
+
+          <textarea id="rejectDetail" placeholder="ระบุเพิ่มเติม..." rows="3"></textarea>
+
+          <div class="modal-actions">
+            <button id="confirmRejectBtn" class="btn-cancel">ยืนยัน</button>
+            <button id="cancelRejectBtn" class="btn-save">ยกเลิก</button>
+          </div>
+        </div>
+      </div>
+
 
       <script>
         document.addEventListener("DOMContentLoaded", async () => {
@@ -115,8 +140,48 @@
             }
           });
         });
-      </script>
 
+        // ✅ ปุ่มปฏิเสธ
+        const rejectBtn = document.getElementById("rejectSelectedBtn");
+        const modal = document.getElementById("rejectModal");
+        const confirmRejectBtn = document.getElementById("confirmRejectBtn");
+        const cancelRejectBtn = document.getElementById("cancelRejectBtn");
+
+        rejectBtn.addEventListener("click", () => {
+          const selected = Array.from(document.querySelectorAll("input[name=selected]:checked"))
+            .map(chk => parseInt(chk.value));
+
+          if (!selected.length) return alert("กรุณาเลือกรายการที่จะปฏิเสธ");
+
+          modal.classList.remove("hidden");
+          confirmRejectBtn.dataset.ids = JSON.stringify(selected);
+        });
+
+        cancelRejectBtn.addEventListener("click", () => modal.classList.add("hidden"));
+
+        confirmRejectBtn.addEventListener("click", async () => {
+          const ids = JSON.parse(confirmRejectBtn.dataset.ids || "[]");
+          const reason = document.getElementById("rejectReason").value;
+          const detail = document.getElementById("rejectDetail").value;
+
+          if (!reason) return alert("กรุณาเลือกเหตุผล");
+
+          try {
+            const res = await fetch("/api/rentals/reject", {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ rentalIds: ids, reason, detail }),
+            });
+            const data = await res.json();
+            alert(data.message || "ดำเนินการสำเร็จ");
+            location.reload();
+          } catch (err) {
+            console.error("❌ reject error:", err);
+            alert("เกิดข้อผิดพลาดในการปฏิเสธคำสั่งซื้อ");
+          }
+        });
+
+      </script>
 
   </body>
 

@@ -1,15 +1,20 @@
 const express = require('express');
 const router = express.Router();
 const adminController = require('../Controllers/adminController');
+const { requireAdmin } = require("../middlewares/roleMiddleware");
 
 // ✅ ผู้ใช้ทั้งหมด
-router.get('/admin/users', adminController.getUsers);
+router
+    .get('/admin/customers', requireAdmin, adminController.getAllCustomers);
+
 
 // ✅ ยืนยันการเช่า
-router.put('/admin/confirm-rental/:rentalId', adminController.confirmRental);
+router
+    .put('/admin/confirm-rental/:rentalId', adminController.confirmRental);
 
 // ✅ แดชบอร์ด
-router.get('/admin/dashboard', adminController.renderAdminDashboard);
-router.get('/admin/top-stats', require('../Controllers/adminController').getTopStats);
+router
+    .get('/admin/dashboard', adminController.renderAdminDashboard)
+    .get('/admin/top-stats', adminController.getTopStats);
 
 module.exports = router;

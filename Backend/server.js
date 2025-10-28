@@ -99,6 +99,7 @@ app.get("/admin/add_product", productController.renderAddProduct);
 app.get("/admin/edit_product", PageRender.renderEdit_product);
 app.get("/admin/chat", PageRender.renderAdmin_chat);
 app.get("/admin/dashboard", adminController.renderAdminDashboard);
+app.get("/admin/customers", adminController.getAllCustomers);
  
 
 // ============================

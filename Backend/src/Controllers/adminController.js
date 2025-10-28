@@ -1,19 +1,6 @@
 const prisma = require('../../prisma/prisma');
 const { notifyUserEmail, notifyAdminEmail } = require("../utils/emailNotify");
 
-// ✅ ดึงข้อมูลผู้ใช้ทั้งหมด
-exports.getUsers = async (req, res) => {
-    try {
-        const users = await prisma.user.findMany({
-            orderBy: { user_id: 'desc' },
-        });
-        res.status(200).json(users);
-    } catch (err) {
-        console.error("❌ getUsers error:", err);
-        res.status(500).json({ error: "Server error" });
-    }
-};
-
 // ✅ ยอมรับการเช่าสินค้า (เปลี่ยนสถานะเป็นรอส่ง)
 exports.confirmRental = async (req, res) => {
     try {
@@ -108,6 +95,41 @@ exports.renderAdminDashboard = async (req, res) => {
         res.status(500).send("Server Error");
     }
 };
+
+// ✅ แสดงลูกค้าทั้งหมดพร้อมคำสั่งซื้อ
+exports.getAllCustomers = async (req, res) => {
+    try {
+        const customers = await prisma.Customer.findMany({
+            include: {
+                proportion: true,
+                rentals: {
+                    include: {
+                        product: { select: { product_name: true } },
+                    },
+                    orderBy: { rental_id: 'desc' },
+                },
+                orders: {
+                    include: {
+                        Rentals: {
+                            include: {
+                                product: { select: { product_name: true } },
+                            },
+                        },
+                    },
+                    orderBy: { order_id: 'desc' },
+                },
+            },
+            orderBy: { customer_id: 'asc' },
+        });
+
+        res.render("admin_customers", { customers });
+    } catch (err) {
+        console.error("❌ getAllCustomers error:", err);
+        res.status(500).send("Server Error");
+    }
+};
+
+
 
 exports.getTopStats = async (req, res) => {
     try {

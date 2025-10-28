@@ -1,0 +1,123 @@
+.hidden {
+    display: none;
+  }
+  
+  /* พื้นหลังการ์ด */
+  .order-history td {
+    background: #faf5ff;
+    border-top: 1px solid #ddd;
+  }
+  
+  /* กล่องรวมออเดอร์ */
+  .orders-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: flex-start;
+    margin-top: 15px;
+  }
+  
+  /* การ์ดออเดอร์ */
+  .order-card {
+    background: white;
+    border-radius: 14px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    padding: 20px;
+    width: 360px;
+    transition: transform 0.2s ease;
+  }
+  
+  .order-card:hover {
+    transform: translateY(-3px);
+  }
+  
+  .order-card h3 {
+    color: #6b46c1;
+    font-size: 18px;
+    margin-bottom: 5px;
+  }
+  
+  .order-card p {
+    font-size: 15px;
+    color: #444;
+    margin: 4px 0;
+  }
+  
+  /* สถานะ */
+  .status {
+    margin-bottom: 10px;
+  }
+  
+  .status-tag {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 8px;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  
+  /* สีสถานะ */
+  .status-tag.waiting_confirm { background: #fbbf24; }
+  .status-tag.waiting_payment { background: #f97316; }
+  .status-tag.waiting_deliver { background: #3b82f6; }
+  .status-tag.waiting_receive { background: #60a5fa; }
+  .status-tag.rented { background: #10b981; }
+  .status-tag.returning { background: #6366f1; }
+  .status-tag.returned { background: #8b5cf6; }
+  .status-tag.cancelled { background: #ef4444; }
+  .status-tag.rejected { background: #9ca3af; }
+  
+  /* การ์ดสินค้าในออเดอร์ */
+  .rental-card {
+    display: flex;
+    align-items: center;
+    background: #f8f7ff;
+    border: 1px solid #e4ddff;
+    border-radius: 10px;
+    padding: 10px;
+    margin-bottom: 10px;
+    gap: 10px;
+  }
+  
+  .rental-card img {
+    width: 70px;
+    height: 70px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 2px solid #d8b4fe;
+  }
+  
+  .rental-info h4 {
+    font-size: 15px;
+    color: #4c1d95;
+    margin-bottom: 4px;
+  }
+  
+  .rental-info p {
+    font-size: 13px;
+    margin: 0;
+    color: #555;
+  }
+  
+  /* ปุ่ม footer */
+  .order-footer {
+    text-align: right;
+    margin-top: 8px;
+  }
+  
+  .order-footer .btn {
+    background-color: #6b46c1;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 14px;
+    transition: 0.25s;
+  }
+  
+  .order-footer .btn:hover {
+    background-color: #553c9a;
+    transform: translateY(-1px);
+  }
+  
