@@ -1,30 +1,191 @@
 <%- include('includes/head') %>
-<link rel="stylesheet" href="/styles/chat.css">
+<link rel="stylesheet" href="/styles/chatWidget.css">
+<style>
+  /* ===== 💬 Bubbles แชทแบบแยกฝั่ง ===== */
+  #chat-messages {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .msg {
+    max-width: 75%;
+    margin: 8px 0;
+    padding: 10px 14px;
+    border-radius: 16px;
+    line-height: 1.4;
+    word-wrap: break-word;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* 🟣 แอดมิน (ชิดขวา) */
+  .msg.me {
+    align-self: flex-end;
+    background: #8b5cf6;
+    color: #fff;
+    border-top-right-radius: 0;
+  }
+
+  /* ⚪ ลูกค้า (ชิดซ้าย) */
+  .msg.user {
+    align-self: flex-start;
+    background: #f3f4f6;
+    color: #111827;
+    border-top-left-radius: 0;
+  }
+
+  /* 🏷️ ชื่อผู้ส่ง */
+  .sender-name {
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+
+  /* 🕒 เวลา */
+  .msg small {
+    margin-top: 4px;
+    font-size: 11px;
+    color: #d1d5db;
+    text-align: right;
+  }
+
+  .chat-item {
+    transition: background 0.2s ease, transform 0.1s ease;
+  }
+  .chat-item:hover {
+    background: #ede9fe;
+    transform: scale(1.02);
+  }
+</style>
+</head>
 
 <body>
-  <%- include('includes/navAdmin') %>
-  
-  <main class="chat-admin-container">
-    <!-- 📜 รายชื่อห้องแชททั้งหมด -->
-    <aside id="chat-list">
-      <h3>💬 ห้องแชททั้งหมด</h3>
-      <div id="chat-rooms"></div>
+    <%- include('includes/navAdmin') %>
+    
+  <main style="display:flex; height:90vh;">
+    <!-- 🧍 รายชื่อผู้ใช้ -->
+    <aside style="width:280px; border-right:1px solid #ddd; overflow-y:auto; padding:10px;" id="chat-list">
+      <h3 style="color:#6d28d9;">รายชื่อผู้ใช้</h3>
     </aside>
 
-    <!-- 💬 หน้าต่างแชท -->
-    <section id="chat-window">
-      <div id="chat-header">
-        <h3 id="chat-title">เลือกห้องเพื่อเริ่มสนทนา</h3>
+    <!-- 💬 กล่องข้อความ -->
+    <section style="flex:1; display:flex; flex-direction:column;">
+      <div id="chat-header" style="background:#6d28d9;color:white;padding:10px;">
+        <h3 id="chat-customer-name">เลือกผู้ใช้</h3>
       </div>
-      <div id="messages" class="messages-area"></div>
-
-      <form id="chat-form" class="chat-form">
-        <input type="text" id="message" placeholder="พิมพ์ข้อความ..." autocomplete="off" />
-        <button type="submit">ส่ง</button>
+      <div id="chat-messages" style="flex:1;overflow-y:auto;padding:10px;background:#f9fafb;"></div>
+      <form id="chat-form" style="display:flex;border-top:1px solid #ddd;">
+        <input id="chat-input" style="flex:1;padding:10px;" placeholder="พิมพ์ข้อความ..." />
+        <button type="submit" style="background:#6d28d9;color:white;border:none;padding:10px 16px;">ส่ง</button>
       </form>
     </section>
   </main>
 
-  <script src="/socket.io/socket.io.js"></script>
-  <script src="/js/chat_admin.js"></script>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
+    import {
+      getFirestore, collection, addDoc, query, orderBy, onSnapshot,
+      doc, updateDoc, getDoc
+    } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAeBRXnxHUKXUKcm2r_DSfzvBHXuOuWhaQ",
+      authDomain: "lendly-5ee70.firebaseapp.com",
+      projectId: "lendly-5ee70",
+      storageBucket: "lendly-5ee70.firebasestorage.app",
+      messagingSenderId: "831943468595",
+      appId: "1:831943468595:web:846bf587df4b1b7065e546",
+      measurementId: "G-RCPEEFTNTW"
+    };
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const listBox = document.getElementById("chat-list");
+    const msgBox = document.getElementById("chat-messages");
+    const input = document.getElementById("chat-input");
+    const form = document.getElementById("chat-form");
+    let currentCustomerId = null;
+
+    // ✅ โหลดรายชื่อแชทแบบเรียลไทม์
+    const chatQuery = query(collection(db, "chats"), orderBy("updatedAt", "desc"));
+    onSnapshot(chatQuery, (snapshot) => {
+      listBox.innerHTML = "<h3 style='color:#6d28d9;'>รายชื่อผู้ใช้</h3>";
+      snapshot.forEach((chatDoc) => {
+        const data = chatDoc.data();
+        const div = document.createElement("div");
+        div.className = "chat-item";
+        div.style.padding = "10px";
+        div.style.cursor = "pointer";
+        div.style.borderBottom = "1px solid #eee";
+        div.innerHTML = `
+          <strong>${data.customerName || "ไม่ทราบชื่อ"}</strong><br>
+          <small style="color:#555;">${data.lastMessage || "ยังไม่มีข้อความ"}</small>
+        `;
+        div.onclick = () => openChat(chatDoc.id, data.customerName);
+        listBox.appendChild(div);
+      });
+    });
+
+    // ✅ เปิดห้องแชทของลูกค้า
+    async function openChat(chatId, fallbackName) {
+      currentCustomerId = chatId;
+      const chatDoc = await getDoc(doc(db, "chats", chatId));
+      const chatData = chatDoc.exists() ? chatDoc.data() : {};
+      const customerName = chatData.customerName || fallbackName || "ลูกค้า";
+      document.getElementById("chat-customer-name").textContent = customerName;
+
+      const q = query(
+        collection(db, `chats/${chatId}/messages`),
+        orderBy("createdAt", "asc")
+      );
+
+      onSnapshot(q, (snapshot) => {
+        msgBox.innerHTML = "";
+        snapshot.forEach((docSnap) => {
+          const m = docSnap.data();
+          const time = m.createdAt?.toDate
+            ? m.createdAt.toDate().toLocaleTimeString("th-TH", {
+              hour: "2-digit",
+              minute: "2-digit",
+            })
+            : "";
+
+          const div = document.createElement("div");
+          div.className = "msg " + (m.senderRole === "ADMIN" ? "me" : "user");
+          const senderLabel = m.senderRole === "ADMIN" ? "แอดมิน" : customerName;
+
+          div.innerHTML = `
+            <div class="sender-name">${senderLabel}</div>
+            <div>${m.message}</div>
+            <small>${time}</small>
+          `;
+          msgBox.appendChild(div);
+        });
+        msgBox.scrollTop = msgBox.scrollHeight;
+      });
+    }
+
+    // ✅ แอดมินส่งข้อความ
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (!input.value.trim() || !currentCustomerId) return;
+
+      const messageText = input.value.trim();
+      await addDoc(collection(db, `chats/${currentCustomerId}/messages`), {
+        senderId: "ADMIN",
+        senderRole: "ADMIN",
+        message: messageText,
+        createdAt: new Date()
+      });
+
+      await updateDoc(doc(db, "chats", currentCustomerId), {
+        lastMessage: messageText,
+        updatedAt: new Date()
+      });
+
+      input.value = "";
+    });
+  </script>
 </body>
+</html>

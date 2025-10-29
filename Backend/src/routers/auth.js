@@ -2,8 +2,6 @@ const express = require('express');
 const router = express.Router();
 const authController = require('../Controllers/authController');
 const prisma = require('../../prisma/prisma');
-const authRequired = require("../middlewares/authMiddleware");
-
 
 // 🔐 Auth routes
 router
@@ -44,7 +42,5 @@ router.get('/subdistricts/:districtId', async (req, res) => {
     });
     res.json(data);
 });
-
-router.get("/me", authRequired, authController.me);
 
 module.exports = router;

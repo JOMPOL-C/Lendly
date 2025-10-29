@@ -209,6 +209,9 @@ exports.editprofile = async (req, res) => {
   }
 };
 
+
+
+
 // แก้ไขโดยใช้ bcrypt ในการ hash รหัสผ่าน
 exports.changePassword = async (req, res) => {
   try {
@@ -287,34 +290,6 @@ exports.resetPassword = async (req, res) => {
   } catch (err) {
     console.error(err);
     return res.status(500).render("resetPassword", { error: "เกิดข้อผิดพลาดในเซิร์ฟเวอร์" });
-  }
-};
-
-// ✅ authController.js
-exports.me = async (req, res) => {
-  try {
-    if (!req.user) {
-      return res.status(401).json({ message: "ไม่มี token หรือ token หมดอายุ" });
-    }
-
-    const user = await prisma.Customer.findUnique({
-      where: { customer_id: req.user.id },
-      select: {
-        customer_id: true,
-        username: true,
-        name: true,
-        role: true
-      },
-    });
-
-    if (!user) {
-      return res.status(404).json({ message: "ไม่พบผู้ใช้" });
-    }
-
-    res.json(user);
-  } catch (err) {
-    console.error("❌ [auth.me] error:", err);
-    res.status(500).json({ message: "โหลดข้อมูลผู้ใช้ไม่สำเร็จ" });
   }
 };
 
