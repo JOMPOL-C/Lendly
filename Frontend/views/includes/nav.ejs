@@ -5,7 +5,6 @@
   <form action="/category" method="get" class="input-field">
     <i class='bx bx-search'></i>
     <input type="text" name="search" placeholder="ค้นหาสินค้า..." value="<%= typeof searchTerm !== 'undefined' ? searchTerm : '' %>">
-
   </form>
 
   <div>
@@ -22,20 +21,25 @@
           <% if (user && user.profile_image_url) { %>
             <img src="<%= user.profile_image_url %>" alt="Profile" class="nav-profile-pic"
               style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;">
-            <% } else { %>
-              <i class='bx bx-user'></i>
-              <% } %>
+          <% } else { %>
+            <i class='bx bx-user'></i>
+          <% } %>
         </a>
         <ul class="dropdown-menu">
           <% if (!user) { %>
             <li><a href="/login">เข้าสู่ระบบ</a></li>
             <li><a href="/register">สมัครบัญชี</a></li>
-            <% } else { %>
-              <li><a href="/deposit_user">ประวัติการคืนมัดจำ</a></li>
-              <li><a href="/chat">คุยกับเรา</a></li>
-              <li><a href="/profile">จัดการโปรไฟล์</a></li>
-              <li><a href="/api/auth/logout">ออกจากระบบ</a></li>
-              <% } %>
+          <% } else { %>
+            <!-- ✅ ถ้าเป็น ADMIN แสดงปุ่มแดชบอร์ด -->
+            <% if (user.role === 'ADMIN') { %>
+              <li><a href="/admin/dashboard">แดชบอร์ดแอดมิน</a></li>
+            <% } %>
+
+            <li><a href="/deposit_user">ประวัติการคืนมัดจำ</a></li>
+            <li><a href="/chat">คุยกับเรา</a></li>
+            <li><a href="/profile">จัดการโปรไฟล์</a></li>
+            <li><a href="/api/auth/logout">ออกจากระบบ</a></li>
+          <% } %>
         </ul>
       </li>
 

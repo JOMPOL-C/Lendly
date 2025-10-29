@@ -7,6 +7,7 @@ const chatController = require("../Controllers/chatController");
 router.get("/chats", requireUser, chatController.getChats);
 router.get("/chats/:chatId/messages", requireUser, chatController.getMessages);
 router.post("/chats/send", requireUser, chatController.sendMessage);
+router.post("/chats/create", chatController.createChat);
 
 // 🧑‍💼 แอดมินดูทุกห้อง
 router.get("/admin/chats", requireAdmin, chatController.getChats);

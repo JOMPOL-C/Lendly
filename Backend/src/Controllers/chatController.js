@@ -74,22 +74,14 @@ exports.sendMessage = async (req, res) => {
       return res.status(400).json({ message: "ไม่พบรหัสลูกค้า" });
     }
 
-    let chat = null;
     let isNewChat = false;
 
     // ✅ ถ้ามี chatId → หาจากฐาน
-    if (chatId) {
-      chat = await prisma.chat.findUnique({
-        where: { chat_id: Number(chatId) },
-      });
+    // ✅ หาโดย customerId เป็นหลักเลย
+    let chat = await prisma.chat.findUnique({
+      where: { customerId }, // ใช้คอลัมน์ unique โดยตรง
+    });
 
-      if (!chat) {
-        console.warn(`⚠️ ไม่พบ chat_id=${chatId}, หาจาก customerId`);
-        chat = await prisma.chat.findFirst({ where: { customerId } });
-      }
-    }
-
-    // ✅ ถ้ายังไม่เจออีก → สร้างห้องใหม่
     if (!chat) {
       console.log(`🆕 ยังไม่มีห้อง → สร้างใหม่ให้ customerId=${customerId}`);
       chat = await prisma.chat.create({
@@ -97,6 +89,7 @@ exports.sendMessage = async (req, res) => {
       });
       isNewChat = true;
     }
+
 
     console.log(`📂 ใช้ห้อง chat_id=${chat.chat_id}`);
 
@@ -149,5 +142,43 @@ exports.sendMessage = async (req, res) => {
   } catch (err) {
     console.error("❌ [sendMessage] error:", err);
     res.status(500).json({ message: "ส่งข้อความไม่สำเร็จ" });
+  }
+};
+
+// 🆕 สร้างห้องเปล่า (โดยไม่ต้องส่งข้อความ)
+exports.createChat = async (req, res) => {
+  try {
+    const user = req.user;
+    const customerId = Number(user?.customer_id || req.body.customerId);
+    const customerName =
+      user?.username || req.body.customerName || "ไม่ทราบชื่อ";
+    const io = req.app.get("io");
+
+    if (!customerId || isNaN(customerId)) {
+      return res.status(400).json({ message: "ไม่พบรหัสลูกค้า" });
+    }
+
+    // ✅ หาห้องที่มีอยู่ก่อน
+    let chat = await prisma.chat.findUnique({ where: { customerId } });
+    if (!chat) {
+      chat = await prisma.chat.create({
+        data: { customerId, customerName },
+      });
+      console.log(`🆕 [createChat] สร้างห้องใหม่ให้ customerId=${customerId}`);
+    } else {
+      console.log(`🟢 [createChat] ห้องมีอยู่แล้ว chat_id=${chat.chat_id}`);
+    }
+
+    // ✅ แจ้ง admin ถ้ามีห้องใหม่
+    io.emit("newChat", {
+      chatId: chat.chat_id,
+      customerName: chat.customerName,
+      lastMessage: chat.lastMessage || "เริ่มการสนทนาใหม่",
+    });
+
+    return res.json(chat);
+  } catch (err) {
+    console.error("❌ [createChat] error:", err);
+    res.status(500).json({ message: "สร้างห้องไม่สำเร็จ" });
   }
 };

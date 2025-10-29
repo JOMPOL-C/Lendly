@@ -397,24 +397,23 @@ model sub_districts {
 
 model Chat {
   chat_id      Int       @id @default(autoincrement())
-  customerId   Int
-  customerName String?     
-  lastMessage  String?      
+  customerId   Int       @unique
+  customerName String?
+  lastMessage  String?
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
   messages     Message[]
 }
 
 model Message {
-  message_id  Int       @id @default(autoincrement())
-  chatId      Int
-  senderId    Int?
-  senderRole  String
-  message     String   
-  createdAt   DateTime  @default(now())
-  chat        Chat      @relation(fields: [chatId], references: [chat_id])
+  message_id Int      @id @default(autoincrement())
+  chatId     Int
+  senderId   Int?
+  senderRole String
+  message    String
+  createdAt  DateTime @default(now())
+  chat       Chat     @relation(fields: [chatId], references: [chat_id])
 }
-
 
 enum Role {
   ADMIN
