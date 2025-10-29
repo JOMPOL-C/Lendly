@@ -275,27 +275,35 @@ model ReturnBoxItem {
 }
 
 model Rentals {
-  rental_id            Int                     @id @default(autoincrement())
-  customerId           Int
-  productId            Int
-  rental_date          DateTime?               @default(now()) @db.DateTime(0)
-  rental_end_date      DateTime?               @default(now()) @db.DateTime(0)
-  rental_status        Calender_rental_status?
-  rental_datetime      DateTime?               @default(now()) @db.DateTime(0)
-  rental_update        DateTime?               @updatedAt
-  mode                 RentalMode?             @default(TEST)
+  rental_id       Int                     @id @default(autoincrement())
+  customerId      Int
+  productId       Int
+  rental_date     DateTime?               @default(now()) @db.DateTime(0)
+  rental_end_date DateTime?               @default(now()) @db.DateTime(0)
+  rental_status   Calender_rental_status?
+  rental_datetime DateTime?               @default(now()) @db.DateTime(0)
+  rental_update   DateTime?               @updatedAt
+  mode            RentalMode?             @default(TEST)
+
+  // 🔹 แก้ type ให้สอดคล้องกับฐานข้อมูลจริง
+  refund_amount Decimal?  @db.Decimal(10, 2)
+  refund_note   String?   @db.VarChar(255)
+  refund_slip   String?   @db.VarChar(255)
+  refund_date   DateTime? @default(now()) @db.DateTime(0)
+
   orderId              Int?
-  total_price          Decimal?                @db.Decimal(10, 2)
+  total_price          Decimal?  @db.Decimal(10, 2)
   return_tracking_code String?
   shipping_box_id      Int?
   received_at          DateTime?
-  PaymentSlip          PaymentSlip[]
-  ReceiveImages        RentalReceiveImage[]
-  customer             Customer                @relation(fields: [customerId], references: [customer_id])
-  order                Orders?                 @relation(fields: [orderId], references: [order_id], onDelete: Cascade)
-  product              Product                 @relation(fields: [productId], references: [product_id])
-  ReturnBoxItem        ReturnBoxItem[]
-  Review               Review[]
+
+  PaymentSlip   PaymentSlip[]
+  ReceiveImages RentalReceiveImage[]
+  customer      Customer             @relation(fields: [customerId], references: [customer_id])
+  order         Orders?              @relation(fields: [orderId], references: [order_id], onDelete: Cascade)
+  product       Product              @relation(fields: [productId], references: [product_id])
+  ReturnBoxItem ReturnBoxItem[]
+  Review        Review[]
 
   @@index([customerId], map: "FK_customer_id_idx")
   @@index([productId], map: "FK_product_id")
@@ -387,7 +395,6 @@ model sub_districts {
   deleted_at  DateTime? @db.DateTime(0)
 }
 
-<<<<<<< HEAD
 model Chat {
   chat_id      Int       @id @default(autoincrement())
   customerId   Int       @unique
@@ -408,8 +415,6 @@ model Message {
   chat       Chat     @relation(fields: [chatId], references: [chat_id])
 }
 
-=======
->>>>>>> parent of af666b8 (Chat Realtime)
 enum Role {
   ADMIN
   USER

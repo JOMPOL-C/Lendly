@@ -129,8 +129,6 @@ exports.getAllCustomers = async (req, res) => {
     }
 };
 
-
-
 exports.getTopStats = async (req, res) => {
     try {
         // ✅ Top 5 สินค้าถูกเช่ามากที่สุด
@@ -158,6 +156,84 @@ exports.getTopStats = async (req, res) => {
     } catch (err) {
         console.error("❌ getTopStats error:", err);
         res.status(500).json({ error: "ไม่สามารถดึงข้อมูลยอดนิยมได้" });
+    }
+};
+
+exports.renderDepositRefundPage = async (req, res) => {
+    try {
+        const rentals = await prisma.rentals.findMany({
+            where: { rental_status: "RETURNED" },
+            include: {
+                product: { include: { images: true } },
+                customer: true,
+            },
+            orderBy: { rental_id: 'desc' },
+        });
+
+        res.render("Deposit_refund", { rentals });
+    } catch (err) {
+        console.error("❌ renderDepositRefundPage error:", err);
+        res.status(500).send("Server Error");
+    }
+};
+
+exports.refundDeposit = async (req, res) => {
+    try {
+        const { rental_id } = req.params;
+        const { refund_amount, refund_note } = req.body;
+        const file = req.file;
+
+        // ✅ อัปเดตข้อมูลการคืนมัดจำ
+        const updated = await prisma.rentals.update({
+            where: { rental_id: parseInt(rental_id) },
+            data: {
+                refund_amount: refund_amount ? parseFloat(refund_amount) : null,
+                refund_note: refund_note || null,
+                refund_slip: file?.path || null,
+                refund_date: new Date(),
+                rental_status: "Deposit_Refunded",
+            },
+            include: {
+                customer: true,
+                product: true,
+            },
+        });
+
+        console.log(`💸 คืนมัดจำเรียบร้อย rental_id: ${rental_id}`);
+
+        // ✉️ แจ้งลูกค้า
+        if (updated.customer?.customer_email) {
+            const noteText = updated.refund_note
+                ? `หมายเหตุจากร้าน: ${updated.refund_note}`
+                : "";
+
+            await notifyUserEmail(
+                updated.customer.customer_email,
+                `
+          💜 ระบบได้ทำการคืนมัดจำเรียบร้อยแล้ว
+          สินค้า: ${updated.product?.product_name || "-"}
+          จำนวนเงินที่คืน: ${updated.refund_amount ?? 0} บาท
+          ${noteText}
+          `,
+                "💸 Lendly | คืนมัดจำเรียบร้อยแล้ว"
+            );
+        }
+
+        // ✉️ แจ้งแอดมิน (optional)
+        await notifyAdminEmail(`
+        💸 แอดมินได้คืนมัดจำแล้ว  
+        สินค้า: ${updated.product?.product_name || "-"}  
+        ลูกค้า: ${updated.customer?.name || ""} ${updated.customer?.last_name || ""}  
+        จำนวนเงิน: ${updated.refund_amount ?? 0} บาท
+      `);
+
+        res.json({
+            message: "✅ คืนมัดจำสำเร็จ",
+            updated,
+        });
+    } catch (err) {
+        console.error("❌ refundDeposit error:", err);
+        res.status(500).json({ error: "Server error" });
     }
 };
 
