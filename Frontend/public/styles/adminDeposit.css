@@ -1,0 +1,156 @@
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.admin-table th,
+.admin-table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: center;
+}
+
+.admin-table th {
+    background: #f5f3ff;
+    color: #4c1d95;
+}
+
+.status.returned {
+    color: #6d28d9;
+    font-weight: bold;
+}
+
+/* 🪞 Popup พาสเทลมินิมอล */
+.popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+    backdrop-filter: blur(3px);
+}
+
+.popup-content {
+    background: #ffffff;
+    border-radius: 18px;
+    padding: 28px 30px;
+    width: 380px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    animation: fadeIn 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.popup-content h3 {
+    margin: 0 0 10px 0;
+    color: #5b21b6;
+    font-size: 20px;
+    font-weight: 600;
+    text-align: center;
+}
+
+.popup-content label {
+    font-weight: 500;
+    color: #4b5563;
+    margin-bottom: 4px;
+    display: block;
+    font-size: 14px;
+}
+
+.popup-content input[type="number"],
+.popup-content input[type="file"],
+.popup-content textarea {
+    width: 100%;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-size: 14px;
+    outline: none;
+    transition: border 0.2s ease, box-shadow 0.2s ease;
+}
+
+.popup-content input:focus,
+.popup-content textarea:focus {
+    border-color: #a78bfa;
+    box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.2);
+}
+
+.popup-content textarea {
+    resize: none;
+}
+
+.popup-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 14px;
+}
+
+.btn {
+    flex: 1;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 0;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: 500;
+    font-size: 15px;
+}
+
+.btn+.btn {
+    margin-left: 8px;
+}
+
+.btn.primary {
+    background: linear-gradient(90deg, #a78bfa, #c4b5fd);
+    color: white;
+}
+
+.btn.primary:hover {
+    background: linear-gradient(90deg, #8b5cf6, #a78bfa);
+}
+
+.btn.gray {
+    background: #f3f4f6;
+    color: #374151;
+}
+
+.btn.gray:hover {
+    background: #e5e7eb;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+.btn {
+    background: #6d28d9;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 16px;
+    cursor: pointer;
+}
+
+.btn.gray {
+    background: #ccc;
+}
+
+.refund-btn {
+    background: #8b5cf6;
+}

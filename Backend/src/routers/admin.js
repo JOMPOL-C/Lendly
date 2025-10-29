@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const adminController = require('../Controllers/adminController');
 const { requireAdmin } = require("../middlewares/roleMiddleware");
+const { uploadRefund } = require("../utils/multerConfig");
 
 // ✅ ผู้ใช้ทั้งหมด
 router
@@ -14,7 +15,15 @@ router
 
 // ✅ แดชบอร์ด
 router
-    .get('/admin/dashboard', adminController.renderAdminDashboard)
-    .get('/admin/top-stats', adminController.getTopStats);
+    .get('/dashboard', requireAdmin, adminController.renderAdminDashboard)
+    .get('/top-stats', requireAdmin, adminController.getTopStats)
+    .get('/Deposit_refund', requireAdmin, adminController.renderDepositRefundPage);
+
+router.post(
+    '/refund/:rental_id',
+    requireAdmin,
+    uploadRefund.single('refund_slip'),
+    adminController.refundDeposit
+);
 
 module.exports = router;

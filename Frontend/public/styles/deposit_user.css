@@ -1,0 +1,119 @@
+body {
+    background: linear-gradient(135deg, #f3e8ff, #faf5ff);
+    font-family: 'Prompt', sans-serif;
+    color: #444;
+    margin: 0;
+    padding: 0;
+  }
+  
+  /* 💜 หัวเรื่อง */
+  .page-title {
+    text-align: center;
+    color: #6d28d9;
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin: 40px 0 30px 0;
+    text-shadow: 0 2px 8px rgba(109, 40, 217, 0.15);
+  }
+  
+  /* 📦 กล่องแต่ละรายการ */
+  .refund-list {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    max-width: 900px;
+    margin: 0 auto 60px auto;
+  }
+  
+  /* 🌸 การ์ดหลัก */
+  .refund-card {
+    background: linear-gradient(180deg, #ffffff, #faf5ff);
+    border-radius: 16px;
+    padding: 20px 24px;
+    box-shadow: 0 6px 20px rgba(109, 40, 217, 0.08);
+    border: 1px solid #ede9fe;
+    transition: all 0.25s ease;
+  }
+  
+  .refund-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(109, 40, 217, 0.12);
+  }
+  
+  /* 🧾 ส่วนหัวของแต่ละการ์ด */
+  .refund-header {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    border-bottom: 1px dashed #ddd6fe;
+    padding-bottom: 12px;
+    margin-bottom: 12px;
+  }
+  
+  .refund-header img {
+    width: 100px;
+    height: 100px;
+    border-radius: 12px;
+    object-fit: cover;
+    border: 2px solid #ddd6fe;
+    background-color: #f5f3ff;
+  }
+  
+  .refund-info h3 {
+    margin: 0;
+    font-size: 20px;
+    color: #4c1d95;
+    font-weight: 600;
+  }
+  
+  .refund-info p {
+    margin: 4px 0;
+    color: #555;
+    font-size: 15px;
+  }
+  
+  /* 💸 เนื้อหาด้านใน */
+  .refund-body p {
+    margin: 6px 0;
+    font-size: 15px;
+    line-height: 1.5;
+    color: #333;
+  }
+  
+  /* 📷 รูปสลิป */
+  .refund-slip {
+    margin-top: 10px;
+    text-align: center;
+  }
+  
+  .refund-slip p {
+    font-weight: 600;
+    color: #5b21b6;
+  }
+  
+  .refund-slip img {
+    width: 260px;
+    border-radius: 10px;
+    margin-top: 6px;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e9d5ff;
+    transition: transform 0.3s ease;
+  }
+  
+  .refund-slip img:hover {
+    transform: scale(1.05);
+  }
+  
+  /* 🩷 ข้อความไม่มีรายการ */
+  .empty-message {
+    text-align: center;
+    color: #7c3aed;
+    font-size: 18px;
+    margin-top: 50px;
+    background: #f5f3ff;
+    padding: 15px 25px;
+    display: inline-block;
+    border-radius: 12px;
+    box-shadow: 0 3px 10px rgba(109, 40, 217, 0.05);
+  }
+  

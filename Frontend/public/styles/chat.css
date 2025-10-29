@@ -1,0 +1,159 @@
+.msg {
+    margin: 8px 0;
+    padding: 10px 14px;
+    border-radius: 12px;
+    max-width: 70%;
+    word-wrap: break-word;
+    transition: transform 0.15s ease;
+}
+
+.msg span {
+    display: inline-block;
+}
+
+.msg.me {
+    background: #d8b4fe;
+    align-self: flex-end;
+}
+
+.msg.admin,
+.msg.customer {
+    background: #ede9fe;
+    align-self: flex-start;
+}
+
+.msg.me:hover,
+.msg.admin:hover {
+    transform: scale(1.02);
+}
+
+.chat-admin-container {
+    display: flex;
+    height: 90vh;
+    background: #faf5ff;
+    font-family: 'Prompt', sans-serif;
+}
+
+/* 📜 รายชื่อห้อง */
+#chat-list {
+    width: 280px;
+    border-right: 2px solid #e9d5ff;
+    padding: 10px;
+    background: #f3e8ff;
+    overflow-y: auto;
+}
+
+#chat-list h3 {
+    color: #6d28d9;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.chat-item {
+    background: white;
+    border-radius: 10px;
+    padding: 10px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    transition: 0.2s;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+.chat-item.active {
+    border: 2px solid #6d28d9;
+    background: #ede9fe;
+}
+
+.chat-item.unread::after {
+    content: "•";
+    color: #ef4444;
+    font-size: 20px;
+    float: right;
+}
+
+.chat-name {
+    font-weight: 600;
+    color: #4c1d95;
+}
+
+.chat-last {
+    font-size: 13px;
+    color: #555;
+}
+
+/* 💬 หน้าต่างแชท */
+#chat-window {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 10px 20px;
+}
+
+#chat-header {
+    background: #6d28d9;
+    color: white;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+}
+
+.messages-area {
+    flex: 1;
+    overflow-y: auto;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+}
+
+.msg {
+    margin: 6px 0;
+    padding: 10px 14px;
+    border-radius: 12px;
+    max-width: 70%;
+    word-break: break-word;
+    transition: transform 0.15s ease;
+}
+
+.msg.me {
+    background: #d8b4fe;
+    align-self: flex-end;
+}
+
+.msg.customer {
+    background: #ede9fe;
+    align-self: flex-start;
+}
+
+.msg span {
+    display: inline-block;
+}
+
+.chat-form {
+    display: flex;
+    gap: 8px;
+    padding-top: 10px;
+    border-top: 2px solid #e9d5ff;
+}
+
+.chat-form input {
+    flex: 1;
+    border: 1px solid #d8b4fe;
+    border-radius: 10px;
+    padding: 10px;
+    outline: none;
+}
+
+.chat-form button {
+    background: #6d28d9;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.chat-form button:hover {
+    background: #5b21b6;
+}
