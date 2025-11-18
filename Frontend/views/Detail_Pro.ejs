@@ -51,14 +51,14 @@
                     <% if (hasTest) { %>
                       <label>
                         <input type="radio" name="mode" value="test" checked>
-                        เทส (<%= firstPrice?.days_test %> วัน)
+                        Tester (เทสเตอร์) (<%= firstPrice?.days_test %> วัน)
                       </label>
                     <% } %>
                   
                     <% if (hasPri) { %>
                       <label>
                         <input type="radio" name="mode" value="pri" <%= !hasTest ? 'checked' : '' %>>
-                        ไพร (<%= firstPrice?.days_pri %> วัน)
+                        Private (ไพรเวท) (<%= firstPrice?.days_pri %> วัน)
                       </label>
                     <% } %>
                   </div>

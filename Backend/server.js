@@ -176,10 +176,10 @@ app.get("/profile", authController.getProfile);
 // ============================
 // ☁️ CLOUDINARY CONNECTION CHECK
 // ============================
-cloudinary.api
-  .ping()
-  .then(res => console.log("✅ Cloudinary Connected:", res.status))
-  .catch(err => console.error("❌ Cloudinary error:", err));
+// cloudinary.api
+//   .ping()
+//   .then(res => console.log("✅ Cloudinary Connected:", res.status))
+//   .catch(err => console.error("❌ Cloudinary error:", err));
 
 // ============================
 // ⚡ SOCKET.IO SETUP

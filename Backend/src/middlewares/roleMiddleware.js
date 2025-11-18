@@ -29,6 +29,21 @@ module.exports = {
             return res.redirect("/");
         }
         next();
+    },
+
+    requireCustomer: (req, res, next) => {
+        if (!req.user) {
+            console.log("🚫 [AUTH] ยังไม่ได้ล็อกอิน");
+            return res.status(401).json({ message: "ยังไม่ได้ล็อกอิน" });
+        }
+
+        if (req.user.role !== "USER") {
+            console.log(`🚫 [ROLE] ${req.user.username} (${req.user.role}) พยายามเข้า /chat`);
+            return res.status(403).json({ message: "เฉพาะลูกค้าเท่านั้นที่สามารถใช้ฟังก์ชันนี้ได้" });
+        }
+
+        next();
     }
+
 
 };

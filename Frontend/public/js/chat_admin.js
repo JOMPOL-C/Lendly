@@ -150,7 +150,7 @@ socket.on("newChat", (data) => {
   });
   chatRooms.prepend(newItem);
 
-  const audio = new Audio("/sounds/notification.mp3");
+
   audio.play().catch(() => {});
 });
 

@@ -67,83 +67,75 @@ exports.sendMessage = async (req, res) => {
     const customerName =
       user?.username || user?.name || req.body.customerName || "ไม่ทราบชื่อ";
 
-    console.log("💬 [sendMessage]", { chatId, senderRole, message, customerId });
+    console.log("💬 [sendMessage]", { chatId, senderRole, message, customerId, role: user?.role });
 
-    if (!customerId || isNaN(customerId)) {
-      console.warn("⚠️ [sendMessage] customerId ว่างหรือไม่ถูกต้อง");
-      return res.status(400).json({ message: "ไม่พบรหัสลูกค้า" });
+    // 🚫 บล็อก ADMIN ตั้งแต่ต้น
+    if (user?.role === "ADMIN" && !chatId) {
+      console.warn("⛔ ADMIN พยายามเริ่มแชทใหม่ — บล็อกไว้");
+      return res.status(403).json({ message: "ADMIN ไม่สามารถสร้างห้องใหม่ได้" });
     }
 
-    let isNewChat = false;
+    // ✅ ถ้าเป็น ADMIN ให้ใช้เฉพาะ chatId ที่ระบุมาเท่านั้น
+    if (user?.role === "ADMIN" && chatId) {
+      const chat = await prisma.chat.findUnique({ where: { chat_id: Number(chatId) } });
+      if (!chat) {
+        console.warn(`⚠️ ADMIN พยายามส่งข้อความในห้อง ${chatId} แต่ไม่มีอยู่จริง`);
+        return res.status(404).json({ message: "ไม่พบห้องแชท" });
+      }
 
-    // ✅ ถ้ามี chatId → หาจากฐาน
-    // ✅ หาโดย customerId เป็นหลักเลย
-    let chat = await prisma.chat.findUnique({
-      where: { customerId }, // ใช้คอลัมน์ unique โดยตรง
-    });
+      const newMsg = await prisma.message.create({
+        data: { chatId: chat.chat_id, senderRole, message },
+      });
+
+      io.to(`chat_${chat.chat_id}`).emit("receiveMessage", {
+        roomId: `chat_${chat.chat_id}`,
+        chatId: chat.chat_id,
+        senderRole,
+        message,
+        createdAt: newMsg.createdAt,
+        customerName: chat.customerName,
+      });
+
+      await prisma.chat.update({
+        where: { chat_id: chat.chat_id },
+        data: { lastMessage: message, updatedAt: new Date() },
+      });
+
+      return res.json({ success: true, chatId: chat.chat_id });
+    }
+
+    // ===============================
+    // 🚀 จากนี้เป็นของลูกค้าปกติเท่านั้น
+    // ===============================
+    let chat = await prisma.chat.findFirst({ where: { customerId } });
 
     if (!chat) {
       console.log(`🆕 ยังไม่มีห้อง → สร้างใหม่ให้ customerId=${customerId}`);
       chat = await prisma.chat.create({
         data: { customerId, customerName },
       });
-      isNewChat = true;
     }
 
-
-    console.log(`📂 ใช้ห้อง chat_id=${chat.chat_id}`);
-
-    // ✅ บันทึกข้อความ
     const newMsg = await prisma.message.create({
-      data: {
-        chatId: chat.chat_id,
-        senderRole,
-        message,
-      },
+      data: { chatId: chat.chat_id, senderRole, message },
     });
 
-    // ✅ อัปเดตข้อความล่าสุดของห้อง
-    await prisma.chat.update({
-      where: { chat_id: chat.chat_id },
-      data: { lastMessage: message, updatedAt: new Date() },
-    });
-
-    // ✅ เตรียมข้อมูล broadcast
-    const roomId = `chat_${chat.chat_id}`;
-    const broadcastData = {
-      roomId,
+    io.to(`chat_${chat.chat_id}`).emit("receiveMessage", {
+      roomId: `chat_${chat.chat_id}`,
       chatId: chat.chat_id,
       senderRole,
       message,
       createdAt: newMsg.createdAt,
-      customerName: chat.customerName, // ✅ ชื่อผู้ใช้
-    };
-
-    // ✅ ตอบกลับไปยัง client ที่ส่ง
-    res.json({
-      chatId: chat.chat_id,
-      roomId,
-      message: newMsg,
+      customerName: chat.customerName,
     });
 
-    // ✅ broadcast realtime ไปยังห้องนั้น (ลูกค้า + แอดมิน)
-    io.to(roomId).emit("receiveMessage", broadcastData);
-    console.log(`📡 [Realtime] ส่งข้อความไปยังห้อง ${roomId}`);
-
-    // ✅ แจ้งเตือนแอดมินเมื่อมีห้องใหม่ (ครั้งแรกของลูกค้า)
-    if (isNewChat) {
-      io.emit("newChat", {
-        chatId: chat.chat_id,
-        customerName: chat.customerName,
-        lastMessage: message,
-      });
-      console.log(`🆕 [Realtime] แจ้งแอดมินว่ามีห้องใหม่จาก ${chat.customerName}`);
-    }
+    res.json({ chatId: chat.chat_id });
   } catch (err) {
     console.error("❌ [sendMessage] error:", err);
     res.status(500).json({ message: "ส่งข้อความไม่สำเร็จ" });
   }
 };
+
 
 // 🆕 สร้างห้องเปล่า (โดยไม่ต้องส่งข้อความ)
 exports.createChat = async (req, res) => {
@@ -159,7 +151,10 @@ exports.createChat = async (req, res) => {
     }
 
     // ✅ หาห้องที่มีอยู่ก่อน
-    let chat = await prisma.chat.findUnique({ where: { customerId } });
+    let chat = await prisma.chat.findFirst({
+      where: { customerId },
+    });
+
     if (!chat) {
       chat = await prisma.chat.create({
         data: { customerId, customerName },
