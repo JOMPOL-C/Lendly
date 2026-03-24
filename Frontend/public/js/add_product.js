@@ -21,8 +21,14 @@ toggleField("rentShoe", "priceAddonShoe");
 const rentCostume = document.getElementById("rentCostume");
 const rentWig = document.getElementById("rentWig");
 const priceSuitWigField = document.getElementById("priceSuitWig");
+const sizeUnitSelect = document.getElementById("sizeUnit");
+const measurementInputs = Array.from(
+  document.querySelectorAll("[data-measurement-input]")
+);
 
 function updateSuitWigVisibility() {
+  if (!rentCostume || !rentWig || !priceSuitWigField) return;
+
   if (rentCostume.checked && rentWig.checked) {
     priceSuitWigField.classList.remove("hidden");
   } else {
@@ -34,8 +40,41 @@ function updateSuitWigVisibility() {
 updateSuitWigVisibility();
 
 // ฟังการเปลี่ยนค่าทั้งสองช่อง
-rentCostume.addEventListener("change", updateSuitWigVisibility);
-rentWig.addEventListener("change", updateSuitWigVisibility);
+if (rentCostume) {
+  rentCostume.addEventListener("change", updateSuitWigVisibility);
+}
+
+if (rentWig) {
+  rentWig.addEventListener("change", updateSuitWigVisibility);
+}
+
+if (sizeUnitSelect && measurementInputs.length > 0) {
+  sizeUnitSelect.addEventListener("change", () => {
+    const previousUnit = sizeUnitSelect.dataset.currentUnit || "cm";
+    const nextUnit = sizeUnitSelect.value;
+
+    if (previousUnit === nextUnit) return;
+
+    measurementInputs.forEach((input) => {
+      const rawValue = input.value.trim();
+      if (!rawValue) return;
+
+      const numericValue = parseFloat(rawValue);
+      if (Number.isNaN(numericValue)) return;
+
+      const convertedValue =
+        previousUnit === "cm" && nextUnit === "in"
+          ? numericValue / 2.54
+          : previousUnit === "in" && nextUnit === "cm"
+            ? numericValue * 2.54
+            : numericValue;
+
+      input.value = Number(convertedValue.toFixed(1));
+    });
+
+    sizeUnitSelect.dataset.currentUnit = nextUnit;
+  });
+}
 
 
 // จำนวนวัน Test / Pri

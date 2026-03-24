@@ -1,6 +1,4 @@
 <%- include('includes/head') %>
-    <link rel="stylesheet" href="/styles/rental.css">
-    <link rel="stylesheet" href="/styles/review.css">
     <link rel="stylesheet" href="/styles/add_product.css">
     <link rel="stylesheet" href="/styles/edit_product.css">
     </head>
@@ -9,156 +7,242 @@
         <%- include('includes/navAdmin') %>
             <main>
                 <section class="index">
-                    <h2>แก้ไขสินค้า</h2>
+                    <div class="page-intro">
+                        <div class="intro-copy">
+                            <h2>แก้ไขสินค้า</h2>
+                        </div>
+                        <div class="intro-badge">Lendly Admin Studio</div>
+                    </div>
 
                     <form action="/api/products/<%= product.product_id %>/update" method="POST"
-                        enctype="multipart/form-data">
-                        <div class="form-group">
-                            <label>ชื่อสินค้า</label>
-                            <input type="text" name="product_name" value="<%= product.product_name %>" required>
-                        </div>
-
-                        <div class="form-group">
-                            <label>ชื่อเรื่อง</label>
-                            <input type="text" name="story_name" value="<%= product.story_name %>" required>
-                        </div>
-
-                        <div class="form-group">
-                            <label>สัดส่วน (ซม.)</label>
-                            <div style="display:flex; gap:10px;">
-                                <input type="number" name="chest" value="<%= product.size?.chest %>" placeholder="อก"
-                                    step="0.1">
-                                <input type="number" name="waist" value="<%= product.size?.waist %>" placeholder="เอว"
-                                    step="0.1">
-                                <input type="number" name="hips" value="<%= product.size?.hips %>" placeholder="สะโพก"
-                                    step="0.1">
+                        enctype="multipart/form-data" class="product-form">
+                        <div class="form-section">
+                            <div class="form-section-header">
+                                <h3>ข้อมูลพื้นฐาน</h3>
+                                <p>อัปเดตชื่อสินค้า เรื่องที่อ้างอิง และรายละเอียดสัดส่วนให้ตรงกับสินค้าปัจจุบัน</p>
                             </div>
-                        </div>
 
-                        <div class="form-group">
-                            <label for="product_images">อัปโหลดรูปใหม่ (สูงสุด 10 รูป)</label>
-                            <input type="file" id="product_images" name="product_images" accept="image/*" multiple>
-
-                            <% if (product.images && product.images.length> 0) { %>
-                                <p style="margin-top:10px;">รูปเดิม:</p>
-                                <div id="old-images" style="display:flex; gap:10px; flex-wrap:wrap;">
-                                    <% product.images.forEach(img=> { %>
-                                        <div class="image-box" data-id="<%= img.image_id %>"
-                                            style="position:relative; display:inline-block;">
-                                            <img src="<%= img.image_url %>" alt="Product Image"
-                                                style="max-width:150px; border-radius:10px;">
-                                            <button type="button" class="remove-btn">×</button>
-                                        </div>
-                                        <% }) %>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label>ชื่อสินค้า</label>
+                                    <input type="text" name="product_name" value="<%= product.product_name %>" required>
                                 </div>
-                                <% } %>
-                        </div>
 
-                        <!-- 👇 จะถูกเติม input hidden ตอนคลิกลบ -->
-                        <div id="removed-container"></div>
+                                <div class="form-group">
+                                    <label>ชื่อเรื่อง</label>
+                                    <input type="text" name="story_name" value="<%= product.story_name %>" required>
+                                </div>
 
+                                <div class="form-group form-group-full">
+                                    <div class="size-header">
+                                        <label>สัดส่วนสินค้า</label>
+                                        <div class="size-unit-picker">
+                                            <span>หน่วย</span>
+                                            <select name="size_unit" id="sizeUnit" data-current-unit="cm">
+                                                <option value="cm" selected>เซนติเมตร (cm)</option>
+                                                <option value="in">นิ้ว (inch)</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="size-grid">
+                                        <input type="number" name="chest" value="<%= product.size?.chest ?? '' %>"
+                                            placeholder="อก" step="0.1" data-measurement-input>
+                                        <input type="number" name="waist" value="<%= product.size?.waist ?? '' %>"
+                                            placeholder="เอว" step="0.1" data-measurement-input>
+                                        <input type="number" name="hips" value="<%= product.size?.hips ?? '' %>"
+                                            placeholder="สะโพก" step="0.1" data-measurement-input>
+                                    </div>
+                                    <p class="note">ค่าที่แสดงปัจจุบันเก็บอยู่ในเซนติเมตร ถ้าเปลี่ยนเป็นนิ้ว ระบบจะคำนวณค่าในช่องให้ก่อนบันทึก</p>
+                                </div>
 
-                        <div class="form-group">
-                            <label>รายละเอียดสินค้า</label>
-                            <textarea name="shipping_info" rows="4" required><%= product.shipping_info %></textarea>
-                        </div>
-
-                        <div class="form-group">
-                            <label>การใช้งาน</label>
-                            <div class="checkbox-group">
-                                <label><input type="checkbox" id="useTest" name="usage" value="test"
-                                        <%=product.prices.some(p=> p.type === 'suit' && p.days_test) ? 'checked' : ''
-                                    %>> เทส</label>
-                                <label><input type="checkbox" id="usePry" name="usage" value="pri"
-                                        <%=product.prices.some(p=> p.type === 'suit' && p.days_pri) ? 'checked' : '' %>>
-                                    ไพร</label>
+                                <div class="form-group form-group-full">
+                                    <label>รายละเอียดสินค้า</label>
+                                    <textarea name="shipping_info" rows="4"
+                                        required><%= product.shipping_info %></textarea>
+                                </div>
                             </div>
                         </div>
 
-                        <div id="daysTestField">
-                            <label>จำนวนวัน (Test)</label>
-                            <input type="number" name="days_suit_test"
-                                value="<%= product.prices.find(p => p.type === 'suit')?.days_test || '' %>">
+                        <div class="form-section">
+                            <div class="form-section-header">
+                                <h3>รูปภาพสินค้า</h3>
+                                <p>เลือกได้หลายรูปในครั้งเดียว และสามารถลบรูปที่ไม่ต้องการออกจากรายการก่อนบันทึกได้</p>
+                            </div>
+
+                            <div class="form-group">
+                                <input type="file" id="product_images" name="product_images" class="upload-input"
+                                    accept="image/*" multiple>
+                                <label for="product_images" id="uploadDropzone" class="upload-dropzone">
+                                    <span class="upload-icon">UP</span>
+                                    <span class="upload-title">ลากรูปใหม่มาวางที่นี่ หรือกดเพื่อเลือกรูปสินค้า</span>
+                                    <span class="upload-subtitle">ใช้สำหรับเพิ่มรูปใหม่เข้าไปในสินค้าชิ้นเดิม และยังลบรูปเก่าที่ไม่ต้องการออกได้ก่อนบันทึก</span>
+                                    <span id="uploadFileCount" class="upload-meta">ยังไม่ได้เลือกรูปใหม่</span>
+                                </label>
+                                <p class="note">เพิ่มรูปใหม่ได้สูงสุด 5 รูปต่อครั้ง</p>
+                                <p id="uploadStatus" class="upload-status hidden"></p>
+                                <div id="preview-container" class="preview-grid"></div>
+                            </div>
+
+                            <% if (product.images && product.images.length > 0) { %>
+                                <div class="form-group">
+                                    <label>รูปปัจจุบัน</label>
+                                    <div id="old-images" class="existing-image-grid">
+                                        <% product.images.forEach(img => { %>
+                                            <div class="existing-image-card image-box" data-id="<%= img.image_id %>">
+                                                <img src="<%= img.image_url %>" alt="Product Image">
+                                                <button type="button" class="remove-btn" title="ลบรูปนี้">×</button>
+                                            </div>
+                                        <% }) %>
+                                    </div>
+                                </div>
+                            <% } %>
+
+                            <div id="removed-container"></div>
                         </div>
 
-                        <div id="daysPriField">
-                            <label>จำนวนวัน (Pri)</label>
-                            <input type="number" name="days_suit_pri"
-                                value="<%= product.prices.find(p => p.type === 'suit')?.days_pri || '' %>">
-                        </div>
+                        <div class="form-section">
+                            <div class="form-section-header">
+                                <h3>การใช้งานและหมวดหมู่</h3>
+                                <p>อัปเดตประเภทการใช้งาน หมวดหมู่ และรายการของให้เช่าให้สอดคล้องกับสินค้าชิ้นนี้</p>
+                            </div>
 
-                        <div class="form-group">
-                            <label>หมวดหมู่สินค้า</label>
-                            <select name="categoryId" required>
-                                <% categories.forEach(c=> { %>
-                                    <option value="<%= c.category_id %>" <%=c.category_id===product.categoryId
-                                        ? 'selected' : '' %>>
-                                        <%= c.category_name %>
-                                    </option>
-                                    <% }) %>
-                            </select>
-                        </div>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label>การใช้งาน</label>
+                                    <div class="checkbox-group">
+                                        <label><input type="checkbox" id="useTest" name="usage" value="test"
+                                                <%= product.prices.some(p => p.type === 'suit' && p.days_test) ? 'checked' : '' %>>
+                                            เทส</label>
+                                        <label><input type="checkbox" id="usePry" name="usage" value="pri"
+                                                <%= product.prices.some(p => p.type === 'suit' && p.days_pri) ? 'checked' : '' %>>
+                                            ไพร</label>
+                                    </div>
+                                </div>
 
-                        <div class="form-group">
-                            <label>ของให้เช่า</label>
-                            <div class="checkbox-group">
-                                <label><input type="checkbox" name="rentalType[]" id="rentCostume" value="costume"
-                                        <%=product.prices.some(p=> p.type === 'suit') ? 'checked' : '' %>> ชุด</label>
-                                <label><input type="checkbox" name="rentalType[]" id="rentWig" value="wig"
-                                        <%=product.prices.some(p=> p.type === 'wig') ? 'checked' : '' %>> วิก</label>
-                                <label><input type="checkbox" name="rentalType[]" id="rentProp" value="prop"
-                                        <%=product.prices.some(p=> p.type === 'solo_prop') ? 'checked' : '' %>>
-                                    พร็อพ</label>
-                                <label><input type="checkbox" name="rentalType[]" id="rentShoe" value="shoe"
-                                        <%=product.prices.some(p=> p.type === 'solo_shoe') ? 'checked' : '' %>>
-                                    รองเท้า</label>
+                                <div class="form-group">
+                                    <label>หมวดหมู่สินค้า</label>
+                                    <select name="categoryId" id="categoryId" required>
+                                        <% categories.forEach(c => { %>
+                                            <option value="<%= c.category_id %>" <%= c.category_id === product.categoryId ? 'selected' : '' %>>
+                                                <%= c.category_name %>
+                                            </option>
+                                        <% }) %>
+                                    </select>
+                                    <button type="button" id="toggleNewCategory" class="category-toggle-btn">
+                                        ไม่มีหมวดหมู่ที่ต้องการ? เพิ่มหมวดใหม่
+                                    </button>
+                                    <div id="newCategoryBox" class="new-category-box hidden">
+                                        <label for="newCategoryName" class="category-sub-label">ชื่อหมวดหมู่ใหม่</label>
+                                        <div class="category-inline">
+                                            <input type="text" id="newCategoryName" maxlength="45"
+                                                placeholder="เช่น ชุดจีนโบราณ / ชุดแฟนตาซี">
+                                            <button type="button" id="addCategoryButton" class="category-add-btn">
+                                                เพิ่มหมวด
+                                            </button>
+                                        </div>
+                                        <p class="note">สร้างหมวดหมู่ใหม่แล้วระบบจะเลือกให้ทันที</p>
+                                        <p id="categoryFeedback" class="category-feedback hidden"></p>
+                                    </div>
+                                </div>
+
+                                <div id="daysTestField" class="price-field">
+                                    <label>จำนวนวัน (Test)</label>
+                                    <input type="number" name="days_suit_test"
+                                        value="<%= product.prices.find(p => p.type === 'suit')?.days_test || '' %>">
+                                </div>
+
+                                <div id="daysPriField" class="price-field">
+                                    <label>จำนวนวัน (Pri)</label>
+                                    <input type="number" name="days_suit_pri"
+                                        value="<%= product.prices.find(p => p.type === 'suit')?.days_pri || '' %>">
+                                </div>
+
+                                <div class="form-group form-group-full">
+                                    <label>ของให้เช่า</label>
+                                    <div class="checkbox-group">
+                                        <label><input type="checkbox" name="rentalType[]" id="rentCostume" value="costume"
+                                                <%= product.prices.some(p => p.type === 'suit') ? 'checked' : '' %>> ชุด</label>
+                                        <label><input type="checkbox" name="rentalType[]" id="rentWig" value="wig"
+                                                <%= product.prices.some(p => p.type === 'wig') ? 'checked' : '' %>> วิก</label>
+                                        <label><input type="checkbox" name="rentalType[]" id="rentProp" value="prop"
+                                                <%= product.prices.some(p => p.type === 'solo_prop') ? 'checked' : '' %>> พร็อพ</label>
+                                        <label><input type="checkbox" name="rentalType[]" id="rentShoe" value="shoe"
+                                                <%= product.prices.some(p => p.type === 'solo_shoe') ? 'checked' : '' %>> รองเท้า</label>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
-                        <div id="priceCostume" class="price-field">
-                            <label>ราคาเช่าชุด</label>
-                            <input type="number" name="price_costume"
-                                value="<%= product.prices.find(p => p.type === 'suit')?.price_test || '' %>">
-                        </div>
+                        <div class="form-section">
+                            <div class="form-section-header">
+                                <h3>ราคาและสถานะสินค้า</h3>
+                                <p>อัปเดตราคาแต่ละประเภทและสถานะเปิดให้เช่าของสินค้าชิ้นนี้</p>
+                            </div>
 
-                        <div id="priceWig" class="price-field">
-                            <label>ราคาเช่าวิก</label>
-                            <input type="number" name="price_wig"
-                                value="<%= product.prices.find(p => p.type === 'wig')?.price_test || '' %>">
-                        </div>
+                            <div class="form-grid">
+                                <div id="priceCostume" class="price-field">
+                                    <label>ราคาเช่าชุด</label>
+                                    <input type="number" name="price_costume"
+                                        value="<%= product.prices.find(p => p.type === 'suit')?.price_test || '' %>">
+                                </div>
 
-                        <div id="priceProp" class="price-field">
-                            <label>ราคาเช่าพร็อพ</label>
-                            <input type="number" name="price_prop"
-                                value="<%= product.prices.find(p => p.type === 'solo_prop')?.price_test || '' %>">
-                        </div>
+                                <div id="priceWig" class="price-field">
+                                    <label>ราคาเช่าวิก</label>
+                                    <input type="number" name="price_wig"
+                                        value="<%= product.prices.find(p => p.type === 'wig')?.price_test || '' %>">
+                                </div>
 
-                        <div id="priceShoe" class="price-field">
-                            <label>ราคาเช่ารองเท้า</label>
-                            <input type="number" name="price_shoe"
-                                value="<%= product.prices.find(p => p.type === 'solo_shoe')?.price_test || '' %>">
-                        </div>
+                                <div id="priceSuitWig" class="price-field">
+                                    <label>ราคาเช่าชุด + วิก (ราคาพิเศษ)</label>
+                                    <input type="number" name="price_suit_wig"
+                                        value="<%= product.prices.find(p => p.type === 'suit_wig')?.price_test || '' %>">
+                                </div>
 
-                        <div id="pricePryExtra" class="price-field">
-                            <label>ราคาเพิ่มสำหรับไพร</label>
-                            <input type="number" name="price_pry_extra"
-                                value="<%= product.prices.find(p => p.price_pry_extra)?.price_pry_extra || '' %>">
-                        </div>
+                                <div id="priceProp" class="price-field">
+                                    <label>ราคาเช่าพร็อพ</label>
+                                    <input type="number" name="price_prop"
+                                        value="<%= product.prices.find(p => p.type === 'solo_prop')?.price_test || '' %>">
+                                </div>
 
-                        <div class="form-group">
-                            <label>ราคามัดจำสินค้า (บาท)</label>
-                            <input type="number" name="deposit" value="<%= product.prices[0]?.Deposit || '' %>" <p
-                                class="note">** ราคามัดจำจะคืนให้เมื่อสินค้าคืนตามสภาพ **</p>
-                        </div>
+                                <div id="priceAddonProp" class="price-field">
+                                    <label>ราคาเช่าพร็อพเสริม (ราคาพิเศษ)</label>
+                                    <input type="number" name="price_prop_addon"
+                                        value="<%= product.prices.find(p => p.type === 'addon_prop')?.price_test || '' %>">
+                                </div>
 
-                        <div class="form-group">
-                            <label>สถานะสินค้า</label>
-                            <select name="status" required>
-                                <option value="active" <%=product.product_status ? "selected" : "" %>>เปิดให้เช่า
-                                </option>
-                                <option value="inactive" <%=!product.product_status ? "selected" : "" %>>ปิดการเช่า
-                                </option>
-                            </select>
+                                <div id="priceShoe" class="price-field">
+                                    <label>ราคาเช่ารองเท้า</label>
+                                    <input type="number" name="price_shoe"
+                                        value="<%= product.prices.find(p => p.type === 'solo_shoe')?.price_test || '' %>">
+                                </div>
+
+                                <div id="priceAddonShoe" class="price-field">
+                                    <label>ราคาเช่ารองเท้าเสริม (ราคาพิเศษ)</label>
+                                    <input type="number" name="price_shoe_addon"
+                                        value="<%= product.prices.find(p => p.type === 'addon_shoe')?.price_test || '' %>">
+                                </div>
+
+                                <div id="pricePryExtra" class="price-field">
+                                    <label>ราคาเพิ่มสำหรับไพร</label>
+                                    <input type="number" name="price_pry_extra"
+                                        value="<%= product.prices.find(p => p.price_pry_extra)?.price_pry_extra || '' %>">
+                                </div>
+
+                                <div id="depositField" class="price-field">
+                                    <label>ราคามัดจำสินค้า (บาท)</label>
+                                    <input type="number" name="deposit" min="0" step="0.01"
+                                        value="<%= product.prices[0]?.Deposit || '' %>">
+                                    <p class="note">ราคามัดจำจะคืนให้เมื่อสินค้าคืนตามสภาพ</p>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>สถานะสินค้า</label>
+                                    <select name="status" required>
+                                        <option value="active" <%= product.product_status ? "selected" : "" %>>เปิดให้เช่า</option>
+                                        <option value="inactive" <%= !product.product_status ? "selected" : "" %>>ปิดการเช่า</option>
+                                    </select>
+                                </div>
+                            </div>
                         </div>
 
                         <button type="submit" class="submit-btn">บันทึกการแก้ไข</button>
@@ -179,14 +263,12 @@
                         btn.addEventListener("click", () => {
                             const imageId = box.getAttribute("data-id");
 
-                            // สร้าง hidden input เพื่อส่ง id ของรูปที่จะลบ
                             const input = document.createElement("input");
                             input.type = "hidden";
                             input.name = "removeImages";
                             input.value = imageId;
                             removedContainer.appendChild(input);
 
-                            // ลบรูปออกจากหน้า (ไม่ reload)
                             box.remove();
                         });
                     });

@@ -42,7 +42,8 @@ exports.createProduct = async (req, res) => {
       price_shoe_addon,
       days_suit_test,
       days_suit_pri,
-      deposit
+      deposit,
+      status
     } = req.body;
 
     const files = req.files || [];
@@ -223,6 +224,7 @@ exports.createProduct = async (req, res) => {
         product_name,
         story_name,
         shipping_info,
+        product_status: status !== "inactive",
         category: { connect: { category_id: categoryId } },
         size: { connect: { proportion_product_id: proportion.proportion_product_id } },
         prices: { create: priceData },
@@ -269,7 +271,8 @@ exports.updateProduct = async (req, res) => {
       days_suit_test,
       days_suit_pri,
       removeImages,
-      deposit
+      deposit,
+      status
     } = req.body;
 
     const files = req.files || [];
@@ -388,6 +391,7 @@ exports.updateProduct = async (req, res) => {
         product_name,
         story_name,
         shipping_info,
+        product_status: status !== "inactive",
         category: { connect: { category_id: categoryId } },
       },
     });
