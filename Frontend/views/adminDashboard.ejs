@@ -30,20 +30,35 @@
       </div>
     </section>
 
-    <!-- 📊 กราฟรายได้รายเดือน
-    <section class="chart-section">
-      <h3>รายได้รายเดือน</h3>
-      <canvas id="revenueChart" width="400" height="200"></canvas>
+    <section class="chart-grid">
+      <section class="chart-section">
+        <div class="section-heading">
+          <h3>รายได้รายเดือน</h3>
+          <p>สรุปรายได้ของแต่ละเดือนในปีนี้จากข้อมูลการเช่าที่มีในระบบ</p>
+        </div>
+        <canvas id="revenueChart" height="140"></canvas>
+      </section>
+
+      <section class="chart-section">
+        <div class="section-heading">
+          <h3>สถานะคำสั่งเช่า</h3>
+          <p>ภาพรวมของรายการที่รออนุมัติ กำลังเช่า คืนแล้ว และยกเลิก</p>
+        </div>
+        <canvas id="rentalStatusChart" height="140"></canvas>
+      </section>
     </section>
 
     <section class="chart-section">
-        <h3>วิเคราะห์ข้อมูลยอดนิยม</h3>
-        <div style="text-align:center; margin-bottom:15px;">
-          <button onclick="loadTopStats()">📊 ดูสินค้ายอดนิยม</button>
+      <div class="section-heading top-stats-header">
+        <div>
+          <h3>วิเคราะห์ข้อมูลยอดนิยม</h3>
+          <p>ดูว่าสินค้าและหมวดหมู่ไหนถูกเช่าบ่อยที่สุด</p>
         </div>
-        <div id="top-stats"></div>
-      </section> -->
-      
+        <button type="button" id="loadTopStatsButton">โหลดข้อมูลยอดนิยม</button>
+      </div>
+      <div id="top-stats" class="top-stats-placeholder">กดปุ่มเพื่อดูข้อมูลยอดนิยมล่าสุด</div>
+    </section>
+  </main>
 
   <!-- ✅ โหลด Chart.js หลัง DOM -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
@@ -52,68 +67,95 @@
       const monthLabels = <%- JSON.stringify(monthLabels) %>;
       const monthlyRevenue = <%- JSON.stringify(monthlyRevenue) %>;
       const statusCounts = <%- JSON.stringify(statusCounts) %>;
+      const revenueCanvas = document.getElementById('revenueChart');
+      const statusCanvas = document.getElementById('rentalStatusChart');
+      const topStatsButton = document.getElementById('loadTopStatsButton');
+      const topStatsContainer = document.getElementById('top-stats');
 
-      const ctx1 = document.getElementById('revenueChart').getContext('2d');
-      new Chart(ctx1, {
-        type: 'line',
-        data: {
-          labels: monthLabels,
-          datasets: [{
-            label: 'รายได้รายเดือน (บาท)',
-            data: monthlyRevenue,
-            borderColor: '#8b5cf6',
-            backgroundColor: 'rgba(139,92,246,0.2)',
-            tension: 0.3,
-            fill: true,
-            pointRadius: 4,
-            pointHoverRadius: 6
-          }]
-        },
-        options: {
-          plugins: { legend: { display: false } },
-          scales: {
-            y: { beginAtZero: true, ticks: { callback: v => v.toLocaleString() } }
+      if (revenueCanvas && window.Chart) {
+        const ctx1 = revenueCanvas.getContext('2d');
+        new Chart(ctx1, {
+          type: 'line',
+          data: {
+            labels: monthLabels,
+            datasets: [{
+              label: 'รายได้รายเดือน (บาท)',
+              data: monthlyRevenue,
+              borderColor: '#8b5cf6',
+              backgroundColor: 'rgba(139,92,246,0.2)',
+              tension: 0.3,
+              fill: true,
+              pointRadius: 4,
+              pointHoverRadius: 6
+            }]
+          },
+          options: {
+            plugins: { legend: { display: false } },
+            scales: {
+              y: { beginAtZero: true, ticks: { callback: v => v.toLocaleString() } }
+            }
           }
-        }
-      });
+        });
+      }
 
-      const ctx2 = document.getElementById('rentalStatusChart').getContext('2d');
-      new Chart(ctx2, {
-        type: 'doughnut',
-        data: {
-          labels: ['รออนุมัติ', 'กำลังเช่า', 'คืนแล้ว', 'ยกเลิก'],
-          datasets: [{
-            data: statusCounts,
-            backgroundColor: ['#fde68a','#a5b4fc','#bbf7d0','#fecaca']
-          }]
-        },
-        options: {
-          plugins: { legend: { position: 'bottom' } }
+      if (statusCanvas && window.Chart) {
+        const ctx2 = statusCanvas.getContext('2d');
+        new Chart(ctx2, {
+          type: 'doughnut',
+          data: {
+            labels: ['รออนุมัติ', 'กำลังเช่า', 'คืนแล้ว', 'ยกเลิก'],
+            datasets: [{
+              data: statusCounts,
+              backgroundColor: ['#fde68a','#a5b4fc','#bbf7d0','#fecaca']
+            }]
+          },
+          options: {
+            plugins: { legend: { position: 'bottom' } }
+          }
+        });
+      }
+
+      if (topStatsButton) {
+        topStatsButton.addEventListener('click', loadTopStats);
+      }
+
+      async function loadTopStats() {
+        if (!topStatsContainer) return;
+
+        topStatsContainer.innerHTML = '<div class="top-stats-placeholder">กำลังโหลดข้อมูลยอดนิยม...</div>';
+
+        try {
+          const res = await fetch('/api/admin/top-stats');
+          if (!res.ok) {
+            throw new Error('ไม่สามารถโหลดข้อมูลยอดนิยมได้');
+          }
+
+          const data = await res.json();
+          const topProducts = data.topProducts || [];
+          const topCategories = data.topCategories || [];
+
+          const productItems = topProducts.length
+            ? topProducts.map(p => `<li>${p.product_name} - ${p.count} ครั้ง</li>`).join('')
+            : '<li>ยังไม่มีข้อมูลสินค้า</li>';
+
+          const categoryItems = topCategories.length
+            ? topCategories.map(c => `<li>${c.category_name} - ${c.count} ครั้ง</li>`).join('')
+            : '<li>ยังไม่มีข้อมูลหมวดหมู่</li>';
+
+          topStatsContainer.innerHTML = `
+            <div class="top-box">
+              <h4>สินค้าที่ถูกเช่ามากที่สุด</h4>
+              <ul>${productItems}</ul>
+              <h4>หมวดหมู่ยอดนิยม</h4>
+              <ul>${categoryItems}</ul>
+            </div>
+          `;
+        } catch (error) {
+          topStatsContainer.innerHTML = `<div class="top-stats-placeholder is-error">${error.message}</div>`;
         }
-      });
+      }
     });
   </script>
-
-<script>
-    async function loadTopStats() {
-      const res = await fetch('/admin/top-stats');
-      const data = await res.json();
-    
-      const html = `
-        <div class="top-box">
-          <h4>🛍️ สินค้าที่ถูกเช่ามากที่สุด</h4>
-          <ul>
-            ${data.topProducts.map(p => `<li>${p.product_name} - ${p.count} ครั้ง</li>`).join('')}
-          </ul>
-          <h4>🏷️ หมวดหมู่ยอดนิยม</h4>
-          <ul>
-            ${data.topCategories.map(c => `<li>${c.category_name} - ${c.count} ครั้ง</li>`).join('')}
-          </ul>
-        </div>
-      `;
-      document.getElementById('top-stats').innerHTML = html;
-    }
-    </script>
     
 </body>
 </html>

@@ -55,6 +55,34 @@ h2 {
     margin-bottom: 30px;
 }
 
+.chart-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 24px;
+    margin-bottom: 30px;
+}
+
+.section-heading {
+    margin-bottom: 18px;
+}
+
+.section-heading h3 {
+    margin: 0 0 6px;
+    color: #5b21b6;
+}
+
+.section-heading p {
+    margin: 0;
+    color: #7c6d95;
+}
+
+.top-stats-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+}
+
 button {
     background: #8b5cf6;
     color: white;
@@ -92,4 +120,30 @@ button:hover {
 .top-box li {
     padding: 5px 0;
     border-bottom: 1px dashed #ddd6fe;
+}
+
+.top-stats-placeholder {
+    padding: 18px;
+    border-radius: 12px;
+    background: #f8f4ff;
+    border: 1px dashed #d8c7fb;
+    color: #7a5db3;
+    text-align: center;
+}
+
+.top-stats-placeholder.is-error {
+    color: #b42318;
+    border-color: #f3b7b7;
+    background: #fff5f5;
+}
+
+@media (max-width: 768px) {
+    .dashboard-container {
+        padding: 24px 16px;
+    }
+
+    .top-stats-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
 }

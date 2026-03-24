@@ -56,12 +56,49 @@ if (pryCheckbox && pryExtraField) {
 // Preview รูป
 const input = document.getElementById("product_images");
 const previewContainer = document.getElementById("preview-container");
+const uploadDropzone = document.getElementById("uploadDropzone");
+const uploadFileCount = document.getElementById("uploadFileCount");
+const uploadStatus = document.getElementById("uploadStatus");
+const MAX_UPLOAD_FILES = 5;
 
 if (input && previewContainer) {
-  input.addEventListener("change", () => {
+  let selectedFiles = [];
+
+  const setUploadStatus = (message = "", type = "info") => {
+    if (!uploadStatus) return;
+
+    if (!message) {
+      uploadStatus.textContent = "";
+      uploadStatus.classList.add("hidden");
+      uploadStatus.classList.remove("is-info", "is-error");
+      return;
+    }
+
+    uploadStatus.textContent = message;
+    uploadStatus.classList.remove("hidden", "is-info", "is-error");
+    uploadStatus.classList.add(`is-${type}`);
+  };
+
+  const syncInputFiles = () => {
+    const dt = new DataTransfer();
+    selectedFiles.forEach((file) => dt.items.add(file));
+    input.files = dt.files;
+  };
+
+  const updateUploadMeta = () => {
+    const totalFiles = selectedFiles.length;
+
+    if (!uploadFileCount) return;
+
+    uploadFileCount.textContent = totalFiles
+      ? `เลือกรูปแล้ว ${totalFiles}/${MAX_UPLOAD_FILES} ไฟล์`
+      : "ยังไม่ได้เลือกรูป";
+  };
+
+  const renderPreview = () => {
     previewContainer.innerHTML = "";
 
-    Array.from(input.files).forEach((file, index) => {
+    selectedFiles.forEach((file, index) => {
       const reader = new FileReader();
       reader.onload = (e) => {
         const div = document.createElement("div");
@@ -78,15 +115,80 @@ if (input && previewContainer) {
       };
       reader.readAsDataURL(file);
     });
-  });
+    updateUploadMeta();
+  };
 
   function removeFile(removeIndex) {
-    const dt = new DataTransfer();
-    Array.from(input.files).forEach((file, idx) => {
-      if (idx !== removeIndex) dt.items.add(file);
-    });
-    input.files = dt.files;
+    selectedFiles = selectedFiles.filter((_, idx) => idx !== removeIndex);
+    syncInputFiles();
+    if (selectedFiles.length < MAX_UPLOAD_FILES) {
+      setUploadStatus("");
+    }
+    renderPreview();
   }
+
+  const appendFiles = (incomingFiles) => {
+    const imageFiles = Array.from(incomingFiles).filter((file) =>
+      file.type.startsWith("image/")
+    );
+
+    if (!imageFiles.length) {
+      setUploadStatus("กรุณาเลือกรูปภาพเท่านั้น", "error");
+      return;
+    }
+
+    const availableSlots = MAX_UPLOAD_FILES - selectedFiles.length;
+
+    if (availableSlots <= 0) {
+      setUploadStatus(`อัปโหลดได้สูงสุด ${MAX_UPLOAD_FILES} รูป`, "error");
+      return;
+    }
+
+    const filesToAdd = imageFiles.slice(0, availableSlots);
+    selectedFiles = [...selectedFiles, ...filesToAdd];
+    syncInputFiles();
+    renderPreview();
+
+    if (imageFiles.length > availableSlots) {
+      setUploadStatus(`เพิ่มได้สูงสุด ${MAX_UPLOAD_FILES} รูป ระบบเลือกให้เท่าที่ว่าง`, "error");
+      return;
+    }
+
+    if (selectedFiles.length === MAX_UPLOAD_FILES) {
+      setUploadStatus(`ครบ ${MAX_UPLOAD_FILES} รูปแล้ว สามารถลบรูปเดิมก่อนเพิ่มใหม่ได้`, "info");
+      return;
+    }
+
+    setUploadStatus("");
+  };
+
+  input.addEventListener("change", () => {
+    appendFiles(input.files);
+  });
+
+  if (uploadDropzone) {
+    ["dragenter", "dragover"].forEach((eventName) => {
+      uploadDropzone.addEventListener(eventName, (event) => {
+        event.preventDefault();
+        uploadDropzone.classList.add("is-dragover");
+      });
+    });
+
+    ["dragleave", "dragend", "drop"].forEach((eventName) => {
+      uploadDropzone.addEventListener(eventName, (event) => {
+        event.preventDefault();
+        uploadDropzone.classList.remove("is-dragover");
+      });
+    });
+
+    uploadDropzone.addEventListener("drop", (event) => {
+      const droppedFiles = event.dataTransfer?.files;
+      if (!droppedFiles?.length) return;
+      appendFiles(droppedFiles);
+    });
+  }
+
+  updateUploadMeta();
 }
 
 const categorySelect = document.getElementById("categoryId");

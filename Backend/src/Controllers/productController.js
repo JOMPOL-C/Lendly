@@ -10,6 +10,16 @@ exports.upload = multer({ storage }).array("product_images", 10); // อัป�
 const bufferToDataUri = (file) =>
   `data:${file.mimetype};base64,${file.buffer.toString('base64')}`;
 
+const parseMeasurement = (value, unit = "cm") => {
+  if (value === undefined || value === null || value === "") return null;
+
+  const numericValue = parseFloat(value);
+  if (Number.isNaN(numericValue)) return null;
+
+  const valueInCm = unit === "in" ? numericValue * 2.54 : numericValue;
+  return Number(valueInCm.toFixed(1));
+};
+
 // POST /api/products → เพิ่มสินค้า
 exports.createProduct = async (req, res) => {
   try {
@@ -21,6 +31,7 @@ exports.createProduct = async (req, res) => {
       chest,
       waist,
       hips,
+      size_unit,
       price_costume,
       price_wig,
       price_suit_wig,
@@ -41,6 +52,7 @@ exports.createProduct = async (req, res) => {
     const toNum = v => (v && !isNaN(parseFloat(v)) ? parseFloat(v) : 0);
 
     const depositValue = toNum(deposit);
+    const normalizedSizeUnit = size_unit === "in" ? "in" : "cm";
 
     // ✅ 1) อัปโหลดรูปทั้งหมดขึ้น Cloudinary
     const uploadPromises = files.map(file =>
@@ -51,9 +63,9 @@ exports.createProduct = async (req, res) => {
     // ✅ 2) สร้างสัดส่วนสินค้า
     const proportion = await prisma.Proportion_product.create({
       data: {
-        chest: toNum(chest),
-        waist: toNum(waist),
-        hips: toNum(hips)
+        chest: parseMeasurement(chest, normalizedSizeUnit),
+        waist: parseMeasurement(waist, normalizedSizeUnit),
+        hips: parseMeasurement(hips, normalizedSizeUnit)
       }
     });
 
@@ -226,6 +238,9 @@ exports.createProduct = async (req, res) => {
     res.redirect("/");
   } catch (err) {
     console.error("❌ Error createProduct:", err);
+    if (err.code === "P2000" && err.meta?.column_name === "shipping_info") {
+      return res.status(400).send("รายละเอียดสินค้ายาวเกินไปสำหรับฐานข้อมูลปัจจุบัน");
+    }
     res.status(500).send("เพิ่มสินค้าไม่สำเร็จ");
   }
 };
@@ -242,6 +257,7 @@ exports.updateProduct = async (req, res) => {
       chest,
       waist,
       hips,
+      size_unit,
       price_costume,
       price_wig,
       price_suit_wig,
@@ -259,6 +275,7 @@ exports.updateProduct = async (req, res) => {
     const files = req.files || [];
     const toNum = v => (v && !isNaN(parseFloat(v)) ? parseFloat(v) : 0);
     const depositValue = toNum(deposit);
+    const normalizedSizeUnit = size_unit === "in" ? "in" : "cm";
 
     // ✅ โหลดข้อมูลสินค้าเดิม
     const product = await prisma.Product.findUnique({
@@ -300,9 +317,9 @@ exports.updateProduct = async (req, res) => {
       await prisma.Proportion_product.update({
         where: { proportion_product_id: product.ppId },
         data: {
-          chest: toNum(chest),
-          waist: toNum(waist),
-          hips: toNum(hips),
+          chest: parseMeasurement(chest, normalizedSizeUnit),
+          waist: parseMeasurement(waist, normalizedSizeUnit),
+          hips: parseMeasurement(hips, normalizedSizeUnit),
         },
       });
     }
@@ -378,6 +395,9 @@ exports.updateProduct = async (req, res) => {
     res.redirect("/admin/products");
   } catch (err) {
     console.error("❌ Error updateProduct:", err);
+    if (err.code === "P2000" && err.meta?.column_name === "shipping_info") {
+      return res.status(400).send("รายละเอียดสินค้ายาวเกินไปสำหรับฐานข้อมูลปัจจุบัน");
+    }
     res.status(500).send("อัปเดตสินค้าไม่สำเร็จ");
   }
 };

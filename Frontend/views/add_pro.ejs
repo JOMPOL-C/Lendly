@@ -6,158 +6,202 @@
         <%- include('includes/navAdmin') %>
             <main>
                 <section class="index">
-                    <h2>เพิ่มสินค้า</h2>
-
-                    <form action="/api/products" method="POST" enctype="multipart/form-data">
-                        <!-- ชื่อและรายละเอียดพื้นฐาน -->
-                        <div class="form-group">
-                            <label>ชื่อสินค้า</label>
-                            <input type="text" name="product_name" required>
+                    <div class="page-intro">
+                        <div class="intro-copy">
+                            <h2>เพิ่มสินค้าใหม่</h2>
                         </div>
+                        <div class="intro-badge">Lendly Admin Studio</div>
+                    </div>
 
-                        <div class="form-group">
-                            <label>ชื่อเรื่อง</label>
-                            <input type="text" name="story_name" required>
-                        </div>
-
-                        <div class="form-group">
-                            <label>สัดส่วน (ซม.)</label>
-                            <div style="display:flex; gap:10px;">
-                                <input type="number" name="chest" placeholder="อก" step="0.1">
-                                <input type="number" name="waist" placeholder="เอว" step="0.1">
-                                <input type="number" name="hips" placeholder="สะโพก" step="0.1">
+                    <form action="/api/products" method="POST" enctype="multipart/form-data" class="product-form">
+                        <div class="form-section">
+                            <div class="form-section-header">
+                                <h3>ข้อมูลพื้นฐาน</h3>
+                                <p>ระบุชื่อสินค้า เรื่องที่อ้างอิง และสัดส่วนของชุดเพื่อให้ลูกค้าเลือกง่ายขึ้น</p>
                             </div>
-                        </div>
 
-                        <!-- อัปโหลดรูป -->
-                        <div class="form-group">
-                            <label for="product_images">อัปโหลดรูปสินค้า</label>
-                            <input type="file" name="product_images" id="product_images" multiple accept="image/*">
-                            <p class="note">เลือกได้หลายรูป</p>
-                            <div id="preview-container" class="preview-grid"></div>
-                        </div>
-
-                        <div class="form-group">
-                            <label>รายละเอียดสินค้า</label>
-                            <textarea name="shipping_info" rows="4" required></textarea>
-                        </div>
-
-                        <!-- โหมดใช้งาน -->
-                        <div class="form-group">
-                            <label>การใช้งาน</label>
-                            <div class="checkbox-group">
-                                <label><input type="checkbox" id="useTest" name="usage" value="test"> เทส</label>
-                                <label><input type="checkbox" id="usePry" name="usage" value="pri"> ไพร</label>
-                            </div>
-                        </div>
-
-                        <!-- จำนวนวันเช่า -->
-                        <div id="daysTestField" class="hidden">
-                            <label>จำนวนวัน (Test)</label>
-                            <input type="number" name="days_suit_test" min="1">
-                        </div>
-
-                        <div id="daysPriField" class="hidden">
-                            <label>จำนวนวัน (Pri)</label>
-                            <input type="number" name="days_suit_pri" min="1">
-                        </div>
-
-                        <!-- หมวดหมู่ -->
-                        <div class="form-group">
-                            <label>หมวดหมู่สินค้า</label>
-                            <select name="categoryId" id="categoryId" required>
-                                <% categories.forEach(c=> { %>
-                                    <option value="<%= c.category_id %>">
-                                        <%= c.category_name %>
-                                    </option>
-                                    <% }) %>
-                            </select>
-                            <button type="button" id="toggleNewCategory" class="category-toggle-btn">
-                                ไม่มีหมวดหมู่ที่ต้องการ? เพิ่มหมวดใหม่
-                            </button>
-                            <div id="newCategoryBox" class="new-category-box hidden">
-                                <label for="newCategoryName" class="category-sub-label">ชื่อหมวดหมู่ใหม่</label>
-                                <div class="category-inline">
-                                    <input type="text" id="newCategoryName" maxlength="45"
-                                        placeholder="เช่น ชุดจีนโบราณ / ชุดแฟนตาซี">
-                                    <button type="button" id="addCategoryButton" class="category-add-btn">
-                                        เพิ่มหมวด
-                                    </button>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label>ชื่อสินค้า</label>
+                                    <input type="text" name="product_name" placeholder="เช่น ชุดดราม่าย้อนยุคสีแดง" required>
                                 </div>
-                                <p class="note">สร้างหมวดหมู่ใหม่แล้วระบบจะเลือกให้ทันที</p>
-                                <p id="categoryFeedback" class="category-feedback hidden"></p>
+
+                                <div class="form-group">
+                                    <label>ชื่อเรื่อง</label>
+                                    <input type="text" name="story_name" placeholder="เช่น Scarlet Chronicle" required>
+                                </div>
+
+                                <div class="form-group form-group-full">
+                                    <div class="size-header">
+                                        <label>สัดส่วนสินค้า</label>
+                                        <div class="size-unit-picker">
+                                            <span>หน่วย</span>
+                                            <select name="size_unit" id="sizeUnit">
+                                                <option value="cm">เซนติเมตร (cm)</option>
+                                                <option value="in">นิ้ว (inch)</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="size-grid">
+                                        <input type="number" name="chest" placeholder="อก" step="0.1">
+                                        <input type="number" name="waist" placeholder="เอว" step="0.1">
+                                        <input type="number" name="hips" placeholder="สะโพก" step="0.1">
+                                    </div>
+                                    <p class="note">ถ้าเว้นช่องไหนไว้ ระบบจะบันทึกค่านั้นเป็นค่าว่าง และถ้าเลือกหน่วยนิ้ว ระบบจะคำนวณเก็บเป็นเซนติเมตรให้อัตโนมัติ</p>
+                                </div>
+
+                                <div class="form-group form-group-full">
+                                    <label>รายละเอียดสินค้า</label>
+                                    <textarea name="shipping_info" rows="4"
+                                        placeholder="อธิบายวัสดุ รายละเอียดดีไซน์ หรือเงื่อนไขที่ควรรู้ก่อนเช่า" required></textarea>
+                                </div>
                             </div>
                         </div>
 
-                        <!-- ประเภทของให้เช่า -->
-                        <div class="form-group">
-                            <label>ของให้เช่า</label>
-                            <div class="checkbox-group">
-                                <label><input type="checkbox" id="rentCostume" name="rentalType[]" value="costume">
-                                    ชุด</label>
-                                <label><input type="checkbox" id="rentWig" name="rentalType[]" value="wig"> วิก</label>
-                                <label><input type="checkbox" id="rentProp" name="rentalType[]" value="prop">
-                                    พร็อพ</label>
-                                <label><input type="checkbox" id="rentShoe" name="rentalType[]" value="shoe">
-                                    รองเท้า</label>
+                        <div class="form-section">
+                            <div class="form-section-header">
+                                <h3>รูปภาพสินค้า</h3>
+                                <p>เลือกได้หลายรูปในครั้งเดียว และสามารถลบรูปที่ไม่ต้องการออกจากรายการก่อนบันทึกได้</p>
+                            </div>
+
+                            <div class="form-group">
+                                <input type="file" name="product_images" id="product_images" class="upload-input" multiple accept="image/*">
+                                <label for="product_images" id="uploadDropzone" class="upload-dropzone">
+                                    <span class="upload-icon">UP</span>
+                                    <span class="upload-title">ลากรูปมาวางที่นี่ หรือกดเพื่อเลือกรูปสินค้า</span>
+                                    <span class="upload-subtitle">แนะนำให้ใช้รูปที่เห็นสินค้าเต็มตัวและรูปเก็บรายละเอียด เพื่อให้ลูกค้าตัดสินใจง่ายขึ้น</span>
+                                    <span id="uploadFileCount" class="upload-meta">ยังไม่ได้เลือกรูป</span>
+                                </label>
+                                <p class="note">เพิ่มรูปได้สูงสุด 5 รูป</p>
+                                <p id="uploadStatus" class="upload-status hidden"></p>
+                                <div id="preview-container" class="preview-grid"></div>
                             </div>
                         </div>
 
-                        <!-- ราคาของแต่ละส่วน -->
-                        <div id="priceCostume" class="price-field hidden">
-                            <label>ราคาเช่าชุด</label>
-                            <input type="number" name="price_costume">
+                        <div class="form-section">
+                            <div class="form-section-header">
+                                <h3>การใช้งานและหมวดหมู่</h3>
+                                <p>เลือกประเภทการใช้งาน หมวดหมู่สินค้า และประเภทของให้เช่าให้ตรงกับสินค้า</p>
+                            </div>
+
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label>การใช้งาน</label>
+                                    <div class="checkbox-group">
+                                        <label><input type="checkbox" id="useTest" name="usage" value="test"> เทส</label>
+                                        <label><input type="checkbox" id="usePry" name="usage" value="pri"> ไพร</label>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>หมวดหมู่สินค้า</label>
+                                    <select name="categoryId" id="categoryId" required>
+                                        <% categories.forEach(c=> { %>
+                                            <option value="<%= c.category_id %>">
+                                                <%= c.category_name %>
+                                            </option>
+                                        <% }) %>
+                                    </select>
+                                    <button type="button" id="toggleNewCategory" class="category-toggle-btn">
+                                        ไม่มีหมวดหมู่ที่ต้องการ? เพิ่มหมวดใหม่
+                                    </button>
+                                    <div id="newCategoryBox" class="new-category-box hidden">
+                                        <label for="newCategoryName" class="category-sub-label">ชื่อหมวดหมู่ใหม่</label>
+                                        <div class="category-inline">
+                                            <input type="text" id="newCategoryName" maxlength="45"
+                                                placeholder="เช่น ชุดจีนโบราณ / ชุดแฟนตาซี">
+                                            <button type="button" id="addCategoryButton" class="category-add-btn">
+                                                เพิ่มหมวด
+                                            </button>
+                                        </div>
+                                        <p class="note">สร้างหมวดหมู่ใหม่แล้วระบบจะเลือกให้ทันที</p>
+                                        <p id="categoryFeedback" class="category-feedback hidden"></p>
+                                    </div>
+                                </div>
+
+                                <div id="daysTestField" class="price-field hidden">
+                                    <label>จำนวนวัน (Test)</label>
+                                    <input type="number" name="days_suit_test" min="1">
+                                </div>
+
+                                <div id="daysPriField" class="price-field hidden">
+                                    <label>จำนวนวัน (Pri)</label>
+                                    <input type="number" name="days_suit_pri" min="1">
+                                </div>
+
+                                <div class="form-group form-group-full">
+                                    <label>ของให้เช่า</label>
+                                    <div class="checkbox-group">
+                                        <label><input type="checkbox" id="rentCostume" name="rentalType[]" value="costume"> ชุด</label>
+                                        <label><input type="checkbox" id="rentWig" name="rentalType[]" value="wig"> วิก</label>
+                                        <label><input type="checkbox" id="rentProp" name="rentalType[]" value="prop"> พร็อพ</label>
+                                        <label><input type="checkbox" id="rentShoe" name="rentalType[]" value="shoe"> รองเท้า</label>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
-                        <div id="priceWig" class="price-field hidden">
-                            <label>ราคาเช่าวิก</label>
-                            <input type="number" name="price_wig">
-                        </div>
+                        <div class="form-section">
+                            <div class="form-section-header">
+                                <h3>ราคาและสถานะสินค้า</h3>
+                                <p>ใส่ราคาตามประเภทของให้เช่าที่เปิดใช้งาน และกำหนดสถานะพร้อมให้เช่าของสินค้า</p>
+                            </div>
 
-                        <div id="priceSuitWig" class="price-field hidden">
-                            <label>ราคาเช่าชุด + วิก (ราคาพิเศษ)</label>
-                            <input type="number" name="price_suit_wig">
-                        </div>
+                            <div class="form-grid">
+                                <div id="priceCostume" class="price-field hidden">
+                                    <label>ราคาเช่าชุด</label>
+                                    <input type="number" name="price_costume">
+                                </div>
 
-                        <div id="priceProp" class="price-field hidden">
-                            <label>ราคาเช่าพร็อพ</label>
-                            <input type="number" name="price_prop">
-                        </div>
+                                <div id="priceWig" class="price-field hidden">
+                                    <label>ราคาเช่าวิก</label>
+                                    <input type="number" name="price_wig">
+                                </div>
 
-                        <div id="priceAddonProp" class="price-field hidden">
-                            <label>ราคาเช่าพร็อพเสริม (ราคาพิเศษ)</label>
-                            <input type="number" name="price_prop_addon">
-                        </div>
+                                <div id="priceSuitWig" class="price-field hidden">
+                                    <label>ราคาเช่าชุด + วิก (ราคาพิเศษ)</label>
+                                    <input type="number" name="price_suit_wig">
+                                </div>
 
-                        <div id="priceShoe" class="price-field hidden">
-                            <label>ราคาเช่ารองเท้า</label>
-                            <input type="number" name="price_shoe">
-                        </div>
+                                <div id="priceProp" class="price-field hidden">
+                                    <label>ราคาเช่าพร็อพ</label>
+                                    <input type="number" name="price_prop">
+                                </div>
 
-                        <div id="priceAddonShoe" class="price-field hidden">
-                            <label>ราคาเช่ารองเท้าเสริม (ราคาพิเศษ)</label>
-                            <input type="number" name="price_shoe_addon">
-                        </div>
+                                <div id="priceAddonProp" class="price-field hidden">
+                                    <label>ราคาเช่าพร็อพเสริม (ราคาพิเศษ)</label>
+                                    <input type="number" name="price_prop_addon">
+                                </div>
 
-                        <!-- ราคาเพิ่มสำหรับโหมดไพร -->
-                        <div id="pricePryExtra" class="price-field hidden">
-                            <label>ราคาเพิ่มสำหรับไพร</label>
-                            <input type="number" name="price_pry_extra">
-                        </div>
+                                <div id="priceShoe" class="price-field hidden">
+                                    <label>ราคาเช่ารองเท้า</label>
+                                    <input type="number" name="price_shoe">
+                                </div>
 
-                        <div id="depositField" class="price-field">
-                            <label>ราคามัดจำสินค้า (บาท)</label>
-                            <input type="number" name="deposit" min="0" step="0.01" placeholder="กรอกราคามัดจำ">
-                            <p class="note">** ราคามัดจำจะคืนให้เมื่อสินค้าคืนตามสภาพ **</p>
-                        </div>
+                                <div id="priceAddonShoe" class="price-field hidden">
+                                    <label>ราคาเช่ารองเท้าเสริม (ราคาพิเศษ)</label>
+                                    <input type="number" name="price_shoe_addon">
+                                </div>
 
-                        <!-- สถานะสินค้า -->
-                        <div class="form-group">
-                            <label>สถานะสินค้า</label>
-                            <select name="status" required>
-                                <option value="active">เปิดให้เช่า</option>
-                                <option value="inactive">ปิดการเช่า</option>
-                            </select>
+                                <div id="pricePryExtra" class="price-field hidden">
+                                    <label>ราคาเพิ่มสำหรับไพร</label>
+                                    <input type="number" name="price_pry_extra">
+                                </div>
+
+                                <div id="depositField" class="price-field">
+                                    <label>ราคามัดจำสินค้า (บาท)</label>
+                                    <input type="number" name="deposit" min="0" step="0.01" placeholder="กรอกราคามัดจำ">
+                                    <p class="note">ราคามัดจำจะคืนให้เมื่อสินค้าคืนตามสภาพ</p>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>สถานะสินค้า</label>
+                                    <select name="status" required>
+                                        <option value="active">เปิดให้เช่า</option>
+                                        <option value="inactive">ปิดการเช่า</option>
+                                    </select>
+                                </div>
+                            </div>
                         </div>
 
                         <button type="submit" class="submit-btn">เพิ่มสินค้า</button>
