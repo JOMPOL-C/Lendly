@@ -65,13 +65,28 @@
                         <!-- หมวดหมู่ -->
                         <div class="form-group">
                             <label>หมวดหมู่สินค้า</label>
-                            <select name="categoryId" required>
+                            <select name="categoryId" id="categoryId" required>
                                 <% categories.forEach(c=> { %>
                                     <option value="<%= c.category_id %>">
                                         <%= c.category_name %>
                                     </option>
                                     <% }) %>
                             </select>
+                            <button type="button" id="toggleNewCategory" class="category-toggle-btn">
+                                ไม่มีหมวดหมู่ที่ต้องการ? เพิ่มหมวดใหม่
+                            </button>
+                            <div id="newCategoryBox" class="new-category-box hidden">
+                                <label for="newCategoryName" class="category-sub-label">ชื่อหมวดหมู่ใหม่</label>
+                                <div class="category-inline">
+                                    <input type="text" id="newCategoryName" maxlength="45"
+                                        placeholder="เช่น ชุดจีนโบราณ / ชุดแฟนตาซี">
+                                    <button type="button" id="addCategoryButton" class="category-add-btn">
+                                        เพิ่มหมวด
+                                    </button>
+                                </div>
+                                <p class="note">สร้างหมวดหมู่ใหม่แล้วระบบจะเลือกให้ทันที</p>
+                                <p id="categoryFeedback" class="category-feedback hidden"></p>
+                            </div>
                         </div>
 
                         <!-- ประเภทของให้เช่า -->

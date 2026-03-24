@@ -1,111 +1,180 @@
-.logo {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: darkslateblue;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  .logo img {
-    height: auto;
-  }
-  
+body {
+  margin: 0;
+  font-family: "IBM Plex Sans Thai", sans-serif;
+  background: #fff;
+}
 
-  main {
-    display: flex;
-    justify-content: center;   /* จัดแนวนอนกลาง */
-    align-items: center;       /* จัดแนวตั้งกลาง */
-    min-height: 100vh;         /* เต็มจอ */
-    gap: 50px;                 /* ระยะห่างระหว่าง logo กับฟอร์ม */
-  }
-  
-  @media (max-width: 768px) {
-    main {
-      flex-direction: column;
-      gap: 20px;
-    }
-  }
-  
+.logo {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: darkslateblue;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.logo img {
+  height: auto;
+}
+
+main {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  gap: 56px;
+  padding: 32px;
+}
+
 .wrapper{
     width: 100%;
-    max-width: 400px;
-    padding: 40px;
+    max-width: 420px;
+    padding: 34px 32px 28px;
     background: #fff;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,.08);
+    border-radius: 26px;
+    box-shadow: 0 22px 48px rgba(48, 53, 78, 0.10);
+    border: 1px solid rgba(81, 88, 128, 0.08);
 }
+
+.login-card__header {
+    margin-bottom: 22px;
+}
+
+.login-card__header h1 {
+    margin: 0;
+    font-family: "Noto Serif", serif;
+    font-size: 2rem;
+    line-height: 1.1;
+    color: #171b31;
+}
+
+.login-card__header p {
+    margin: 10px 0 0;
+    color: #747b8f;
+    font-size: 0.96rem;
+    line-height: 1.65;
+}
+
 .input-box{
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 18px;
 }
+
 .input-field{
     position: relative;
     display: flex;
-    flex-direction: column;      /* input + error เป็นแนวตั้ง */
-    gap: 6px;                    /* ช่องไฟระหว่าง input กับ error */
+    flex-direction: column;
+    gap: 6px;
 }
+
 .input-field input{
     width: 100%;
-    padding: 10px 40px;          /* กันพื้นที่ไอคอนซ้าย/ขวา */
-    border: 2px solid rgba(0,0,0,.2);
-    border-radius: 10px;
-    background: transparent;
+    height: 56px;
+    padding: 0 20px;
+    border: 1.5px solid rgba(77, 87, 122, 0.22);
+    border-radius: 18px;
+    background: #fbfbfe;
     outline: none;
     font-size: 1rem;
-    transition: border-color .2s ease, box-shadow .2s ease;
+    color: #242944;
+    transition: border-color .2s ease, box-shadow .2s ease, background-color .2s ease;
 }
+
+.input-field input::placeholder {
+    color: #8a90a0;
+}
+
 .input-field input:focus{
-    border-color: darkslateblue;
-    box-shadow: 0 0 0 3px rgba(72,61,139,.12);
+    border-color: #5b54b3;
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(91, 84, 179, .12);
 }
-.input-field i{
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #666;
-    line-height: 1;
-    font-size: 1.05rem;
-}
-.input-field i.left{ left: 12px; }
-.input-field i.right{ right: 12px; cursor: pointer; }
-.input-field .error-txt{
-    font-size: .875rem;
-    color: crimson;
-    display: none;
-}
-.input-field.error input{
-    border-color: crimson;
-}
-.input-field.error .error-txt{
-    display: block;
-}
+
 button{
     width: 100%;
-    padding: 10px;
+    height: 56px;
     border: none;
-    border-radius: 10px;
-    background: darkslateblue;
+    border-radius: 18px;
+    background: #54499c;
     color: #fff;
-    font-size: 1.1rem;
+    font-size: 1.08rem;
     font-weight: 600;
     cursor: pointer;
-    box-shadow: 0 4px 12px rgba(0,0,0,.08);
-    transition: background .2s ease;
+    box-shadow: 0 14px 28px rgba(84, 73, 156, .22);
+    transition: background .2s ease, transform .2s ease, box-shadow .2s ease;
 }
-button:hover{ background: slateblue; }
-.link{
-    text-align: center;
-    margin-top: 12px;
+
+button:hover{
+    background: #4b428e;
+    transform: translateY(-1px);
+    box-shadow: 0 18px 30px rgba(84, 73, 156, .28);
+}
+
+#error {
+    margin: 6px 2px 0;
+    color: #d44545;
     font-size: .9rem;
 }
-.link a{ color: darkslateblue; text-decoration: none; }
-.link a:hover{ text-decoration: underline; }
 
-.h1 {
+.divider {
+    margin: 22px 0 18px;
+    border: 0;
+    border-top: 1px solid rgba(95, 103, 132, 0.18);
+}
+
+.login-links {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+
+.login-links a {
+    color: #4c56b2;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.login-links a:hover {
+    text-decoration: underline;
+}
+
+.login-links__register {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #555f79;
+}
+
+.login-links__register p {
+    margin: 0;
+}
+
+@media (max-width: 768px) {
+  main {
+    flex-direction: column;
+    gap: 22px;
+    padding: 20px 14px;
+  }
+
+  .wrapper {
+    max-width: 100%;
+    padding: 28px 22px 24px;
+    border-radius: 22px;
+  }
+
+  .login-card__header h1 {
+    font-size: 1.8rem;
     text-align: center;
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: darkslateblue;
-    margin-bottom: 24px;
+  }
+
+  .login-card__header p {
+    text-align: center;
+  }
+
+  .login-links__register {
+    flex-direction: column;
+    gap: 2px;
+  }
 }

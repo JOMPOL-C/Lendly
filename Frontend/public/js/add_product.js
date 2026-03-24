@@ -88,3 +88,112 @@ if (input && previewContainer) {
     input.files = dt.files;
   }
 }
+
+const categorySelect = document.getElementById("categoryId");
+const toggleNewCategoryButton = document.getElementById("toggleNewCategory");
+const newCategoryBox = document.getElementById("newCategoryBox");
+const newCategoryInput = document.getElementById("newCategoryName");
+const addCategoryButton = document.getElementById("addCategoryButton");
+const categoryFeedback = document.getElementById("categoryFeedback");
+
+function setCategoryFeedback(message, type = "info") {
+  if (!categoryFeedback) return;
+
+  categoryFeedback.textContent = message;
+  categoryFeedback.classList.remove("hidden", "is-success", "is-error", "is-info");
+  categoryFeedback.classList.add(`is-${type}`);
+}
+
+function upsertCategoryOption(category) {
+  if (!categorySelect || !category?.category_id || !category?.category_name) return;
+
+  let option = Array.from(categorySelect.options).find(
+    (item) => item.value === category.category_id
+  );
+
+  if (!option) {
+    option = document.createElement("option");
+    option.value = category.category_id;
+    option.textContent = category.category_name;
+    categorySelect.appendChild(option);
+  } else {
+    option.textContent = category.category_name;
+  }
+
+  categorySelect.value = category.category_id;
+}
+
+async function createCategoryFromInput() {
+  const categoryName = newCategoryInput?.value.trim();
+
+  if (!categoryName) {
+    setCategoryFeedback("กรุณากรอกชื่อหมวดหมู่ก่อน", "error");
+    newCategoryInput?.focus();
+    return;
+  }
+
+  if (!addCategoryButton) return;
+
+  addCategoryButton.disabled = true;
+  addCategoryButton.textContent = "กำลังเพิ่ม...";
+
+  try {
+    const response = await fetch("/api/categories", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ category_name: categoryName }),
+    });
+
+    const payload = await response.json().catch(() => ({}));
+    const category = payload.category || payload;
+
+    if (!response.ok) {
+      if (response.status === 409 && category?.category_id) {
+        upsertCategoryOption(category);
+        setCategoryFeedback("มีหมวดหมู่นี้อยู่แล้ว ระบบเลือกให้เรียบร้อย", "info");
+        newCategoryInput.value = "";
+        return;
+      }
+
+      throw new Error(payload.message || "ไม่สามารถเพิ่มหมวดหมู่ได้");
+    }
+
+    upsertCategoryOption(category);
+    setCategoryFeedback("เพิ่มหมวดหมู่ใหม่สำเร็จ", "success");
+    newCategoryInput.value = "";
+  } catch (error) {
+    setCategoryFeedback(error.message || "เกิดข้อผิดพลาดในการเพิ่มหมวดหมู่", "error");
+  } finally {
+    addCategoryButton.disabled = false;
+    addCategoryButton.textContent = "เพิ่มหมวด";
+  }
+}
+
+if (toggleNewCategoryButton && newCategoryBox) {
+  toggleNewCategoryButton.addEventListener("click", () => {
+    const isHidden = newCategoryBox.classList.toggle("hidden");
+    toggleNewCategoryButton.textContent = isHidden
+      ? "ไม่มีหมวดหมู่ที่ต้องการ? เพิ่มหมวดใหม่"
+      : "ซ่อนฟอร์มเพิ่มหมวดหมู่";
+
+    if (!isHidden) {
+      setCategoryFeedback("พิมพ์ชื่อหมวดหมู่ใหม่แล้วกดเพิ่มหมวดได้เลย", "info");
+      newCategoryInput?.focus();
+    }
+  });
+}
+
+if (addCategoryButton) {
+  addCategoryButton.addEventListener("click", createCategoryFromInput);
+}
+
+if (newCategoryInput) {
+  newCategoryInput.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      createCategoryFromInput();
+    }
+  });
+}

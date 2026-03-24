@@ -11,6 +11,8 @@ const cors = require("cors");
 const morgan = require("morgan");
 const cookieParser = require("cookie-parser");
 const cloudinary = require("cloudinary").v2;
+const isDev = process.env.NODE_ENV !== "production";
+const liveReloadBootId = Date.now().toString();
 
 // ============================
 // 📦 CONTROLLERS & MIDDLEWARES
@@ -47,8 +49,69 @@ cloudinary.config({
 // ============================
 app.use(cookieParser());
 app.use(cors());
-app.use(morgan("dev"));
+app.use(
+  morgan("dev", {
+    skip: (req) => isDev && req.path === "/__live_reload",
+  })
+);
 app.use(express.static(path.join(__dirname, "../Frontend/public")));
+
+if (isDev) {
+  app.get("/__live_reload", (req, res) => {
+    res.set("Cache-Control", "no-store");
+    res.json({ bootId: liveReloadBootId });
+  });
+
+  app.use((req, res, next) => {
+    const originalRender = res.render.bind(res);
+
+    res.render = (view, locals, callback) => {
+      let renderLocals = locals;
+      let renderCallback = callback;
+
+      if (typeof renderLocals === "function") {
+        renderCallback = renderLocals;
+        renderLocals = undefined;
+      }
+
+      const liveReloadScript = `
+<script>
+(() => {
+  const currentBootId = "${liveReloadBootId}";
+  const checkForChanges = async () => {
+    try {
+      const response = await fetch("/__live_reload", { cache: "no-store" });
+      const payload = await response.json();
+      if (payload.bootId && payload.bootId !== currentBootId) {
+        window.location.reload();
+      }
+    } catch (error) {
+      // Ignore transient restart errors while the dev server is booting again.
+    }
+  };
+
+  window.setInterval(checkForChanges, 1000);
+})();
+</script>`;
+
+      return originalRender(view, renderLocals, (err, html) => {
+        if (err) {
+          if (renderCallback) return renderCallback(err);
+          return next(err);
+        }
+
+        const injectedHtml = html.includes("</body>")
+          ? html.replace("</body>", `${liveReloadScript}</body>`)
+          : `${html}${liveReloadScript}`;
+
+        if (renderCallback) return renderCallback(null, injectedHtml);
+        return res.send(injectedHtml);
+      });
+    };
+
+    next();
+  });
+}
 
 // ✅ โหลด upload-slip router ก่อน parse body ใด ๆ
 const uploadSlipRouter = require("./src/routers/uploadSlipRouter");

@@ -1,0 +1,13 @@
+{
+  "watch": [
+    "Backend",
+    "Frontend/views",
+    "Frontend/public"
+  ],
+  "ext": "js,mjs,cjs,json,ejs,css",
+  "ignore": [
+    ".git/**",
+    "node_modules/**"
+  ],
+  "exec": "node Backend/server.js"
+}

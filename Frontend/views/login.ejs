@@ -1,5 +1,8 @@
 <head>
   <link rel="stylesheet" href="/styles/login.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&family=Noto+Serif:wght@600;700&display=swap" rel="stylesheet">
   <link href='https://cdn.boxicons.com/fonts/basic/boxicons.min.css' rel='stylesheet'>
   <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
 </head>
@@ -11,19 +14,20 @@
 
   <div class="wrapper">
     <form id="loginForm" method="POST" action="/api/auth/login">
-      <h1>Lendly</h1>
+      <div class="login-card__header">
+        <h1>Lendly</h1>
+        <p>เข้าสู่ระบบเพื่อจัดการบัญชีและติดตามการเช่าของคุณ</p>
+      </div>
 
       <div class="input-box">
         <div class="input-field">
           <input type="text" placeholder="ชื่อผู้ใช้" name="username" id="username" required>
-
         </div>
       </div>
 
       <div class="input-box">
         <div class="input-field">
           <input type="password" placeholder="รหัสผ่าน" name="password" id="password" required>
-
         </div>
       </div>
 
@@ -31,20 +35,18 @@
         <div class="input-field">
           <button id="submitBtn" type="submit" class="btn">เข้าสู่ระบบ</button>
           <% if (typeof error !=='undefined' && error) { %>
-            <p id="error">
-              <%= error %>
-            </p>
-            <% } %>
+            <p id="error"><%= error %></p>
+          <% } %>
         </div>
       </div>
     </form>
 
-    <hr class="my-5">
+    <hr class="divider">
 
-    <div style="display: flex; flex-direction: column; align-items: center; gap: 10px;">
+    <div class="login-links">
       <a href="/forgetpassword">ลืมรหัสผ่านใช่ไหม</a>
-      <div style="display: flex; align-items: center; gap: 5px;">
-        <p style="margin: 0;">ไม่มีบัญชีใช่ไหม</p>
+      <div class="login-links__register">
+        <p>ไม่มีบัญชีใช่ไหม</p>
         <a href="/register">สมัครบัญชี</a>
       </div>
     </div>

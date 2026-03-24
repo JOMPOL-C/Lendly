@@ -4,6 +4,7 @@
 }
 
 body {
+  margin: 0;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -175,5 +176,319 @@ a {
 @media (max-width: 960px) {
   .logo {
     display: none;
+  }
+}
+
+body.register-page {
+  font-family: "IBM Plex Sans Thai", sans-serif;
+  align-items: stretch;
+  padding: 24px;
+  background:
+    radial-gradient(circle at top right, rgba(90, 79, 207, 0.18), transparent 24rem),
+    radial-gradient(circle at bottom left, rgba(14, 116, 144, 0.14), transparent 22rem),
+    linear-gradient(135deg, #f6f1ea 0%, #f3f5fb 48%, #eef1f8 100%);
+  color: #1d2433;
+}
+
+.register-shell {
+  width: min(1180px, 100%);
+  display: grid;
+  grid-template-columns: minmax(280px, 0.95fr) minmax(360px, 520px);
+  gap: 32px;
+  align-items: stretch;
+}
+
+.register-story {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 760px;
+  padding: 48px;
+  border: 1px solid rgba(58, 70, 104, 0.12);
+  border-radius: 32px;
+  background:
+    radial-gradient(circle at top, rgba(255, 255, 255, 0.36), transparent 32%),
+    linear-gradient(155deg, #223056 0%, #39447a 48%, #5560a4 100%);
+  box-shadow: 0 30px 80px rgba(32, 40, 67, 0.18);
+  color: #f8f6f1;
+}
+
+.register-story::after {
+  content: "";
+  position: absolute;
+  inset: auto -80px -100px auto;
+  width: 260px;
+  height: 260px;
+  border-radius: 50%;
+  background: rgba(255, 224, 178, 0.16);
+  filter: blur(2px);
+}
+
+.register-story__badge {
+  width: fit-content;
+  margin-bottom: 24px;
+  padding: 8px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.register-story__logo {
+  width: 168px;
+  margin-bottom: 14px;
+  filter: drop-shadow(0 16px 28px rgba(14, 18, 35, 0.28));
+}
+
+.register-story__title {
+  margin: 0 0 18px;
+  font-family: "Noto Serif Thai", serif;
+  font-size: clamp(2.1rem, 4vw, 3.5rem);
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+}
+
+.register-story__text {
+  max-width: 540px;
+  margin: 0;
+  color: rgba(248, 246, 241, 0.82);
+  font-size: 1.02rem;
+  line-height: 1.8;
+}
+
+.register-story__highlights {
+  display: grid;
+  gap: 14px;
+  margin-top: 34px;
+}
+
+.story-chip {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: fit-content;
+  padding: 12px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(10px);
+}
+
+.story-chip i {
+  font-size: 1.15rem;
+  color: #ffd89a;
+}
+
+.register-card {
+  max-width: none;
+  padding: 38px 34px 30px;
+  border: 1px solid rgba(46, 56, 87, 0.08);
+  border-radius: 30px;
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow: 0 24px 60px rgba(37, 45, 76, 0.12);
+  backdrop-filter: blur(18px);
+}
+
+.register-card__header {
+  margin-bottom: 24px;
+}
+
+.register-card__eyebrow {
+  display: inline-block;
+  margin-bottom: 10px;
+  color: #5260a0;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.register-card__header h2 {
+  margin: 0;
+  font-family: "Noto Serif Thai", serif;
+  font-size: 2.1rem;
+  line-height: 1.15;
+  color: #1c2340;
+}
+
+.register-card__header p {
+  margin: 10px 0 0;
+  color: #63708c;
+  line-height: 1.7;
+}
+
+.register-grid {
+  gap: 14px;
+}
+
+.input-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+body.register-page .input-field {
+  gap: 7px;
+}
+
+body.register-page .input-field input {
+  height: 58px;
+  padding: 14px 48px;
+  border: 1px solid rgba(86, 96, 128, 0.2);
+  border-radius: 18px;
+  background: rgba(248, 249, 253, 0.9);
+  color: #1e2437;
+  font-size: 1rem;
+}
+
+body.register-page .input-field input::placeholder {
+  color: #8590a8;
+}
+
+body.register-page .input-field input:focus {
+  border-color: #5c63ba;
+  box-shadow: 0 0 0 4px rgba(92, 99, 186, 0.12);
+}
+
+body.register-page .field-icon {
+  left: 16px;
+  top: 22px;
+  transform: none;
+  color: #7a83a0;
+  font-size: 1.2rem;
+}
+
+body.register-page .toggle-icon {
+  right: 14px;
+  top: 14px;
+  transform: none;
+  width: 30px;
+  height: 30px;
+  border-radius: 999px;
+  color: #6e7692;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+body.register-page .toggle-icon:hover {
+  background: rgba(92, 99, 186, 0.12);
+  color: #4951a5;
+}
+
+body.register-page .error-text {
+  min-height: 18px;
+  padding-left: 4px;
+  color: #c23d43;
+  font-size: 0.78rem;
+}
+
+.terms-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 8px 0 18px;
+  color: #53607d;
+  font-size: 0.94rem;
+  line-height: 1.6;
+}
+
+.terms-check input {
+  margin-top: 4px;
+  accent-color: #4f57b8;
+}
+
+.terms-check a {
+  color: #4350a5;
+}
+
+body.register-page .btn {
+  height: 56px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #3b467d 0%, #4f57b8 55%, #6a73d8 100%);
+  box-shadow: 0 16px 28px rgba(79, 87, 184, 0.24);
+  font-size: 1rem;
+  letter-spacing: 0.01em;
+}
+
+body.register-page .btn:hover {
+  background: linear-gradient(135deg, #33406f 0%, #4851ae 55%, #626bd3 100%);
+}
+
+.form-error {
+  min-height: 22px;
+  margin: 12px 0 0;
+  color: #c23d43;
+  font-size: 0.9rem;
+}
+
+.register-footer {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 8px;
+  color: #65708a;
+  font-size: 0.94rem;
+}
+
+.register-footer a {
+  color: #3f4ca2;
+}
+
+@media (max-width: 960px) {
+  body.register-page {
+    padding: 18px;
+  }
+
+  .register-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .register-story {
+    min-height: auto;
+    padding: 28px;
+  }
+
+  .register-card {
+    padding: 28px 22px 24px;
+  }
+}
+
+@media (max-width: 640px) {
+  body.register-page {
+    padding: 12px;
+  }
+
+  .register-story {
+    padding: 24px 20px;
+    border-radius: 24px;
+  }
+
+  .register-card__header h2 {
+    font-size: 1.75rem;
+  }
+
+  .input-row {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  body.register-page .input-field input {
+    height: 54px;
+    border-radius: 16px;
+  }
+
+  body.register-page .btn {
+    height: 54px;
+    border-radius: 16px;
+  }
+
+  .register-footer {
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
   }
 }

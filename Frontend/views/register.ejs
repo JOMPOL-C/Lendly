@@ -1,89 +1,117 @@
 <head>
     <link rel="stylesheet" href="/styles/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&family=Noto+Serif+Thai:wght@500;600;700&display=swap" rel="stylesheet">
     <link href='https://cdn.boxicons.com/fonts/basic/boxicons.min.css' rel='stylesheet'>
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
 
 </head>
 
-<body>
-    <div class="wrapper">
-        <form id="RegisForm" method="POST" action="/api/register">
-            <h1>สมัครบัญชี Lendly</h1>
+<body class="register-page">
+    <main class="register-shell">
+        <section class="register-story">
+            <img class="register-story__logo" src="/imag/LogoLenedly-removebg-preview.png" alt="Lendly Logo">
+            <div class="register-story__badge">Costume Rental Platform</div>
+            <h1 class="register-story__title">เริ่มต้นบัญชีใหม่ เพื่อจองชุดที่ใช่ในจังหวะที่พอดี</h1>
+            <p class="register-story__text">
+                สมัครครั้งเดียว แล้วจัดการการเช่า ชำระเงิน ติดตามพัสดุ และรีวิวหลังใช้งานได้ในที่เดียว
+            </p>
 
-            <div class="input-box">
-
-                <!-- name -->
-                <div class="input-field">
-                    <input type="text" placeholder="ชื่อ" name="name" id="name">
+            <div class="register-story__highlights">
+                <div class="story-chip">
+                    <i class='bx bx-check-circle'></i>
+                    <span>จองง่ายผ่านระบบออนไลน์</span>
                 </div>
-
-                <!-- last name -->
-                <div class="input-field">
-                    <input type="text" placeholder="นามสกุล" name="last_name" id="last_name">
+                <div class="story-chip">
+                    <i class='bx bx-shield-quarter'></i>
+                    <span>ติดตามสถานะคำสั่งเช่าได้ชัดเจน</span>
                 </div>
-
-                <!-- username -->
-                <div class="input-field">
-                    <input type="text" placeholder="ชื่อผู้ใช้" name="username" id="username">
-                    <small id="username-error" class="error-text"></small>
-                    <i class='bxr  bx-user'></i>
-                </div>
-
-                <!-- phone Number -->
-                <div class="input-field">
-                    <input type="number" placeholder="เบอร์โทรศัพท์" name="customer_phone" id="phone">
-                    <small id="phone-error" class="error-text"></small>
-                    <i class='bxr  bx-phone'></i>
-                </div>
-
-                <!-- email -->
-                <div class="input-field">
-                    <input type="email" placeholder="อีเมล" name="customer_email" id="email">
-                    <small id="email-error" class="error-text"></small>
-                    <i class='bxr  bx-envelope'></i>
-                </div>
-
-                <!-- password -->
-                <div class="input-field">
-                    <input type="password" placeholder="รหัสผ่าน" name="password" id="password">
-                    <small id="password-error" class="error-text"></small>
-                    <i class='bx bx-show toggle-icon' id="togglePassword"></i>
-                    <i class='bxr  bx-lock'></i>
-                </div>
-
-                <!-- confirm password -->
-                <div class="input-field">
-                    <input type="password" placeholder="ยืนยันรหัสผ่าน" name="confirm_password" id="confirm_password">
-                    <small id="confirm_password-error" class="error-text"></small>
-                    <i class='bx bx-show toggle-icon' id="toggleConfirmPassword"></i>
-                    <i class='bxr  bx-lock'></i>
-                </div>
-
-                <!-- birthday -->
-                <div class="input-field">
-                    <input type="date" name="birthday" id="birthday" required>
-                    <small id="birthday-error" class="error-text"></small>
-                    <i class='bx bx-calendar'></i>
+                <div class="story-chip">
+                    <i class='bx bx-package'></i>
+                    <span>รองรับการส่งและคืนสินค้า</span>
                 </div>
             </div>
+        </section>
 
-            <!-- terms and condition -->
-            <div style="margin-top: 10px;">
-                <label for="termsCheck" class="form-check-label">
-                    <input type="checkbox" name="confirm" id="confirm"> ยอมรับ
-                    <a href="#">ข้อตกลง และเงื่อนไข</a>
+        <section class="wrapper register-card">
+            <form id="RegisForm" method="POST" action="/api/register">
+                <div class="register-card__header">
+                    <span class="register-card__eyebrow">Create Account</span>
+                    <h2>สมัครบัญชี Lendly</h2>
+                    <p>กรอกข้อมูลพื้นฐานให้ครบ แล้วเริ่มใช้งานได้ทันที</p>
+                </div>
+
+                <div class="input-box register-grid">
+                    <div class="input-row">
+                        <div class="input-field">
+                            <input type="text" placeholder="ชื่อ" name="name" id="name">
+                        </div>
+
+                        <div class="input-field">
+                            <input type="text" placeholder="นามสกุล" name="last_name" id="last_name">
+                        </div>
+                    </div>
+
+                    <div class="input-field">
+                        <input type="text" placeholder="ชื่อผู้ใช้" name="username" id="username">
+                        <small id="username-error" class="error-text"></small>
+                        <i class='bxr bx-user field-icon'></i>
+                    </div>
+
+                    <div class="input-field">
+                        <input type="number" placeholder="เบอร์โทรศัพท์" name="customer_phone" id="phone">
+                        <small id="phone-error" class="error-text"></small>
+                        <i class='bxr bx-phone field-icon'></i>
+                    </div>
+
+                    <div class="input-field">
+                        <input type="email" placeholder="อีเมล" name="customer_email" id="email">
+                        <small id="email-error" class="error-text"></small>
+                        <i class='bxr bx-envelope field-icon'></i>
+                    </div>
+
+                    <div class="input-field">
+                        <input type="password" placeholder="รหัสผ่าน" name="password" id="password">
+                        <small id="password-error" class="error-text"></small>
+                        <i class='bx bx-show toggle-icon' id="togglePassword"></i>
+                        <i class='bxr bx-lock field-icon'></i>
+                    </div>
+
+                    <div class="input-field">
+                        <input type="password" placeholder="ยืนยันรหัสผ่าน" name="confirm_password" id="confirm_password">
+                        <small id="confirm_password-error" class="error-text"></small>
+                        <i class='bx bx-show toggle-icon' id="toggleConfirmPassword"></i>
+                        <i class='bxr bx-lock field-icon'></i>
+                    </div>
+
+                    <div class="input-field">
+                        <input type="date" name="birthday" id="birthday" required>
+                        <small id="birthday-error" class="error-text"></small>
+                        <i class='bx bx-calendar field-icon'></i>
+                    </div>
+                </div>
+
+                <label for="confirm" class="terms-check">
+                    <input type="checkbox" name="confirm" id="confirm">
+                    <span>ยอมรับ <a href="#">ข้อตกลง และเงื่อนไข</a></span>
                 </label>
-            </div>
 
-            <!-- submit button -->
-            <div class="input-box">
-                <div class="input-field">
-                    <button id="submitBtn" type="submit" class="btn">สมัครบัญชี</button>
+                <div class="input-box">
+                    <div class="input-field">
+                        <button id="submitBtn" type="submit" class="btn">สมัครบัญชี</button>
+                    </div>
                 </div>
-            </div>
-            <p id="form-error" style="color: red; margin-top: 10px;"></p>
-        </form>
-    </div>
+
+                <p id="form-error" class="form-error"></p>
+
+                <div class="register-footer">
+                    <span>มีบัญชีอยู่แล้ว?</span>
+                    <a href="/login">เข้าสู่ระบบ</a>
+                </div>
+            </form>
+        </section>
+    </main>
 
     <!-- script ส่วนเพิ่ม -->
     <script src="/js/register.js"></script>
