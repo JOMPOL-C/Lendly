@@ -13,7 +13,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
 
 // ===============================
-// 🔥 Firebase Config
+// Firebase Config
 // ===============================
 const firebaseConfig = {
   apiKey: "AIzaSyAeBRXnxHUKXUKcm2r_DSfzvBHXuOuWhaQ",
@@ -29,7 +29,7 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 // ===============================
-// 👤 กำหนดรหัสลูกค้า
+// กำหนดรหัสลูกค้า
 // ===============================
 const customerId =
   localStorage.getItem("customer_id") || "guest_" + Date.now();
@@ -37,7 +37,7 @@ const customerName =
   localStorage.getItem("customer_name") || "ผู้ใช้ใหม่";
 
 // ===============================
-// 🏠 สร้างห้องแชท (ถ้ายังไม่มี)
+// สร้างห้องแชท (ถ้ายังไม่มี)
 // ===============================
 async function ensureChatRoom() {
   const chatRef = doc(db, "chats", customerId);
@@ -50,13 +50,13 @@ async function ensureChatRoom() {
       lastMessage: "",
       updatedAt: new Date(),
     });
-    console.log("✅ สร้างห้องแชทใหม่ให้ลูกค้า:", customerId);
+    console.log("สร้างห้องแชทใหม่ให้ลูกค้า:", customerId);
   }
 }
 ensureChatRoom();
 
 // ===============================
-// 🎨 DOM Elements
+// DOM Elements
 // ===============================
 const chatToggle = document.getElementById("chat-toggle");
 const chatBox = document.getElementById("chat-box");
@@ -66,7 +66,7 @@ const form = document.getElementById("chat-form");
 const input = document.getElementById("chat-input");
 
 // ===============================
-// 🔴 จุดแดงแจ้งเตือน
+// จุดแจ้งเตือน
 // ===============================
 const notifDot = document.createElement("span");
 Object.assign(notifDot.style, {
@@ -84,12 +84,12 @@ Object.assign(notifDot.style, {
 chatToggle.style.position = "relative";
 chatToggle.appendChild(notifDot);
 
-// 🔔 เสียงแจ้งเตือน
+// เสียงแจ้งเตือน
 const notifSound = new Audio("/sounds/notification.mp3");
 notifSound.volume = 0.4;
 
 // ===============================
-// 📦 เปิด/ปิดกล่องแชท
+// เปิด/ปิดกล่องแชท
 // ===============================
 chatToggle.onclick = () => {
   const isActive = chatBox.classList.toggle("active");
@@ -110,7 +110,7 @@ closeBtn.onclick = () => {
 };
 
 // ===============================
-// 💬 ฟังข้อความแบบเรียลไทม์
+// ฟังข้อความแบบเรียลไทม์
 // ===============================
 const q = query(
   collection(db, `chats/${customerId}/messages`),
@@ -154,7 +154,7 @@ onSnapshot(q, (snapshot) => {
 });
 
 // ===============================
-// ✉️ ส่งข้อความ
+// ส่งข้อความ
 // ===============================
 form.addEventListener("submit", async (e) => {
   e.preventDefault();

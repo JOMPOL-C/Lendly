@@ -1,5 +1,5 @@
 body {
-    font-family: "Prompt", sans-serif;
+    font-family: var(--font-body);
     background:
         radial-gradient(circle at top left, rgba(184, 140, 255, 0.16), transparent 28%),
         radial-gradient(circle at top right, rgba(255, 196, 196, 0.2), transparent 26%),
@@ -479,6 +479,63 @@ input[type="checkbox"]:checked::after {
 
 .submit-btn:active {
     transform: translateY(0);
+}
+
+.form-popup-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(28, 16, 44, 0.48);
+    backdrop-filter: blur(6px);
+}
+
+.form-popup {
+    width: min(100%, 420px);
+    padding: 28px 24px 22px;
+    border-radius: 24px;
+    background: #fff;
+    text-align: center;
+    box-shadow: 0 26px 60px rgba(58, 31, 88, 0.28);
+}
+
+.form-popup-icon {
+    width: 56px;
+    height: 56px;
+    margin: 0 auto 14px;
+    border-radius: 18px;
+    display: grid;
+    place-items: center;
+    background: linear-gradient(135deg, #f59e0b, #ef4444);
+    color: #fff;
+    font-size: 1.7rem;
+    font-weight: 700;
+}
+
+.form-popup h3 {
+    margin: 0 0 8px;
+    color: #42245e;
+    font-size: 1.35rem;
+}
+
+.form-popup p {
+    margin: 0 0 18px;
+    color: #715d8c;
+    line-height: 1.6;
+}
+
+.form-popup button {
+    min-width: 110px;
+    padding: 11px 18px;
+    border: none;
+    border-radius: 12px;
+    background: #7d4eb1;
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
 }
 
 @media (max-width: 860px) {

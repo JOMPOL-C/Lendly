@@ -91,6 +91,20 @@ model ProductImage {
   @@index([productId], map: "ProductImage_productId_fkey")
 }
 
+model HomeBanner {
+  homeBanner_id Int      @id @default(autoincrement())
+  title         String   @db.VarChar(120)
+  subtitle      String?  @db.Text
+  image_url     String   @db.VarChar(255)
+  cloudinary_id String   @db.VarChar(255)
+  link_url      String?  @db.VarChar(255)
+  button_text   String?  @db.VarChar(45)
+  is_active     Boolean  @default(true)
+  display_order Int      @default(1)
+  createdAt     DateTime @default(now()) @db.DateTime(0)
+  updatedAt     DateTime @updatedAt
+}
+
 model Proportion_product {
   proportion_product_id Int       @id @default(autoincrement())
   chest                 Decimal?  @db.Decimal(5, 1)

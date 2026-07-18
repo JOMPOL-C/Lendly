@@ -1,6 +1,6 @@
 .dashboard-container {
     padding: 40px;
-    font-family: 'Prompt', sans-serif;
+    font-family: var(--font-body);
     background: #faf9ff;
 }
 

@@ -180,7 +180,7 @@ a {
 }
 
 body.register-page {
-  font-family: "IBM Plex Sans Thai", sans-serif;
+  font-family: var(--font-body);
   align-items: stretch;
   padding: 24px;
   background:
@@ -247,7 +247,7 @@ body.register-page {
 
 .register-story__title {
   margin: 0 0 18px;
-  font-family: "Noto Serif Thai", serif;
+  font-family: var(--font-heading);
   font-size: clamp(2.1rem, 4vw, 3.5rem);
   line-height: 1.15;
   letter-spacing: -0.03em;
@@ -310,7 +310,7 @@ body.register-page {
 
 .register-card__header h2 {
   margin: 0;
-  font-family: "Noto Serif Thai", serif;
+  font-family: var(--font-heading);
   font-size: 2.1rem;
   line-height: 1.15;
   color: #1c2340;

@@ -1,6 +1,6 @@
 body {
   margin: 0;
-  font-family: "IBM Plex Sans Thai", sans-serif;
+  font-family: var(--font-body);
   background: #fff;
 }
 
@@ -42,7 +42,7 @@ main {
 
 .login-card__header h1 {
     margin: 0;
-    font-family: "Noto Serif", serif;
+    font-family: var(--font-heading);
     font-size: 2rem;
     line-height: 1.1;
     color: #171b31;

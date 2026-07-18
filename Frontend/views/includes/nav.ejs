@@ -2,7 +2,7 @@
   <a href="/"><img src="/imag/LENDLY_logo.png" alt="" style="width: 50px;"></a>
 
   <!-- 🔍 ฟอร์มค้นหาสินค้า -->
-  <form action="/category" method="get" class="input-field">
+  <form action="/products" method="get" class="input-field">
     <i class='bx bx-search'></i>
     <input type="text" name="search" placeholder="ค้นหาสินค้า..." value="<%= typeof searchTerm !== 'undefined' ? searchTerm : '' %>">
 
@@ -11,7 +11,7 @@
   <div>
     <ul id="navbar">
       <li><a href="/">หน้าหลัก</a></li>
-      <li><a href="/category" class="active">หมวดหมู่</a></li>
+      <li><a href="/products" class="active">สินค้าทั้งหมด</a></li>
       <li><a href="/my_rentals">เช่าของฉัน</a></li>
       <li><a href="/all_review">รีวิวทั้งหมด</a></li>
       <li id="lg-fav"><a href="/favorites" class="nav-fav-link"><i class="bx bx-heart"></i></a></li>

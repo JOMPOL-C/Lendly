@@ -96,7 +96,7 @@
   max-width: 900px;
   margin: auto;
   padding: 20px;
-  font-family: sans-serif;
+  font-family: var(--font-body);
 }
 
 .timeline-horizontal {

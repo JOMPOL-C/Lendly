@@ -5,55 +5,128 @@
   <body>
     <%- include('includes/nav') %>
 
-      <main>
-        <section class="index-category">
-          <p>หมวดหมู่</p>
+      <main class="category-page">
+        <input type="checkbox" id="filterDrawerToggle" class="filter-drawer-toggle" aria-hidden="true">
+        <label for="filterDrawerToggle" class="filter-backdrop" aria-label="ปิดตัวกรอง"></label>
 
-          <% if (categories && categories.length> 0) { %>
-            <% categories.forEach(cat=> { %>
-              <a href="/category?categoryId=<%= cat.category_id %>&sizeId=<%= selectedSize %>&search=<%= searchTerm || '' %>"
-                class="index-category-box <%= selectedCategory === cat.category_id ? 'active' : '' %>">
-                <h3>
-                  <%= cat.category_name %>
-                </h3>
-              </a>
-              <% }) %>
+        <div class="category-shell">
+          <aside class="filter-sidebar" aria-label="ตัวกรองสินค้า">
+            <div class="filter-sidebar__header">
+              <div>
+                <span>Filter</span>
+                <h2>ตัวกรองสินค้า</h2>
+              </div>
+              <label for="filterDrawerToggle" class="filter-close" aria-label="ปิดตัวกรอง">
+                <i class="bx bx-x"></i>
+              </label>
+            </div>
+
+            <form action="/products" method="get" class="filter-form" data-auto-filter>
+              <input type="hidden" name="categoryId" value="<%= selectedCategory || '' %>">
+              <input type="hidden" name="sizeId" value="<%= selectedSize || '' %>">
+              <input type="hidden" name="search" value="<%= searchTerm || '' %>">
+
+              <div class="filter-section">
+                <h3>ช่วงราคา</h3>
+                <p>อิงจากราคาเทสของชุดพร้อมวิก เพื่อให้เทียบราคาได้ตรงกันทุกสินค้า</p>
+                <div class="price-filter">
+                  <label>
+                    <span>เริ่มต้น</span>
+                    <div class="price-input">
+                      <input type="number" name="minPrice" placeholder="0" value="<%= minPrice || '' %>" step="1" min="0">
+                      <span>บาท</span>
+                    </div>
+                  </label>
+                  <label>
+                    <span>ไม่เกิน</span>
+                    <div class="price-input">
+                      <input type="number" name="maxPrice" placeholder="1000" value="<%= maxPrice || '' %>" step="1" min="0">
+                      <span>บาท</span>
+                    </div>
+                  </label>
+                </div>
+              </div>
+
+              <div class="filter-section">
+                <h3>สัดส่วน</h3>
+                <p>กรอกสัดส่วนเพื่อช่วยหาชุดที่พอดีขึ้น</p>
+                <div class="size-filter">
+                  <label>
+                    <span>อก</span>
+                    <input type="number" name="chest" placeholder="cm" value="<%= chest || '' %>" step="0.1" min="0">
+                  </label>
+                  <label>
+                    <span>เอว</span>
+                    <input type="number" name="waist" placeholder="cm" value="<%= waist || '' %>" step="0.1" min="0">
+                  </label>
+                  <label>
+                    <span>สะโพก</span>
+                    <input type="number" name="hips" placeholder="cm" value="<%= hips || '' %>" step="0.1" min="0">
+                  </label>
+                </div>
+              </div>
+
+              <div class="filter-actions">
+                <p class="filter-live-note" aria-live="polite">กรองอัตโนมัติเมื่อกรอกข้อมูล</p>
+                <button type="submit">ใช้ตัวกรองทันที</button>
+                <a class="filter-reset" href="/products">ล้างทั้งหมด</a>
+              </div>
+            </form>
+          </aside>
+
+          <section id="all_product" class="section-p1 product1 category-results">
+          <div class="category-results__header">
+            <div>
+              <span class="section-label">Results</span>
+              <h2>
+                <% if (selectedCategory && categories) { %>
+                  <%= categories.find(cat => cat.category_id === selectedCategory)?.category_name || 'สินค้าทั้งหมด' %>
                 <% } else { %>
-                  <p>ยังไม่มีหมวดหมู่ในระบบ</p>
-                  <% } %>
-                    <form action="/category" method="get" class="filter-form">
-                      <div class="size-filter">
-                        <input type="number" name="chest" placeholder="อก (cm)" value="<%= chest || '' %>" step="0.1">
-                        <input type="number" name="waist" placeholder="เอว (cm)" value="<%= waist || '' %>" step="0.1">
-                        <input type="number" name="hips" placeholder="สะโพก (cm)" value="<%= hips || '' %>" step="0.1">
-                        <button type="submit">กรอง</button>
-                      </div>
-                    </form>
-        </section>
-
-
-
-        <!-- 🛍 สินค้าทั้งหมด -->
-        <section id="all_product" class="section-p1 product1">
-          <h2>ชุดทั้งหมด</h2>
-          <p>สามารถดูแต่ละหมวดหมู่ได้ที่หมวดหมู่</p>
-
-
-          <div class="pro-container">
-            <% if (products && products.length> 0) { %>
-              <% products.slice(0,4).forEach(product=> { %>
-                <%- include('includes/productCard', { product }) %>
-                  <% }) %>
-                    <% } else { %>
-                      <p>ยังไม่มีสินค้าในระบบ</p>
-                      <% } %>
+                  สินค้าทั้งหมด
+                <% } %>
+              </h2>
+              <p data-results-summary>
+                พบ <%= products ? products.length : 0 %> รายการ
+                <% if (minPrice || maxPrice || chest || waist || hips) { %>
+                  ที่ตรงกับตัวกรอง
+                <% } else { %>
+                  พร้อมให้เลือกเช่าตามสไตล์ที่ต้องการ
+                <% } %>
+              </p>
+            </div>
+            <label for="filterDrawerToggle" class="filter-toggle-button">
+              <i class="bx bx-slider-alt"></i>
+              ตัวกรอง
+            </label>
           </div>
-        </section>
+
+          <div class="category-chip-list" aria-label="หมวดหมู่สินค้า">
+            <a href="/products?categoryId=&sizeId=<%= selectedSize || '' %>&search=<%= searchTerm || '' %>&chest=<%= chest || '' %>&waist=<%= waist || '' %>&hips=<%= hips || '' %>&minPrice=<%= minPrice || '' %>&maxPrice=<%= maxPrice || '' %>"
+              class="category-chip <%= !selectedCategory ? 'active' : '' %>">ทั้งหมด</a>
+
+            <% if (categories && categories.length> 0) { %>
+              <% categories.forEach(cat=> { %>
+                <a href="/products?categoryId=<%= cat.category_id %>&sizeId=<%= selectedSize || '' %>&search=<%= searchTerm || '' %>&chest=<%= chest || '' %>&waist=<%= waist || '' %>&hips=<%= hips || '' %>&minPrice=<%= minPrice || '' %>&maxPrice=<%= maxPrice || '' %>"
+                  class="category-chip <%= selectedCategory === cat.category_id ? 'active' : '' %>">
+                  <%= cat.category_name %>
+                </a>
+              <% }) %>
+            <% } else { %>
+              <span class="category-empty-note">ยังไม่มีหมวดหมู่ในระบบ</span>
+            <% } %>
+          </div>
+
+          <div class="pro-container" data-products-results aria-live="polite">
+            <%- include('includes/categoryProductResults', { products, likedIds }) %>
+          </div>
+          </section>
+        </div>
       </main>
 
       <%- include('includes/footer') %>
         <%- include('includes/chatWidget') %>
           <script src="/js/script.js"></script>
+          <script src="/js/category-filter.js"></script>
           <script src="/js/heart-toggle.js"></script>
   </body>
 

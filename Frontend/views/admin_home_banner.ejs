@@ -1,0 +1,246 @@
+<%- include('includes/head') %>
+<style>
+  .admin-banner-gallery {
+    display: flex;
+    align-items: stretch;
+    gap: 10px;
+    width: min(100%, 900px);
+    height: clamp(260px, 34vw, 340px);
+    overflow: hidden;
+    margin: 0 auto;
+  }
+
+  .admin-banner-panel {
+    position: relative;
+    flex: 1 1 58px;
+    min-width: 0;
+    overflow: hidden;
+    border-radius: 22px;
+    background: #f3edff;
+    box-shadow: 0 16px 38px rgba(37, 45, 76, 0.12);
+    cursor: grab;
+    transition: flex-basis 0.45s ease, flex-grow 0.45s ease, opacity 0.2s ease, transform 0.2s ease;
+  }
+
+  .admin-banner-panel.is-expanded,
+  .admin-banner-panel:hover,
+  .admin-banner-panel:focus-within {
+    flex: 4.6 1 360px;
+  }
+
+  .admin-banner-gallery:hover .admin-banner-panel.is-expanded:not(:hover) {
+    flex: 1 1 58px;
+  }
+
+  .admin-banner-panel.is-dragging {
+    opacity: 0.45;
+    cursor: grabbing;
+    transform: scale(0.98);
+  }
+
+  .admin-banner-panel img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  .admin-banner-position,
+  .admin-banner-delete {
+    position: absolute;
+    opacity: 0;
+    transition: opacity 0.18s ease, transform 0.18s ease;
+  }
+
+  .admin-banner-position {
+    left: 14px;
+    top: 14px;
+    display: grid;
+    width: 34px;
+    height: 34px;
+    place-items: center;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.9);
+    color: #4f46e5;
+    font-weight: 800;
+    transform: translateY(-4px);
+  }
+
+  .admin-banner-delete {
+    right: 14px;
+    top: 14px;
+    transform: translateY(-4px);
+  }
+
+  .admin-banner-delete button {
+    display: grid;
+    width: 38px;
+    height: 38px;
+    place-items: center;
+    border: 0;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.92);
+    color: #dc2626;
+    cursor: pointer;
+    font-size: 1.2rem;
+  }
+
+  .admin-banner-panel:hover .admin-banner-position,
+  .admin-banner-panel:hover .admin-banner-delete,
+  .admin-banner-panel:focus-within .admin-banner-position,
+  .admin-banner-panel:focus-within .admin-banner-delete {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  @media (max-width: 799px) {
+    .admin-banner-gallery {
+      height: 300px;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 6px;
+    }
+
+    .admin-banner-panel {
+      flex: 0 0 46px;
+      border-radius: 18px;
+    }
+
+    .admin-banner-panel.is-expanded,
+    .admin-banner-panel:hover,
+    .admin-banner-panel:focus-within {
+      flex-basis: 220px;
+    }
+  }
+</style>
+</head>
+
+<body class="bg-zinc-50">
+  <%- include('includes/navAdmin') %>
+
+  <main class="max-w-6xl mx-auto py-10 px-5">
+    <div class="mb-8">
+      <p class="text-sm font-bold text-indigo-600 uppercase tracking-wide">Home Banner</p>
+      <h1 class="text-3xl font-bold text-slate-900 mt-1">จัดการแบนเนอร์หน้าหลัก</h1>
+      <p class="text-slate-600 mt-2">อัปโหลดรูป lookbook แล้วลากเรียงลำดับให้ตรงกับหน้าแรก</p>
+    </div>
+
+    <section class="bg-white rounded-2xl shadow-sm border border-violet-100 p-6 mb-8">
+      <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-5 mb-6">
+        <div>
+          <h2 class="text-xl font-bold text-slate-900">เพิ่มรูปเข้าแบนเนอร์</h2>
+          <p class="text-slate-500 mt-1">เลือกได้สูงสุด 6 รูปต่อครั้ง รูปที่เพิ่มจะไปอยู่ในชุด expand cards ทันที</p>
+        </div>
+      </div>
+
+      <% const activeBanners = banners || []; %>
+      <% const remainingSlots = Math.max(0, 6 - activeBanners.length); %>
+
+      <form action="/admin/home-banner" method="POST" enctype="multipart/form-data" class="grid gap-5" id="homeBannerForm">
+        <div class="grid md:grid-cols-2 gap-5">
+          <label class="grid gap-2">
+            <span class="font-semibold text-slate-700">หัวข้อ</span>
+            <input type="text" name="title" required maxlength="120"
+              value="เช่าชุดให้พร้อมก่อนวันจริง"
+              class="border border-violet-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-4 focus:ring-violet-100">
+            <span class="text-sm text-slate-500">ใช้เป็นข้อความหลักของรูปชุดนี้</span>
+          </label>
+
+          <label class="grid gap-2">
+            <span class="font-semibold text-slate-700">หน้าที่ปุ่มจะพาไป</span>
+            <select name="link_url"
+              class="border border-violet-200 rounded-xl px-4 py-3 bg-white focus:outline-none focus:ring-4 focus:ring-violet-100">
+              <option value="/products">สินค้าทั้งหมด</option>
+              <option value="#new_product">ชุดแนะนำในหน้าแรก</option>
+              <option value="/favorites">ชุดที่ถูกใจ</option>
+              <option value="/my_rentals">เช่าของฉัน</option>
+              <option value="/all_review">รีวิวทั้งหมด</option>
+            </select>
+            <span class="text-sm text-slate-500">ลิงก์เมื่อคลิกชุดรูปบนหน้าแรก</span>
+          </label>
+        </div>
+
+        <input type="hidden" name="subtitle"
+          value="เลือกชุดแฟนซี คอสเพลย์ และพร็อพที่ใช่ พร้อมดูราคา ตรวจสัดส่วน และคุยกับร้านได้ในที่เดียว">
+        <input type="hidden" name="button_text" value="ดูชุดทั้งหมด">
+        <input type="hidden" name="is_active" value="on">
+
+        <div class="grid gap-2">
+          <span class="font-semibold text-slate-700">รูปแบนเนอร์</span>
+          <label for="bannerImageInput"
+            class="group cursor-pointer rounded-2xl border-2 border-dashed border-violet-200 bg-violet-50/60 p-5 transition hover:border-violet-400 hover:bg-violet-50">
+            <input id="bannerImageInput" type="file" name="banner_images" accept="image/*" multiple required data-preview-image-input data-max-files="<%= remainingSlots %>"
+              <%= remainingSlots === 0 ? 'disabled' : '' %>
+              class="sr-only">
+            <div class="flex flex-col md:flex-row md:items-center gap-4">
+              <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-white text-2xl text-violet-600 shadow-sm">
+                <i class="bx bx-image-add"></i>
+              </div>
+              <div class="min-w-0">
+                <p class="font-bold text-slate-900"><%= remainingSlots === 0 ? 'รูปแบนเนอร์ครบ 6 รูปแล้ว' : 'คลิกเพื่อเลือกรูป หรือวางรูปที่นี่' %></p>
+                <p class="text-sm text-slate-500 mt-1">
+                  รองรับ JPG, PNG, WEBP · เพิ่มได้อีก <%= remainingSlots %> รูป
+                </p>
+              </div>
+            </div>
+          </label>
+        </div>
+
+        <button type="submit"
+          <%= remainingSlots === 0 ? 'disabled' : '' %>
+          class="w-fit bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-bold px-6 py-3 rounded-xl transition">
+          อัปโหลดรูป
+        </button>
+      </form>
+    </section>
+
+    <section class="bg-white rounded-2xl shadow-sm border border-violet-100 p-6">
+      <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
+        <div>
+          <p class="text-sm font-bold text-indigo-600 uppercase tracking-wide">Expand Cards</p>
+          <h2 class="text-2xl font-bold text-slate-900 mt-1">รูปที่แสดงบนหน้าหลัก</h2>
+          <p class="text-slate-500 mt-1">ลากรูปเพื่อจัดลำดับ รูปแรกจะเป็นรูปใหญ่บนหน้าแรก</p>
+        </div>
+
+        <button type="button" data-save-banner-order
+          class="hidden bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-5 py-3 rounded-xl transition">
+          บันทึกลำดับ
+        </button>
+      </div>
+
+      <% if (activeBanners.length > 0) { %>
+        <div class="admin-banner-gallery" data-banner-manager>
+          <% activeBanners.forEach((banner, index) => { %>
+            <div class="admin-banner-panel <%= index === 0 ? 'is-expanded' : '' %>"
+              draggable="true"
+              data-banner-id="<%= banner.homeBanner_id %>"
+              aria-label="<%= banner.title %>">
+              <img src="<%= banner.image_url %>" alt="<%= banner.title %>">
+
+              <span class="admin-banner-position"><%= index + 1 %></span>
+
+              <form action="/admin/home-banner/<%= banner.homeBanner_id %>/delete" method="POST"
+                class="admin-banner-delete"
+                onsubmit="return confirm('ลบรูปนี้ออกจากแบนเนอร์หน้าหลักใช่ไหม?')">
+                <button type="submit" aria-label="ลบรูปนี้">
+                  <i class="bx bx-trash"></i>
+                </button>
+              </form>
+            </div>
+          <% }) %>
+        </div>
+      <% } else { %>
+        <div class="text-center py-16 border border-dashed border-violet-200 rounded-2xl bg-violet-50/40">
+          <i class="bx bx-image-add text-5xl text-violet-400"></i>
+          <h3 class="text-lg font-bold text-slate-900 mt-3">ยังไม่มีรูปแบนเนอร์</h3>
+          <p class="text-slate-600 mt-2">อัปโหลดรูปคนใส่ชุดจริงเพื่อให้หน้าแรกดูเป็นร้านเช่าชุดมากขึ้น</p>
+        </div>
+      <% } %>
+    </section>
+  </main>
+  <script src="/js/admin-home-banner.js"></script>
+</body>
+</html>

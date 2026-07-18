@@ -3,6 +3,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&family=Noto+Serif+Thai:wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/styles/typography.css">
     <link href='https://cdn.boxicons.com/fonts/basic/boxicons.min.css' rel='stylesheet'>
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
 
@@ -89,6 +90,38 @@
                         <input type="date" name="birthday" id="birthday" required>
                         <small id="birthday-error" class="error-text"></small>
                         <i class='bx bx-calendar field-icon'></i>
+                    </div>
+
+                    <div class="input-field">
+                        <select name="province" id="province" required>
+                            <option value="">เลือกจังหวัด</option>
+                        </select>
+                        <small id="province-error" class="error-text"></small>
+                    </div>
+
+                    <div class="input-field">
+                        <select name="district" id="district" required>
+                            <option value="">เลือกอำเภอ</option>
+                        </select>
+                        <small id="district-error" class="error-text"></small>
+                    </div>
+
+                    <div class="input-field">
+                        <select name="sub_district" id="sub_district" required>
+                            <option value="">เลือกตำบล</option>
+                        </select>
+                        <small id="sub_district-error" class="error-text"></small>
+                    </div>
+
+                    <div class="input-field">
+                        <input type="text" placeholder="รหัสไปรษณีย์" name="postal_code" id="postal_code" readonly>
+                        <small id="postal_code-error" class="error-text"></small>
+                        <i class='bxr bx-map-pin field-icon'></i>
+                    </div>
+
+                    <div class="input-field">
+                        <textarea placeholder="บ้านเลขที่ / ถนน / ซอย" name="address" id="address" rows="3"></textarea>
+                        <small id="address-error" class="error-text"></small>
                     </div>
                 </div>
 

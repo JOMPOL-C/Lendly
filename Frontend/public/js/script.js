@@ -23,7 +23,7 @@ const links = document.querySelectorAll("#navbar li a");
 links.forEach(link => {
   const href = link.getAttribute("href");
 
-  // เช็คเฉพาะ path ที่ตรงกันเป๊ะ หรือกรณี /home /category แบบตรงเท่านั้น
+  // เช็คเฉพาะ path ที่ตรงกันเป๊ะ หรือกรณี path ย่อยแบบตรงเท่านั้น
   if (currentPath === href || (href !== "/" && currentPath.startsWith(href + "/"))) {
     link.classList.add("active");
   } else {
@@ -46,6 +46,22 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!dropdown.contains(e.target)) dropdown.classList.remove('active');
   });
 });
+
+// Move the hero's soft light toward the pointer without changing the text color itself.
+const heroTitle = document.querySelector('.hero-title-glow');
+
+if (heroTitle && window.matchMedia('(hover: hover)').matches) {
+  heroTitle.addEventListener('pointermove', (event) => {
+    const bounds = heroTitle.getBoundingClientRect();
+    heroTitle.style.setProperty('--glow-x', `${event.clientX - bounds.left}px`);
+    heroTitle.style.setProperty('--glow-y', `${event.clientY - bounds.top}px`);
+  });
+
+  heroTitle.addEventListener('pointerleave', () => {
+    heroTitle.style.setProperty('--glow-x', '50%');
+    heroTitle.style.setProperty('--glow-y', '50%');
+  });
+}
 
   function showTooltip(message, type = "info") {
   const colors = {

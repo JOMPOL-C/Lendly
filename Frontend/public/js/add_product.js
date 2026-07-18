@@ -10,6 +10,49 @@ function toggleField(checkboxId, fieldId) {
   });
 }
 
+function ensurePopupElements() {
+  let overlay = document.getElementById("formPopupOverlay");
+  if (overlay) return overlay;
+
+  overlay = document.createElement("div");
+  overlay.id = "formPopupOverlay";
+  overlay.className = "form-popup-overlay hidden";
+  overlay.innerHTML = `
+    <div class="form-popup" role="alertdialog" aria-modal="true" aria-labelledby="formPopupTitle">
+      <div class="form-popup-icon">!</div>
+      <h3 id="formPopupTitle">เกิดข้อผิดพลาด</h3>
+      <p id="formPopupMessage"></p>
+      <button type="button" id="formPopupClose">ปิด</button>
+    </div>
+  `;
+
+  document.body.appendChild(overlay);
+
+  const closeButton = document.getElementById("formPopupClose");
+  closeButton?.addEventListener("click", () => {
+    overlay.classList.add("hidden");
+  });
+
+  overlay.addEventListener("click", (event) => {
+    if (event.target === overlay) {
+      overlay.classList.add("hidden");
+    }
+  });
+
+  return overlay;
+}
+
+function showFormPopup(message, title = "เกิดข้อผิดพลาด") {
+  const overlay = ensurePopupElements();
+  const titleElement = document.getElementById("formPopupTitle");
+  const messageElement = document.getElementById("formPopupMessage");
+
+  if (titleElement) titleElement.textContent = title;
+  if (messageElement) messageElement.textContent = message;
+
+  overlay.classList.remove("hidden");
+}
+
 // mapping ของให้เช่า
 toggleField("rentCostume", "priceCostume");
 toggleField("rentWig", "priceWig");
@@ -335,6 +378,47 @@ if (newCategoryInput) {
     if (event.key === "Enter") {
       event.preventDefault();
       createCategoryFromInput();
+    }
+  });
+}
+
+const productForm = document.querySelector(".product-form");
+const productFormSubmitButton = productForm?.querySelector(".submit-btn");
+
+if (productForm) {
+  productForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    const originalButtonText = productFormSubmitButton?.textContent;
+    if (productFormSubmitButton) {
+      productFormSubmitButton.disabled = true;
+      productFormSubmitButton.textContent = "กำลังบันทึก...";
+    }
+
+    try {
+      const response = await fetch(productForm.action, {
+        method: productForm.method || "POST",
+        body: new FormData(productForm),
+        credentials: "same-origin",
+      });
+
+      if (!response.ok) {
+        const errorText = (await response.text()).trim();
+        throw new Error(errorText || "ไม่สามารถบันทึกข้อมูลได้");
+      }
+
+      if (response.redirected && response.url) {
+        window.location.href = response.url;
+        return;
+      }
+
+      window.location.reload();
+    } catch (error) {
+      showFormPopup(error.message || "เกิดข้อผิดพลาดในการบันทึกข้อมูล");
+      if (productFormSubmitButton) {
+        productFormSubmitButton.disabled = false;
+        productFormSubmitButton.textContent = originalButtonText || "บันทึก";
+      }
     }
   });
 }

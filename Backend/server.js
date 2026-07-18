@@ -31,6 +31,7 @@ const reviewController = require("./src/Controllers/reviewController");
 const adminController = require("./src/Controllers/adminController");
 const shippingController = require("./src/Controllers/shippingController");
 const delayController = require("./src/Controllers/delayController");
+const homeBannerController = require("./src/Controllers/homeBannerController");
 
 const { autoCancelExpiredPayments } = require("./src/Controllers/rentalsController");
 
@@ -165,6 +166,11 @@ app.get("/admin/chat", PageRender.renderAdmin_chat);
 app.get("/admin/dashboard", adminController.renderAdminDashboard);
 app.get("/admin/customers", adminController.getAllCustomers);
 app.get("/admin/delay_setting", delayController.renderDelaySetting);
+app.get("/admin/home-banner", homeBannerController.renderAdminHomeBanner);
+app.post("/admin/home-banner", homeBannerController.upload, homeBannerController.createHomeBanner);
+app.post("/admin/home-banner/reorder", homeBannerController.reorderHomeBanners);
+app.post("/admin/home-banner/:id/toggle", homeBannerController.updateHomeBannerStatus);
+app.post("/admin/home-banner/:id/delete", homeBannerController.deleteHomeBanner);
  
 
 // ============================
@@ -172,9 +178,16 @@ app.get("/admin/delay_setting", delayController.renderDelaySetting);
 // ============================
 app.get("/", productControllerPage.getProducts);
 app.get("/all_review", reviewController.getAllReviews);
-app.get("/category", (req, res) =>
+app.get("/products/partial", (req, res) =>
+  productControllerPage.renderCategoryProductsPartial(req, res)
+);
+app.get("/products", (req, res) =>
   productControllerPage.renderProductsPage(req, res, "category")
 );
+app.get("/category", (req, res) => {
+  const queryString = new URLSearchParams(req.query).toString();
+  res.redirect(301, queryString ? `/products?${queryString}` : "/products");
+});
 app.get("/my_rentals", rentalsController.renderMy_rentals);
 app.get("/Detail_Pro", PageRender.renderDetail_Pro);
 app.get("/detail_product", PageRender.renderDetail_product);

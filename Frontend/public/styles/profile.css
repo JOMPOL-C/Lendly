@@ -2,7 +2,7 @@
    🌸 LENDLY PROFILE STYLE (Pastel Theme)
    ============================= */
 body {
-  font-family: "Prompt", "Spartan", sans-serif;
+  font-family: var(--font-body);
   margin: 0;
   background: linear-gradient(180deg, #f8f4ff 0%, #fdfbff 100%);
   color: #333;
@@ -291,7 +291,7 @@ h1 {
   padding: 12px 20px;
   border-radius: 8px;
   box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-  font-family: "Prompt", sans-serif;
+  font-family: var(--font-body);
   font-weight: 500;
   opacity: 0;
   transform: translateY(-10px);

@@ -1,6 +1,16 @@
 document.addEventListener("DOMContentLoaded", () => {
     const form = document.getElementById("RegisForm");
     if (!form) return console.error("❌ ไม่พบฟอร์ม RegisForm");
+
+    const provinceSelect = document.getElementById("province");
+    const districtSelect = document.getElementById("district");
+    const subDistrictSelect = document.getElementById("sub_district");
+    const postalCodeInput = document.getElementById("postal_code");
+
+    initAddressDropdowns().catch((error) => {
+      console.error("❌ โหลดข้อมูลจังหวัดไม่สำเร็จ:", error);
+      document.getElementById("form-error").textContent = "ไม่สามารถโหลดข้อมูลจังหวัดได้";
+    });
   
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
@@ -15,9 +25,14 @@ document.addEventListener("DOMContentLoaded", () => {
       const confirmPassword = document.getElementById("confirm_password")?.value;
       const birthday = document.getElementById("birthday")?.value.trim();
       const id_card_number = document.getElementById("id_card_number")?.value.trim();
+      const province = provinceSelect?.value.trim();
+      const district = districtSelect?.value.trim();
+      const sub_district = subDistrictSelect?.value.trim();
+      const postal_code = postalCodeInput?.value.trim();
+      const address = document.getElementById("address")?.value.trim();
   
       // ✅ ตรวจสอบว่ากรอกครบทุกฟิลด์
-      if (!name || !last_name || !phone || !email || !username || !password || !confirmPassword) {
+      if (!name || !last_name || !phone || !email || !username || !password || !confirmPassword || !birthday || !province || !district || !sub_district || !postal_code || !address) {
         document.getElementById("form-error").textContent = "กรุณากรอกข้อมูลให้ครบทุกช่อง";
         return;
       }
@@ -64,6 +79,31 @@ document.addEventListener("DOMContentLoaded", () => {
         showFieldError("birthday", "อายุต้องไม่น้อยกว่า 16 ปี");
         return;
       }
+
+      if (!province) {
+        showFieldError("province", "กรุณาเลือกจังหวัด");
+        return;
+      }
+
+      if (!district) {
+        showFieldError("district", "กรุณาเลือกอำเภอ");
+        return;
+      }
+
+      if (!sub_district) {
+        showFieldError("sub_district", "กรุณาเลือกตำบล");
+        return;
+      }
+
+      if (!postal_code) {
+        showFieldError("postal_code", "กรุณาเลือกรหัสไปรษณีย์");
+        return;
+      }
+
+      if (!address) {
+        showFieldError("address", "กรุณากรอกที่อยู่");
+        return;
+      }
   
       // ✅ ส่งข้อมูลไป backend
       const formData = {
@@ -76,6 +116,11 @@ document.addEventListener("DOMContentLoaded", () => {
         confirm_password: confirmPassword,
         id_card_number,
         birthday,
+        province,
+        district,
+        sub_district,
+        postal_code,
+        address,
       };
   
       try {
@@ -158,6 +203,61 @@ document.addEventListener("DOMContentLoaded", () => {
         confirmPasswordInput.type = type;
         toggleConfirmPassword.classList.toggle("bx-show");
         toggleConfirmPassword.classList.toggle("bx-hide");
+      });
+    }
+
+    async function initAddressDropdowns() {
+      if (!provinceSelect || !districtSelect || !subDistrictSelect || !postalCodeInput) return;
+
+      const provinces = await fetch("/api/provinces").then((res) => res.json());
+      provinceSelect.innerHTML = '<option value="">เลือกจังหวัด</option>';
+
+      provinces.forEach((province) => {
+        const option = document.createElement("option");
+        option.value = province.name_th;
+        option.textContent = province.name_th;
+        option.dataset.id = province.id;
+        provinceSelect.appendChild(option);
+      });
+
+      provinceSelect.addEventListener("change", async () => {
+        const provinceId = provinceSelect.options[provinceSelect.selectedIndex]?.dataset.id;
+        districtSelect.innerHTML = '<option value="">เลือกอำเภอ</option>';
+        subDistrictSelect.innerHTML = '<option value="">เลือกตำบล</option>';
+        postalCodeInput.value = "";
+
+        if (!provinceId) return;
+
+        const districts = await fetch(`/api/districts/${provinceId}`).then((res) => res.json());
+        districts.forEach((district) => {
+          const option = document.createElement("option");
+          option.value = district.name_th;
+          option.textContent = district.name_th;
+          option.dataset.id = district.id;
+          districtSelect.appendChild(option);
+        });
+      });
+
+      districtSelect.addEventListener("change", async () => {
+        const districtId = districtSelect.options[districtSelect.selectedIndex]?.dataset.id;
+        subDistrictSelect.innerHTML = '<option value="">เลือกตำบล</option>';
+        postalCodeInput.value = "";
+
+        if (!districtId) return;
+
+        const subDistricts = await fetch(`/api/subdistricts/${districtId}`).then((res) => res.json());
+        subDistricts.forEach((subDistrict) => {
+          const option = document.createElement("option");
+          option.value = subDistrict.name_th;
+          option.textContent = subDistrict.name_th;
+          option.dataset.zip = subDistrict.zip_code;
+          subDistrictSelect.appendChild(option);
+        });
+      });
+
+      subDistrictSelect.addEventListener("change", () => {
+        const selected = subDistrictSelect.options[subDistrictSelect.selectedIndex];
+        postalCodeInput.value = selected?.dataset.zip || "";
       });
     }
   });

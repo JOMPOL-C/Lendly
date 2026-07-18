@@ -1,7 +1,7 @@
 /* 🎀 โทนหลัก Lendly: ม่วงพาสเทล + ขาวสะอาด */
 body {
     background: #faf8ff;
-    font-family: 'Prompt', sans-serif;
+    font-family: var(--font-body);
     color: #3b0764;
   }
   

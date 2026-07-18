@@ -1,254 +1,279 @@
 #chat-widget {
-    position: fixed;
-    bottom: 20px;
-    left: 20px;
-    z-index: 999;
-    font-family: 'Prompt', sans-serif;
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 999;
+  font-family: var(--font-body);
 }
 
 #chat-toggle {
-    background: #6d28d9;
-    color: #fff;
-    border: none;
-    padding: 12px 18px;
-    border-radius: 50px;
-    cursor: pointer;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 52px;
+  padding: 0 20px;
+  border: 1px solid rgba(125, 77, 255, 0.22);
+  border-radius: 999px;
+  background: linear-gradient(135deg, #4f57b8 0%, #7d4dff 100%);
+  color: #fff;
+  font-size: 0.98rem;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 18px 34px rgba(79, 87, 184, 0.28);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
 }
 
-#chat-box {
-    width: 320px;
-    height: 420px;
-    background: #fff;
-    border-radius: 16px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-    flex-direction: column;
-    overflow: hidden;
-    position: absolute;
-    bottom: 60px;
-    left: 0;
-
-    /* 🎬 เริ่มซ่อนพร้อม transition */
-    display: none;
-    opacity: 0;
-    transform: translateY(20px);
-    transition: all 0.25s ease;
+#chat-toggle i {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.18);
+  font-size: 1.15rem;
 }
 
-/* ✅ แสดงพร้อมเอฟเฟกต์นุ่ม ๆ */
-#chat-box.active {
-    display: flex;
-    opacity: 1;
-    transform: translateY(0);
-}
-
-#chat-box:not(.hidden) {
-    display: flex;
-    /* ✅ เปิดเมื่อไม่มี hidden */
-}
-
-.hidden {
-    display: none;
-}
-
-#chat-messages {
-    flex: 1;
-    padding: 10px;
-    overflow-y: auto;
-    background: #f9fafb;
-}
-
-/* ===== 🎨 Bubble แชท แยกฝั่ง ===== */
-.msg {
-    display: flex;
-    flex-direction: column;
-    margin: 8px 0;
-    max-width: 75%;
-    padding: 10px 14px;
-    border-radius: 16px;
-    line-height: 1.4;
-    word-wrap: break-word;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-}
-
-/* 🟣 แอดมิน (ชิดขวา) */
-.msg.me {
-    align-self: flex-end;
-    background: #8b5cf6;
-    color: #fff;
-    border-top-right-radius: 0;
-}
-
-/* ⚪ ลูกค้า (ชิดซ้าย) */
-.msg.user {
-    align-self: flex-start;
-    background: #f3f4f6;
-    color: #111827;
-    border-top-left-radius: 0;
-}
-
-/* 🕒 เวลาในแต่ละข้อความ */
-.msg small {
-    margin-top: 4px;
-    font-size: 11px;
-    color: #d1d5db;
-    text-align: right;
-}
-
-/* 🏷️ ชื่อผู้ส่ง */
-.sender-name {
-    font-weight: 600;
-    font-size: 13px;
-    margin-bottom: 4px;
-}
-
-
-#chat-form {
-    display: flex;
-    border-top: 1px solid #ddd;
-}
-
-#chat-input {
-    flex: 1;
-    padding: 10px;
-    border: none;
-    outline: none;
-}
-
-#chat-form button {
-    background: #6d28d9;
-    color: white;
-    border: none;
-    padding: 10px 16px;
-    cursor: pointer;
-}
-
-#chat-toggle {
-    position: relative;
-    background: #6d28d9;
-    color: #fff;
-    border: none;
-    padding: 12px 18px;
-    border-radius: 50px;
-    cursor: pointer;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-}
-
-.sender-name {
-    font-size: 13px;
-    font-weight: 600;
-    margin-bottom: 4px;
-    display: block;
-}
-
-/* 🪩 แอนิเมชันเด้งของปุ่ม 💬 */
-@keyframes bounceButton {
-    0% {
-        transform: scale(1);
-    }
-
-    25% {
-        transform: scale(1.1);
-    }
-
-    50% {
-        transform: scale(0.95);
-    }
-
-    75% {
-        transform: scale(1.05);
-    }
-
-    100% {
-        transform: scale(1);
-    }
+#chat-toggle:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 22px 40px rgba(79, 87, 184, 0.34);
 }
 
 #chat-toggle.bounce {
-    animation: bounceButton 0.6s ease;
+  animation: chatPulse 0.6s ease;
 }
 
-/* ===== 🌈 กล่องข้อความแชท ===== */
-.msg {
-    max-width: 70%;
-    margin: 8px 0;
-    padding: 10px 14px;
-    border-radius: 14px;
-    line-height: 1.4;
-    word-wrap: break-word;
-    display: inline-block;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+@keyframes chatPulse {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
 }
 
-/* ฝั่งลูกค้า */
-.msg.user {
-    background: #f3f4f6;
-    /* เทาอ่อน */
-    color: #111827;
-    align-self: flex-start;
-    border-top-left-radius: 0;
+#chat-box {
+  position: absolute;
+  right: 0;
+  bottom: 68px;
+  display: none;
+  flex-direction: column;
+  width: min(360px, calc(100vw - 32px));
+  height: min(520px, calc(100vh - 130px));
+  overflow: hidden;
+  border: 1px solid rgba(125, 77, 255, 0.12);
+  border-radius: 24px;
+  background: #fff;
+  box-shadow: 0 28px 70px rgba(37, 45, 76, 0.22);
+  opacity: 0;
+  transform: translateY(14px) scale(0.98);
+  transform-origin: bottom right;
+  transition: opacity 0.22s ease, transform 0.22s ease;
 }
 
-/* ฝั่งแอดมิน */
-.msg.me {
-    background: #8b5cf6;
-    /* ม่วงเข้ม */
-    color: #fff;
-    align-self: flex-end;
-    border-top-right-radius: 0;
+#chat-box.active,
+#chat-box:not(.hidden) {
+  display: flex;
 }
 
-/* เวลา */
-.msg small {
-    display: block;
-    font-size: 11px;
-    color: #d1d5db;
-    margin-top: 4px;
-    text-align: right;
+#chat-box.active {
+  opacity: 1;
+  transform: translateY(0) scale(1);
 }
 
-/* ===== 🧍 รายชื่อผู้ใช้ในแถบด้านซ้าย ===== */
-.chat-item {
-    transition: background 0.2s ease, transform 0.1s ease;
+.hidden {
+  display: none;
 }
 
-.chat-item:hover {
-    background: #ede9fe;
-    transform: scale(1.02);
-}
-
-/* ===== 🧭 ส่วนหัวแชท ===== */
 #chat-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background: #e1d0fd;
-    color: white;
-    padding: 12px 16px;
-    font-weight: 500;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 16px 18px;
+  background: linear-gradient(135deg, #f3e8ff 0%, #ede3f3 100%);
+  color: #1d2433;
+  border-bottom: 1px solid rgba(125, 77, 255, 0.10);
 }
 
-/* ===== ✏️ กล่องพิมพ์ข้อความ ===== */
+#chat-header span {
+  display: block;
+  margin-bottom: 3px;
+  color: #7d4dff;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+#chat-header p {
+  margin: 0;
+  color: #1d2433;
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+#chat-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid rgba(125, 77, 255, 0.14);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.72);
+  color: #5235a3;
+  cursor: pointer;
+  transition: transform 0.18s ease, background-color 0.18s ease;
+}
+
+#chat-close:hover {
+  transform: rotate(6deg);
+  background: #fff;
+}
+
+#chat-messages {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px;
+  overflow-y: auto;
+  background:
+    radial-gradient(circle at top left, rgba(125, 77, 255, 0.06), transparent 18rem),
+    #fbf8ff;
+}
+
+.msg {
+  max-width: 78%;
+  padding: 10px 13px;
+  border-radius: 16px;
+  line-height: 1.5;
+  word-wrap: break-word;
+  box-shadow: 0 8px 18px rgba(37, 45, 76, 0.08);
+}
+
+.msg.me {
+  align-self: flex-end;
+  border-bottom-right-radius: 6px;
+  background: #4f57b8;
+  color: #fff;
+}
+
+.msg.user,
+.msg.admin {
+  align-self: flex-start;
+  border-bottom-left-radius: 6px;
+  background: #fff;
+  color: #1d2433;
+}
+
+.msg small {
+  display: block;
+  margin-top: 5px;
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 0.68rem;
+  text-align: right;
+}
+
+.msg.user small,
+.msg.admin small {
+  color: #8b7da3;
+}
+
+.sender-name {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+#chat-form {
+  display: flex;
+  gap: 10px;
+  padding: 12px;
+  border-top: 1px solid rgba(125, 77, 255, 0.10);
+  background: #fff;
+}
+
 #chat-input {
-    flex: 1;
-    padding: 10px 12px;
-    border: none;
-    outline: none;
-    font-size: 15px;
-    border-top: 1px solid #ddd;
+  flex: 1;
+  min-width: 0;
+  height: 42px;
+  padding: 0 14px;
+  border: 1px solid rgba(125, 77, 255, 0.16);
+  border-radius: 14px;
+  background: #fbf8ff;
+  color: #1d2433;
+  font-size: 0.94rem;
+  outline: none;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+#chat-input:focus {
+  border-color: #7d4dff;
+  box-shadow: 0 0 0 4px rgba(125, 77, 255, 0.12);
 }
 
 #chat-form button {
-    background: #6d28d9;
-    border: none;
-    color: #fff;
-    padding: 10px 20px;
-    cursor: pointer;
-    font-weight: 500;
-    transition: background 0.2s ease;
+  height: 42px;
+  padding: 0 16px;
+  border: none;
+  border-radius: 14px;
+  background: #4f57b8;
+  color: #fff;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 0.18s ease, background-color 0.18s ease;
 }
 
 #chat-form button:hover {
-    background: #7c3aed;
+  transform: translateY(-1px);
+  background: #3b467d;
+}
+
+.chat-item {
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.chat-item:hover {
+  background: #ede9fe;
+  transform: scale(1.02);
+}
+
+@media (max-width: 640px) {
+  #chat-widget {
+    right: 14px;
+    bottom: 14px;
+  }
+
+  #chat-toggle {
+    min-height: 48px;
+    padding: 0 16px;
+  }
+
+  #chat-box {
+    bottom: 62px;
+    width: calc(100vw - 28px);
+    height: min(500px, calc(100vh - 110px));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #chat-toggle,
+  #chat-box,
+  #chat-close,
+  #chat-input,
+  #chat-form button,
+  .chat-item {
+    transition: none;
+  }
+
+  #chat-toggle.bounce {
+    animation: none;
+  }
+
+  #chat-toggle:hover,
+  #chat-close:hover,
+  #chat-form button:hover,
+  .chat-item:hover {
+    transform: none;
+  }
 }
