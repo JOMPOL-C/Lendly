@@ -6,27 +6,35 @@
   <%- include('includes/nav') %>
   <main>
     <section id="banner" class="home-hero section-p1">
+      <%
+        const defaultVerboseHeroSubtitle = 'เลือกชุดแฟนซี คอสเพลย์ และพร็อพที่ใช่ พร้อมดูราคา ตรวจสัดส่วน และคุยกับร้านได้ในที่เดียว';
+        const heroTitle = homeBanner?.title || 'เช่าชุดให้พร้อมก่อนวันจริง';
+        const rawHeroSubtitle = homeBanner?.subtitle?.trim();
+        const heroSubtitle = rawHeroSubtitle && rawHeroSubtitle !== defaultVerboseHeroSubtitle
+          ? rawHeroSubtitle
+          : 'เลือกชุดที่ใช่ ดูราคา และคุยกับร้านได้ในที่เดียว';
+        const heroLink = homeBanner?.link_url || '/products';
+        const heroButtonText = homeBanner?.button_text || 'ดูชุดทั้งหมด';
+      %>
       <video autoplay muted loop playsinline id="banner-video">
         <source src="/videos/banner-bg.mp4" type="video/mp4">
       </video>
       <div class="hero-inner">
         <div class="hero-content">
-          <span class="hero-kicker">เช่าชุดง่าย ครบ จบในที่เดียว</span>
-          <h1 class="hero-title-glow"><span><%= homeBanner?.title || 'เช่าชุดให้พร้อมก่อนวันจริง' %></span></h1>
-          <p><%= homeBanner?.subtitle || 'เลือกชุดแฟนซี คอสเพลย์ และพร็อพที่ใช่ พร้อมดูราคา ตรวจสัดส่วน และคุยกับร้านได้ในที่เดียว' %></p>
+          <span class="hero-kicker">เช่าชุดง่ายในที่เดียว</span>
+          <h1 class="hero-title-glow"><span><%= heroTitle %></span></h1>
+          <p><%= heroSubtitle %></p>
           <div class="hero-actions">
-            <a href="<%= homeBanner?.link_url || '/products' %>" class="hero-btn hero-btn-primary"><%= homeBanner?.button_text || 'ดูชุดทั้งหมด' %></a>
-            <a href="#new_product" class="hero-btn hero-btn-secondary">ดูชุดแนะนำ</a>
+            <a href="<%= heroLink %>" class="hero-btn hero-btn-primary"><%= heroButtonText %></a>
           </div>
           <div class="hero-trust">
-            <span><i class="bx bx-calendar-check"></i> ตรวจวันว่างได้</span>
-            <span><i class="bx bx-message-rounded-dots"></i> มีแชทกับร้าน</span>
-            <span><i class="bx bx-package"></i> ติดตามการเช่า</span>
+            <span><i class="bx bx-calendar-check"></i> ดูวันว่างได้</span>
+            <span><i class="bx bx-message-rounded-dots"></i> คุยกับร้านได้</span>
           </div>
         </div>
 
         <% if (homeBanners && homeBanners.length > 0) { %>
-          <a href="<%= homeBanner.link_url || '/products' %>" class="hero-featured-product hero-featured-gallery" aria-label="<%= homeBanner.title %>">
+          <a href="<%= heroLink %>" class="hero-featured-product hero-featured-gallery" aria-label="<%= heroTitle %>">
             <div class="hero-featured-media hero-featured-stack" aria-label="รูปตัวอย่างแบนเนอร์หน้าหลัก">
               <% homeBanners.slice(0, 6).forEach((banner, index) => { %>
                 <div class="hero-stack-panel <%= index === 0 ? 'is-expanded' : '' %>">

@@ -10,10 +10,10 @@
 
   <div>
     <ul id="navbar">
-      <li><a href="/">หน้าหลัก</a></li>
-      <li><a href="/products" class="active">สินค้าทั้งหมด</a></li>
-      <li><a href="/my_rentals">เช่าของฉัน</a></li>
-      <li><a href="/all_review">รีวิวทั้งหมด</a></li>
+      <li><a href="/" class="<%= typeof currentPath !== 'undefined' && currentPath === '/' ? 'active' : '' %>" <%- typeof currentPath !== 'undefined' && currentPath === '/' ? 'aria-current="page"' : '' %>>หน้าหลัก</a></li>
+      <li><a href="/products" class="<%= typeof currentPath !== 'undefined' && currentPath === '/products' ? 'active' : '' %>" <%- typeof currentPath !== 'undefined' && currentPath === '/products' ? 'aria-current="page"' : '' %>>สินค้าทั้งหมด</a></li>
+      <li><a href="/my_rentals" class="<%= typeof currentPath !== 'undefined' && currentPath === '/my_rentals' ? 'active' : '' %>" <%- typeof currentPath !== 'undefined' && currentPath === '/my_rentals' ? 'aria-current="page"' : '' %>>เช่าของฉัน</a></li>
+      <li><a href="/all_review" class="<%= typeof currentPath !== 'undefined' && currentPath === '/all_review' ? 'active' : '' %>" <%- typeof currentPath !== 'undefined' && currentPath === '/all_review' ? 'aria-current="page"' : '' %>>รีวิวทั้งหมด</a></li>
       <li id="lg-fav"><a href="/favorites" class="nav-fav-link"><i class="bx bx-heart"></i></a></li>
       <li id="lg-bag"><a href="/cart"><i class='bx bx-cart'></i></a></li>
 
