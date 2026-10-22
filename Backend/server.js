@@ -11,6 +11,8 @@ const cors = require("cors");
 const morgan = require("morgan");
 const cookieParser = require("cookie-parser");
 const cloudinary = require("cloudinary").v2;
+const isDev = process.env.NODE_ENV !== "production";
+const liveReloadBootId = Date.now().toString();
 
 // ============================
 // 📦 CONTROLLERS & MIDDLEWARES
@@ -29,6 +31,7 @@ const reviewController = require("./src/Controllers/reviewController");
 const adminController = require("./src/Controllers/adminController");
 const shippingController = require("./src/Controllers/shippingController");
 const delayController = require("./src/Controllers/delayController");
+const homeBannerController = require("./src/Controllers/homeBannerController");
 
 const { autoCancelExpiredPayments } = require("./src/Controllers/rentalsController");
 
@@ -47,9 +50,70 @@ cloudinary.config({
 // ============================
 app.use(cookieParser());
 app.use(cors());
-app.get('/healthz', (req, res) => res.status(200).json({ status: 'ok' }));
-app.use(morgan("dev"));
+app.get("/healthz", (req, res) => res.status(200).json({ status: "ok" }));
+app.use(
+  morgan("dev", {
+    skip: (req) => isDev && req.path === "/__live_reload",
+  })
+);
 app.use(express.static(path.join(__dirname, "../Frontend/public")));
+
+if (isDev) {
+  app.get("/__live_reload", (req, res) => {
+    res.set("Cache-Control", "no-store");
+    res.json({ bootId: liveReloadBootId });
+  });
+
+  app.use((req, res, next) => {
+    const originalRender = res.render.bind(res);
+
+    res.render = (view, locals, callback) => {
+      let renderLocals = locals;
+      let renderCallback = callback;
+
+      if (typeof renderLocals === "function") {
+        renderCallback = renderLocals;
+        renderLocals = undefined;
+      }
+
+      const liveReloadScript = `
+<script>
+(() => {
+  const currentBootId = "${liveReloadBootId}";
+  const checkForChanges = async () => {
+    try {
+      const response = await fetch("/__live_reload", { cache: "no-store" });
+      const payload = await response.json();
+      if (payload.bootId && payload.bootId !== currentBootId) {
+        window.location.reload();
+      }
+    } catch (error) {
+      // Ignore transient restart errors while the dev server is booting again.
+    }
+  };
+
+  window.setInterval(checkForChanges, 1000);
+})();
+</script>`;
+
+      return originalRender(view, renderLocals, (err, html) => {
+        if (err) {
+          if (renderCallback) return renderCallback(err);
+          return next(err);
+        }
+
+        const injectedHtml = html.includes("</body>")
+          ? html.replace("</body>", `${liveReloadScript}</body>`)
+          : `${html}${liveReloadScript}`;
+
+        if (renderCallback) return renderCallback(null, injectedHtml);
+        return res.send(injectedHtml);
+      });
+    };
+
+    next();
+  });
+}
 
 // ✅ โหลด upload-slip router ก่อน parse body ใด ๆ
 const uploadSlipRouter = require("./src/routers/uploadSlipRouter");
@@ -103,6 +167,11 @@ app.get("/admin/chat", PageRender.renderAdmin_chat);
 app.get("/admin/dashboard", adminController.renderAdminDashboard);
 app.get("/admin/customers", adminController.getAllCustomers);
 app.get("/admin/delay_setting", delayController.renderDelaySetting);
+app.get("/admin/home-banner", homeBannerController.renderAdminHomeBanner);
+app.post("/admin/home-banner", homeBannerController.upload, homeBannerController.createHomeBanner);
+app.post("/admin/home-banner/reorder", homeBannerController.reorderHomeBanners);
+app.post("/admin/home-banner/:id/toggle", homeBannerController.updateHomeBannerStatus);
+app.post("/admin/home-banner/:id/delete", homeBannerController.deleteHomeBanner);
  
 
 // ============================
@@ -110,9 +179,16 @@ app.get("/admin/delay_setting", delayController.renderDelaySetting);
 // ============================
 app.get("/", productControllerPage.getProducts);
 app.get("/all_review", reviewController.getAllReviews);
-app.get("/category", (req, res) =>
+app.get("/products/partial", (req, res) =>
+  productControllerPage.renderCategoryProductsPartial(req, res)
+);
+app.get("/products", (req, res) =>
   productControllerPage.renderProductsPage(req, res, "category")
 );
+app.get("/category", (req, res) => {
+  const queryString = new URLSearchParams(req.query).toString();
+  res.redirect(301, queryString ? `/products?${queryString}` : "/products");
+});
 app.get("/my_rentals", rentalsController.renderMy_rentals);
 app.get("/Detail_Pro", PageRender.renderDetail_Pro);
 app.get("/detail_product", PageRender.renderDetail_product);
@@ -202,6 +278,6 @@ cloudinary.api
 // 🧠 SERVER LISTEN
 // ============================
 const port = process.env.PORT || 8000;
-app.listen(port, '0.0.0.0', () => {
+app.listen(port, "0.0.0.0", () => {
   console.log(`🚀 Server is listening on port ${port}`);
 });

@@ -420,6 +420,8 @@ exports.renderMy_rentals = async (req, res) => {
 
     // ✅ ส่งข้อมูลไป render
     res.render("my_rentals", {
+      pageTitle: "รายการเช่าของฉัน - Lendly",
+      currentPath: "/my_rentals",
       waiting_payment,
       waiting_confirm,
       waiting_deliver,

@@ -1,0 +1,11 @@
+{
+  "files": [
+    "Frontend/views/**/*.ejs"
+  ],
+  "exclude": [
+    "Frontend/views/includes/*.ejs"
+  ],
+  "insertBefore": "</body>",
+  "commentSyntax": "html",
+  "cspChecked": true
+}

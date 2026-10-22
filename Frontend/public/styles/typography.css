@@ -1,0 +1,28 @@
+:root {
+  --font-body: "IBM Plex Sans Thai", system-ui, sans-serif;
+  --font-heading: "Noto Serif Thai", Georgia, serif;
+}
+
+html,
+body {
+  font-family: var(--font-body);
+  font-kerning: normal;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-heading);
+  text-wrap: balance;
+}
+

@@ -1,180 +1,347 @@
-/* 🎀 cart.css – Lendly Pastel Theme */
-
-body {
-  background: #f9f8ff;
-  font-family: 'Prompt', sans-serif;
-  color: #333;
+.cart-page {
+  text-align: left;
 }
 
-/* 🧺 กล่องสินค้าแต่ละชิ้น */
-.rental-card {
-  background: #fff;
-  border: 1px solid #e5d4ff;
-  border-radius: 16px;
-  padding: 20px;
-  margin-bottom: 20px;
+.cart-heading {
+  width: min(1120px, calc(100% - 48px));
+  margin: 0 auto 40px;
+}
+
+.cart-heading h2 {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  margin: 0;
+  color: #1d2433;
+  font-size: clamp(1.65rem, 3vw, 2.15rem);
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  line-height: 1.1;
+  text-transform: uppercase;
+}
+
+.cart-heading h2 span {
+  color: #1d2433;
+  font-size: clamp(1rem, 1.6vw, 1.25rem);
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  text-transform: none;
+}
+
+.cart-shell {
+  width: min(1120px, calc(100% - 48px));
+  margin: 0 auto 96px;
+}
+
+.cart-form {
+  display: grid;
+  gap: 20px;
+}
+
+.cart-toolbar {
   display: flex;
   align-items: center;
-  gap: 20px;
-  box-shadow: 0 4px 12px rgba(109, 40, 217, 0.08);
-  transition: transform 0.2s ease, box-shadow 0.3s ease;
+  justify-content: space-between;
+  gap: 16px 24px;
+  padding: 18px 22px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 10px 24px rgba(37, 45, 76, 0.08);
 }
 
-.rental-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 6px 16px rgba(109, 40, 217, 0.15);
-}
-
-.rental-card img {
-  width: 160px;
-  height: 160px;
-  object-fit: cover;
-  border-radius: 12px;
-  border: 3px solid #f3e8ff;
-}
-
-/* 📦 รายละเอียดสินค้า */
-.rental-info {
-  flex: 1;
-}
-
-.rental-info h3 {
-  margin: 0 0 8px 0;
-  font-size: 22px;
-}
-
-.rental-info p {
-  margin: 4px 0;
-  font-size: 16px;
-  color: #555;
-}
-
-.rental-info a {
-  text-decoration: none;
-  color: #6d28d9;
-  font-size: 20px;
-  font-weight: 600;
-  transition: color 0.2s ease;
-}
-
-.rental-info a:hover {
-  color: #a855f7;
-}
-
-/* 🗑️ ปุ่มลบ */
-.remove-btn {
-  background: none;
-  border: none;
+.cart-select-all {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  color: #1d2433;
+  font-size: 0.98rem;
+  font-weight: 700;
   cursor: pointer;
-  font-size: 22px;
-  color: #a78bfa;
-  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.cart-toolbar p {
+  margin: 0;
+  color: #53607d;
+  font-size: 0.98rem;
+  line-height: 1.6;
+}
+
+.cart-list {
+  display: grid;
+  gap: 18px;
+}
+
+.cart-card {
+  display: grid;
+  grid-template-columns: auto 150px minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 18px;
+  padding: 20px 22px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 12px 28px rgba(37, 45, 76, 0.08);
+}
+
+.cart-check {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: 8px;
+}
+
+.cart-check input,
+.cart-select-all input {
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  accent-color: #4f57b8;
+  cursor: pointer;
+}
+
+.cart-media {
+  display: block;
+  overflow: hidden;
+  border-radius: 14px;
+  background: linear-gradient(135deg, rgba(243, 232, 255, 0.72), rgba(248, 249, 253, 0.95));
+  aspect-ratio: 1 / 1;
+}
+
+.cart-media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+.cart-card:hover .cart-media img {
+  transform: scale(1.025);
+  filter: saturate(1.03);
+}
+
+.cart-copy {
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+  padding-top: 6px;
+}
+
+.cart-copy-top {
+  display: grid;
+  gap: 8px;
+}
+
+.cart-product-link {
+  color: #1d2433;
+  font-size: 1.15rem;
+  font-weight: 700;
+  line-height: 1.4;
+  text-decoration: none;
+}
+
+.cart-product-link:hover {
+  color: #4f57b8;
+}
+
+.cart-price {
+  margin: 0;
+  color: #53607d;
+  font-size: 0.98rem;
+  line-height: 1.6;
+}
+
+.cart-price strong {
+  color: #4f57b8;
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.cart-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.cart-meta div {
+  min-width: 132px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: #f8f4ff;
+}
+
+.cart-meta span {
+  display: block;
+  margin-bottom: 4px;
+  color: #6f647e;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.cart-meta strong {
+  color: #1d2433;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.cart-item-actions {
+  display: grid;
+  justify-items: end;
+  align-content: space-between;
+  gap: 18px;
+  padding-top: 4px;
+}
+
+.cart-mode-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 34px;
+  padding: 0 14px;
+  border-radius: 999px;
+  background: #f3e8ff;
+  color: #5235a3;
+  font-size: 0.84rem;
+  font-weight: 800;
+}
+
+.remove-btn {
+  width: 40px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 999px;
+  background: #f8f4ff;
+  color: #7a52ae;
+  cursor: pointer;
+  transition: transform 0.18s ease, background-color 0.18s ease, color 0.18s ease;
 }
 
 .remove-btn:hover {
-  transform: scale(1.15);
-  color: #7c3aed;
+  transform: translateY(-1px);
+  background: #ede3f3;
+  color: #4f57b8;
 }
 
-/* ✅ ปุ่มเช่าสินค้าที่เลือก */
+.remove-btn i {
+  font-size: 1.1rem;
+}
+
 .cart-actions {
-  text-align: right;
-  margin-top: 25px;
+  display: flex;
+  justify-content: flex-end;
 }
 
 .btn-rent {
-  background-color: #8b5cf6;
-  color: #fff;
-  padding: 12px 25px;
-  border: none;
+  min-height: 48px;
+  padding: 0 22px;
+  border: 0;
   border-radius: 12px;
-  cursor: pointer;
+  background: #4f57b8;
+  color: #ffffff;
   font-size: 1rem;
-  font-weight: 600;
-  transition: background-color 0.25s ease, transform 0.15s ease, box-shadow 0.25s ease;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 0.18s ease, background-color 0.18s ease;
 }
 
 .btn-rent:hover {
-  background-color: #6d28d9;
-  transform: scale(1.05);
-  box-shadow: 0 6px 15px rgba(109, 40, 217, 0.3);
+  transform: translateY(-2px);
+  background: #3b467d;
 }
 
-/* 🔘 Checkbox */
-#selectAll {
-  transform: scale(1.3);
-  accent-color: #8b5cf6;
+.cart-empty {
+  padding-bottom: 96px;
 }
 
-input[type='checkbox'] {
-  accent-color: #8b5cf6;
-}
-
-/* 📱 Responsive */
-@media (max-width: 477px) {
-  .rental-card {
-    flex-direction: column;
-    align-items: flex-start;
-    padding: 15px;
+@media (max-width: 880px) {
+  .cart-toolbar,
+  .cart-card {
+    grid-template-columns: 1fr;
   }
 
-  .rental-card img {
+  .cart-toolbar {
+    justify-items: start;
+  }
+
+  .cart-card {
+    gap: 16px;
+  }
+
+  .cart-check {
+    justify-content: flex-start;
+    padding-top: 0;
+  }
+
+  .cart-media {
+    max-width: 220px;
+  }
+
+  .cart-item-actions {
+    grid-auto-flow: column;
+    justify-content: space-between;
+    align-items: center;
+    justify-items: start;
+    padding-top: 0;
+  }
+}
+
+@media (max-width: 640px) {
+  .cart-heading,
+  .cart-shell,
+  .cart-page .pro-container {
+    width: calc(100% - 28px);
+  }
+
+  .cart-heading {
+    margin-bottom: 36px;
+  }
+
+  .cart-heading h2 {
+    flex-wrap: wrap;
+    gap: 8px;
+    letter-spacing: 0.08em;
+  }
+
+  .cart-toolbar,
+  .cart-card {
+    padding: 18px;
+  }
+
+  .cart-media {
+    max-width: none;
     width: 100%;
-    height: auto;
   }
 
-  .rental-info a {
-    font-size: 18px;
+  .cart-meta {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .cart-actions {
+    justify-content: stretch;
+  }
+
+  .btn-rent {
+    width: 100%;
+  }
+
+  .cart-empty {
+    padding-bottom: 64px;
   }
 }
-/* ✅ Checkbox ตรงกลางสมบูรณ์แบบ */
-input[type='checkbox'] {
-  appearance: none;
-  -webkit-appearance: none;
-  width: 24px;
-  height: 24px;
-  border: 2px solid #c4b5fd;
-  border-radius: 8px;
-  background: #fff;
-  cursor: pointer;
-  position: relative;
-  transition: all 0.25s ease;
-  display: inline-block;
-  vertical-align: middle;
-}
 
-input[type='checkbox']:hover {
-  box-shadow: 0 0 0 4px rgba(167, 139, 250, 0.15);
-}
+@media (prefers-reduced-motion: reduce) {
+  .cart-media img,
+  .remove-btn,
+  .btn-rent {
+    transition: none;
+  }
 
-input[type='checkbox']:checked {
-  background-color: #8b5cf6;
-  border-color: #8b5cf6;
-  box-shadow: 0 0 6px rgba(139, 92, 246, 0.3);
-  animation: pop 0.25s ease-out;
-}
-
-/* 🎯 เครื่องหมายถูกตรงกลางเป๊ะ */
-input[type='checkbox']::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 7px;
-  height: 12px;
-  border-right: 3px solid #fff;
-  border-bottom: 3px solid #fff;
-  transform: translate(-50%, -50%) scale(0) rotate(45deg);
-  transform-origin: center;
-  transition: transform 0.25s ease-out;
-}
-
-input[type='checkbox']:checked::after {
-  transform: translate(-50%, -50%) scale(1) rotate(45deg);
-}
-
-@keyframes pop {
-  0% { transform: scale(0.9); }
-  50% { transform: scale(1.15); }
-  100% { transform: scale(1); }
+  .cart-card:hover .cart-media img,
+  .remove-btn:hover,
+  .btn-rent:hover {
+    transform: none;
+  }
 }

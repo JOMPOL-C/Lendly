@@ -11,10 +11,19 @@ exports.register = async (req, res) => {
       username,
       password,
       confirm_password,
-      birthday
+      birthday,
+      province,
+      district,
+      sub_district,
+      postal_code,
+      address
     } = req.body;
 
-    if (!name || !last_name || !customer_email || !customer_phone || !username || !password || !confirm_password || !birthday) {
+    if (
+      !name || !last_name || !customer_email || !customer_phone || !username ||
+      !password || !confirm_password || !birthday || !province || !district ||
+      !sub_district || !postal_code || !address
+    ) {
       return res.status(400).json({ error: "กรุณากรอกข้อมูลให้ครบทุกช่อง" });
     }
 
@@ -36,15 +45,19 @@ exports.register = async (req, res) => {
 
     const user = await prisma.Customer.create({
       data: {
-        name,
-        last_name,
-        customer_email,
-        customer_phone,
-        username,
+        name: name.trim(),
+        last_name: last_name.trim(),
+        customer_email: customer_email.trim(),
+        customer_phone: customer_phone.trim(),
+        username: username.trim(),
         password: hashedPassword,
         birthday: new Date(birthday),
         age,
-        address: "",
+        province: province.trim(),
+        district: district.trim(),
+        sub_district: sub_district.trim(),
+        postal_code: postal_code.trim(),
+        address: address.trim(),
         id_card_number: null,
         role: "USER"
       }

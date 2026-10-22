@@ -5,405 +5,396 @@
     <body>
         <%- include('includes/nav') %>
 
-            <main>
-                <section class="index">
-                    <h2>เช่าของฉัน</h2>
+        <%
+            const statusConfig = {
+                waiting_payment: {
+                    label: 'รอชำระเงิน',
+                    tone: 'urgent',
+                    helper: 'ชำระเงินภายในเวลาที่กำหนดเพื่อยืนยันรายการ',
+                    steps: ['ชำระเงิน', 'ร้านยืนยัน', 'จัดเตรียม'],
+                    currentStep: 0,
+                    actionLabel: 'ชำระเงินตอนนี้',
+                },
+                waiting_confirm: {
+                    label: 'ร้านกำลังตรวจสอบ',
+                    tone: 'info',
+                    helper: 'ร้านได้รับข้อมูลแล้วและกำลังตรวจสอบรายการ',
+                    steps: ['ชำระเงิน', 'ร้านยืนยัน', 'จัดเตรียม'],
+                    currentStep: 1,
+                    actionLabel: 'ดูรายละเอียด',
+                },
+                waiting_deliver: {
+                    label: 'กำลังจัดเตรียม',
+                    tone: 'info',
+                    helper: 'ร้านยืนยันแล้วและกำลังเตรียมชุดสำหรับจัดส่ง',
+                    steps: ['ร้านยืนยัน', 'จัดเตรียม', 'จัดส่ง'],
+                    currentStep: 1,
+                    actionLabel: 'ดูรายละเอียด',
+                },
+                waiting_receive: {
+                    label: 'กำลังจัดส่ง',
+                    tone: 'info',
+                    helper: 'ชุดอยู่ระหว่างการจัดส่ง กรุณาเตรียมรับพัสดุ',
+                    steps: ['จัดเตรียม', 'จัดส่ง', 'รับชุด'],
+                    currentStep: 1,
+                    actionLabel: 'ดูรายละเอียด',
+                },
+                renting: {
+                    label: 'กำลังเช่า',
+                    tone: 'active',
+                    helper: 'ตรวจสอบวันคืนและเตรียมส่งชุดคืนตามกำหนด',
+                    steps: ['รับชุด', 'กำลังเช่า', 'ส่งคืน'],
+                    currentStep: 1,
+                    actionLabel: 'ดูรายละเอียด',
+                },
+                returning: {
+                    label: 'กำลังส่งคืน',
+                    tone: 'active',
+                    helper: 'ร้านกำลังรอรับและตรวจสอบชุดที่ส่งคืน',
+                    steps: ['กำลังเช่า', 'ส่งคืน', 'เสร็จสิ้น'],
+                    currentStep: 1,
+                    actionLabel: 'ดูรายละเอียด',
+                },
+                returned: {
+                    label: 'คืนเรียบร้อย',
+                    tone: 'success',
+                    helper: 'ร้านได้รับชุดคืนและปิดรายการแล้ว',
+                    steps: ['รับชุด', 'ส่งคืน', 'เสร็จสิ้น'],
+                    currentStep: 2,
+                    actionLabel: 'ดูรายละเอียด',
+                },
+                cancelled: {
+                    label: 'ยกเลิกแล้ว',
+                    tone: 'problem',
+                    helper: 'เปิดรายละเอียดเพื่อตรวจสอบข้อมูลและขั้นตอนถัดไป',
+                    steps: [],
+                    currentStep: 0,
+                    actionLabel: 'ตรวจสอบรายละเอียด',
+                },
+            };
 
-                    <!-- 🔹 แท็บเมนู -->
-                    <div class="tabs">
-                        <a href="#" class="active" onclick="openTab(event, 'waiting_payment', this)">รอชำระเงิน</a>
-                        <a href="#" onclick="openTab(event, 'waiting_confirm', this)">รอยืนยัน</a>
-                        <a href="#" onclick="openTab(event, 'waiting_deliver', this)">รอจัดส่ง</a>
-                        <a href="#" onclick="openTab(event, 'waiting_receive', this)">กำลังจัดส่ง</a>
-                        <a href="#" onclick="openTab(event, 'renting', this)">กำลังเช่า</a>
-                        <a href="#" onclick="openTab(event, 'returning', this)">กำลังส่งคืน</a>
-                        <a href="#" onclick="openTab(event, 'returned', this)">คืนแล้ว</a>
-                        <a href="#" onclick="openTab(event, 'cancelled', this)">มีปัญหา / ยกเลิก</a>
+            const toEntries = (orders, statusKey) => (orders || []).map(order => ({
+                order,
+                statusKey,
+                config: statusConfig[statusKey],
+            }));
+
+            const groups = [
+                {
+                    id: 'action',
+                    label: 'ต้องดำเนินการ',
+                    icon: 'bx-bell',
+                    entries: [
+                        ...toEntries(waiting_payment, 'waiting_payment'),
+                        ...toEntries(waiting_confirm, 'waiting_confirm'),
+                    ],
+                },
+                {
+                    id: 'progress',
+                    label: 'กำลังดำเนินการ',
+                    icon: 'bx-time-five',
+                    entries: [
+                        ...toEntries(waiting_deliver, 'waiting_deliver'),
+                        ...toEntries(waiting_receive, 'waiting_receive'),
+                        ...toEntries(renting, 'renting'),
+                        ...toEntries(returning, 'returning'),
+                    ],
+                },
+                {
+                    id: 'completed',
+                    label: 'เสร็จแล้ว',
+                    icon: 'bx-check-circle',
+                    entries: toEntries(returned, 'returned'),
+                },
+                {
+                    id: 'problem',
+                    label: 'มีปัญหา',
+                    icon: 'bx-error-circle',
+                    entries: toEntries(cancelled, 'cancelled'),
+                },
+            ];
+
+            const paymentEntries = toEntries(waiting_payment, 'waiting_payment');
+            const priorityEntry = paymentEntries[0];
+            const totalEntries = groups.reduce((sum, group) => sum + group.entries.length, 0);
+            const formatDate = date => new Date(date).toLocaleDateString('th-TH', {
+                day: 'numeric',
+                month: 'short',
+                year: 'numeric',
+            });
+            const formatMoney = value => Number(value || 0).toLocaleString('th-TH', {
+                style: 'currency',
+                currency: 'THB',
+                maximumFractionDigits: 0,
+            });
+        %>
+
+        <main id="main-content" class="rentals-page">
+            <section class="rentals-shell" aria-labelledby="rentals-title">
+                <header class="rentals-heading">
+                    <div>
+                        <p class="rentals-heading__context">บัญชีของฉัน</p>
+                        <h1 id="rentals-title">รายการเช่าของฉัน</h1>
+                        <p>ติดตามสถานะและดูสิ่งที่ต้องทำต่อได้จากหน้านี้</p>
                     </div>
-                    
+                    <% if (totalEntries > 0) { %>
+                        <span class="rentals-total"><%= totalEntries %> รายการ</span>
+                    <% } %>
+                </header>
 
-                    <!-- 🔸 รอชำระเงิน -->
-                    <div id="waiting_payment" class="tab-content" style="display:block">
-                        <% const payOrders=waiting_payment || []; %>
-                            <% if (payOrders.length> 0) { %>
-                                <% payOrders.forEach(order=> { %>
-                                    <div class="order-card">
-                                        <h3>คำสั่งซื้อ: <%= order.order_code %>
-                                        </h3>
-                                        <p>สถานะ: รอชำระเงิน 💸</p>
-                                        <p>หมดเวลาภายใน:
-                                            <span class="countdown"
-                                                data-time="<%= new Date(order.created_at).getTime() %>"></span>
-                                        </p>
+                <% if (priorityEntry) { const priorityOrder = priorityEntry.order; %>
+                    <section class="priority-bar" aria-labelledby="priority-title">
+                        <div class="priority-bar__icon" aria-hidden="true">
+                            <i class="bx bx-time-five"></i>
+                        </div>
+                        <div class="priority-bar__content">
+                            <p id="priority-title" class="priority-bar__label">ต้องดำเนินการก่อนหมดเวลา</p>
+                            <p class="priority-bar__message">
+                                ชำระเงินคำสั่งซื้อ <strong><%= priorityOrder.order_code %></strong>
+                                <span class="priority-bar__deadline">
+                                    เหลือ <span class="countdown" data-time="<%= new Date(priorityOrder.created_at).getTime() %>">กำลังคำนวณ...</span>
+                                </span>
+                            </p>
+                        </div>
+                        <a href="/payment?orderId=<%= priorityOrder.order_id %>" class="rentals-btn rentals-btn--primary priority-payment-link">
+                            <span class="payment-link__label">ชำระเงินตอนนี้</span>
+                            <i class="bx bx-right-arrow-alt" aria-hidden="true"></i>
+                        </a>
+                    </section>
+                <% } else { %>
+                    <section class="priority-bar priority-bar--clear" aria-label="สถานะงานที่ต้องดำเนินการ">
+                        <div class="priority-bar__icon" aria-hidden="true">
+                            <i class="bx bx-check"></i>
+                        </div>
+                        <div class="priority-bar__content">
+                            <p class="priority-bar__label">ไม่มีรายการที่ใกล้หมดเวลา</p>
+                            <p class="priority-bar__message">ตอนนี้ไม่มีรายการชำระเงินเร่งด่วน</p>
+                        </div>
+                    </section>
+                <% } %>
 
-                                        <% order.Rentals.forEach(rental=> { %>
-                                            <div class="rental-card">
-                                                <img src="<%= rental.product?.images?.[0]?.image_url || '/images/no-image.png' %>"
-                                                    alt="">
-                                                <div class="rental-info">
-                                                    <h4>
-                                                        <%= rental.product?.product_name %>
-                                                    </h4>
-                                                    <p>วันที่เช่า: <%= new
-                                                            Date(rental.rental_date).toLocaleDateString('th-TH') %>
-                                                    </p>
-                                                    <p>วันที่คืน: <%= new
-                                                            Date(rental.rental_end_date).toLocaleDateString('th-TH') %>
-                                                    </p>
-                                                </div>
+                <div class="rentals-tabs" role="tablist" aria-label="กรองรายการเช่าตามสถานะ">
+                    <% groups.forEach((group, index) => { %>
+                        <button
+                            type="button"
+                            id="tab-<%= group.id %>"
+                            class="rentals-tab <%= index === 0 ? 'is-active' : '' %>"
+                            role="tab"
+                            aria-selected="<%= index === 0 ? 'true' : 'false' %>"
+                            aria-controls="panel-<%= group.id %>"
+                            tabindex="<%= index === 0 ? '0' : '-1' %>"
+                            data-tab="<%= group.id %>">
+                            <i class="bx <%= group.icon %>" aria-hidden="true"></i>
+                            <span><%= group.label %></span>
+                            <span class="rentals-tab__count" aria-label="<%= group.entries.length %> รายการ"><%= group.entries.length %></span>
+                        </button>
+                    <% }) %>
+                </div>
+
+                <% groups.forEach((group, groupIndex) => { %>
+                    <section
+                        id="panel-<%= group.id %>"
+                        class="rentals-panel"
+                        role="tabpanel"
+                        aria-labelledby="tab-<%= group.id %>"
+                        tabindex="0"
+                        <%= groupIndex === 0 ? '' : 'hidden' %>>
+
+                        <% if (group.entries.length > 0) { %>
+                            <div class="rentals-list">
+                                <% group.entries.forEach(entry => {
+                                    const order = entry.order;
+                                    const config = entry.config;
+                                    const detailHref = `/api/Detail_Ren?order_id=${order.order_id}`;
+                                    const totalPrice = (order.Rentals || []).reduce((sum, rental) => sum + Number(rental.total_price || 0), 0);
+                                %>
+                                    <article class="rental-order" data-status="<%= entry.statusKey %>">
+                                        <header class="rental-order__header">
+                                            <div>
+                                                <p class="rental-order__code">คำสั่งซื้อ <strong><%= order.order_code %></strong></p>
+                                                <p class="rental-order__date">สั่งเมื่อ <%= formatDate(order.created_at) %></p>
                                             </div>
+                                            <span class="rental-status rental-status--<%= config.tone %>">
+                                                <span class="rental-status__dot" aria-hidden="true"></span>
+                                                <%= config.label %>
+                                            </span>
+                                        </header>
+
+                                        <p class="rental-order__helper"><%= config.helper %></p>
+
+                                        <div class="rental-products">
+                                            <% (order.Rentals || []).forEach(rental => {
+                                                const productImage = rental.product?.images?.[0]?.image_url;
+                                            %>
+                                                <div class="rental-product">
+                                                    <% if (productImage) { %>
+                                                        <img
+                                                            src="<%= productImage %>"
+                                                            alt="<%= rental.product?.product_name ? `รูปสินค้า ${rental.product.product_name}` : 'รูปสินค้าที่เช่า' %>"
+                                                            loading="lazy">
+                                                    <% } else { %>
+                                                        <div class="rental-product__placeholder" role="img" aria-label="ยังไม่มีรูปสินค้า">
+                                                            <i class="bx bx-image" aria-hidden="true"></i>
+                                                        </div>
+                                                    <% } %>
+                                                    <div class="rental-product__content">
+                                                        <h2><%= rental.product?.product_name || 'ไม่พบชื่อสินค้า' %></h2>
+                                                        <div class="rental-product__meta">
+                                                            <span><i class="bx bx-calendar" aria-hidden="true"></i> <%= formatDate(rental.rental_date) %> – <%= formatDate(rental.rental_end_date) %></span>
+                                                            <% if (rental.total_price) { %>
+                                                                <span><i class="bx bx-wallet" aria-hidden="true"></i> <%= formatMoney(rental.total_price) %></span>
+                                                            <% } %>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             <% }) %>
+                                        </div>
 
-                                                <div class="order-footer">
-                                                    <a href="/payment?orderId=<%= order.order_id %>"
-                                                        class="btn btn-pay">แนบสลิป / ยืนยันการชำระเงิน</a>
-                                                </div>
-                                    </div>
-                                    <% }) %>
+                                        <% if (config.steps.length > 0) { %>
+                                            <ol class="rental-progress" aria-label="ความคืบหน้าของคำสั่งซื้อ">
+                                                <% config.steps.forEach((step, stepIndex) => { %>
+                                                    <li class="<%= stepIndex < config.currentStep ? 'is-complete' : stepIndex === config.currentStep ? 'is-current' : '' %>" <%= stepIndex === config.currentStep ? 'aria-current="step"' : '' %>>
+                                                        <span class="rental-progress__marker"><%= stepIndex + 1 %></span>
+                                                        <span class="rental-progress__label"><%= step %></span>
+                                                    </li>
+                                                <% }) %>
+                                            </ol>
                                         <% } else { %>
-                                            <div class="empty-state">
-                                                <p>ยังไม่มีรายการรอชำระเงิน</p>
+                                            <div class="rental-problem-note">
+                                                <i class="bx bx-info-circle" aria-hidden="true"></i>
+                                                <span>ดูรายละเอียดเพื่อทราบสาเหตุ หากยังมีข้อสงสัยสามารถติดต่อทีมงานผ่านแชตได้</span>
                                             </div>
+                                        <% } %>
+
+                                        <footer class="rental-order__footer">
+                                            <% if (totalPrice > 0) { %>
+                                                <p class="rental-order__total">ยอดรวม <strong><%= formatMoney(totalPrice) %></strong></p>
+                                            <% } else { %>
+                                                <span></span>
                                             <% } %>
-                    </div>
 
-                    <!-- 🔸 รอยืนยัน -->
-                    <div id="waiting_confirm" class="tab-content" style="display:none">
-                        <% const confirmOrders=waiting_confirm || []; %>
-                            <% if (confirmOrders.length> 0) { %>
-                                <% confirmOrders.forEach(order=> { %>
-                                    <div class="order-card">
-                                        <h3>คำสั่งซื้อ: <%= order.order_code %>
-                                        </h3>
-                                        <p>วันที่สั่ง: <%= new Date(order.created_at).toLocaleDateString("th-TH") %>
-                                        </p>
-                                        <p class="status">สถานะ: รอยืนยันจากร้าน</p>
-
-                                        <% order.Rentals.forEach(rental=> { %>
-                                            <div class="rental-card">
-                                                <img src="<%= rental.product?.images?.[0]?.image_url || '/images/no-image.png' %>"
-                                                    alt="">
-                                                <div class="rental-info">
-                                                    <h4>
-                                                        <%= rental.product?.product_name %>
-                                                    </h4>
-                                                    <p>วันที่เช่า: <%= new
-                                                            Date(rental.rental_date).toLocaleDateString("th-TH") %>
-                                                    </p>
-                                                    <p>วันที่คืน: <%= new
-                                                            Date(rental.rental_end_date).toLocaleDateString("th-TH") %>
-                                                    </p>
+                                            <% if (entry.statusKey === 'waiting_payment') { %>
+                                                <div class="rental-order__actions">
+                                                    <a href="<%= detailHref %>" class="rentals-btn rentals-btn--secondary">ดูรายละเอียด</a>
+                                                    <a href="/payment?orderId=<%= order.order_id %>" class="rentals-btn rentals-btn--primary payment-link" data-payment-link>
+                                                        <span class="countdown countdown--compact" data-time="<%= new Date(order.created_at).getTime() %>">กำลังคำนวณ...</span>
+                                                        <span class="payment-link__label">ชำระเงิน</span>
+                                                    </a>
                                                 </div>
-                                            </div>
-                                            <% }) %>
-
-                                                <div class="order-footer">
-                                                    <a href="/api/Detail_Ren?order_id=<%= order.order_id %>"
-                                                        class="btn">ดูรายละเอียด</a>
-                                                </div>
-                                    </div>
-                                    <% }) %>
-                                        <% } else { %>
-                                            <div class="empty-state">
-                                                <p>ยังไม่มีรายการรอยืนยัน</p>
-                                            </div>
+                                            <% } else { %>
+                                                <a href="<%= detailHref %>" class="rentals-btn <%= entry.statusKey === 'cancelled' ? 'rentals-btn--problem' : 'rentals-btn--secondary' %>">
+                                                    <%= config.actionLabel %>
+                                                </a>
                                             <% } %>
-                    </div>
+                                        </footer>
+                                    </article>
+                                <% }) %>
+                            </div>
+                        <% } else { %>
+                            <div class="rentals-empty">
+                                <div class="rentals-empty__icon" aria-hidden="true">
+                                    <i class="bx <%= group.id === 'completed' ? 'bx-check-circle' : group.id === 'problem' ? 'bx-shield' : 'bx-package' %>"></i>
+                                </div>
+                                <h2>
+                                    <%= group.id === 'action' ? 'ไม่มีรายการที่ต้องทำ' : group.id === 'progress' ? 'ยังไม่มีรายการที่กำลังดำเนินการ' : group.id === 'completed' ? 'ยังไม่มีประวัติการเช่าที่เสร็จแล้ว' : 'ไม่มีรายการที่มีปัญหา' %>
+                                </h2>
+                                <p>
+                                    <%= group.id === 'problem' ? 'รายการยกเลิกหรือรายการที่ต้องตรวจสอบจะแสดงที่นี่' : 'เมื่อมีความคืบหน้า รายการของคุณจะอัปเดตในหน้านี้' %>
+                                </p>
+                                <% if (group.id !== 'problem') { %>
+                                    <a href="/products" class="rentals-btn rentals-btn--secondary">เลือกดูชุดเช่า</a>
+                                <% } %>
+                            </div>
+                        <% } %>
+                    </section>
+                <% }) %>
+            </section>
+        </main>
 
-                    <!-- 🔸 รอจัดส่ง -->
-                    <div id="waiting_deliver" class="tab-content" style="display:none">
-                        <% const deliverOrders=waiting_deliver || []; %>
-                            <% if (deliverOrders.length> 0) { %>
-                                <% deliverOrders.forEach(order=> { %>
-                                    <div class="order-card">
-                                        <h3>คำสั่งซื้อ: <%= order.order_code %>
-                                        </h3>
-                                        <p>วันที่สั่ง: <%= new Date(order.created_at).toLocaleDateString("th-TH") %>
-                                        </p>
-                                        <p class="status">สถานะ: รอจัดส่ง</p>
+        <%- include('includes/footer') %>
+        <%- include('includes/chatWidget') %>
+        <script src="/js/script.js"></script>
 
-                                        <% order.Rentals.forEach(rental=> { %>
-                                            <div class="rental-card">
-                                                <img src="<%= rental.product?.images?.[0]?.image_url || '/images/no-image.png' %>"
-                                                    alt="">
-                                                <div class="rental-info">
-                                                    <h4>
-                                                        <%= rental.product?.product_name %>
-                                                    </h4>
-                                                    <p>วันที่เช่า: <%= new
-                                                            Date(rental.rental_date).toLocaleDateString("th-TH") %>
-                                                    </p>
-                                                    <p>วันที่คืน: <%= new
-                                                            Date(rental.rental_end_date).toLocaleDateString("th-TH") %>
-                                                    </p>
-                                                </div>
-                                            </div>
-                                            <% }) %>
+        <script>
+            (() => {
+                const tabs = Array.from(document.querySelectorAll('[role="tab"][data-tab]'));
+                const panels = Array.from(document.querySelectorAll('[role="tabpanel"]'));
 
-                                                <div class="order-footer">
-                                                    <a href="/api/Detail_Ren?order_id=<%= order.order_id %>"
-                                                        class="btn">ดูรายละเอียด</a>
-                                                </div>
-                                    </div>
-                                    <% }) %>
-                                        <% } else { %>
-                                            <div class="empty-state">
-                                                <p>ยังไม่มีรายการรอจัดส่ง</p>
-                                            </div>
-                                            <% } %>
-                    </div>
+                function activateTab(tab, { updateHash = true, focus = false } = {}) {
+                    const tabId = tab.dataset.tab;
 
-                    <!-- 🔸 กำลังจัดส่ง -->
-                    <div id="waiting_receive" class="tab-content" style="display:none">
-                        <% const receiveOrders=waiting_receive || []; %>
-                            <% if (receiveOrders.length> 0) { %>
-                                <% receiveOrders.forEach(order=> { %>
-                                    <div class="order-card">
-                                        <h3>คำสั่งซื้อ: <%= order.order_code %>
-                                        </h3>
-                                        <p>วันที่สั่ง: <%= new Date(order.created_at).toLocaleDateString("th-TH") %>
-                                        </p>
-                                        <p class="status">สถานะ: กำลังจัดส่ง</p>
-
-                                        <% order.Rentals.forEach(rental=> { %>
-                                            <div class="rental-card">
-                                                <img src="<%= rental.product?.images?.[0]?.image_url || '/images/no-image.png' %>"
-                                                    alt="">
-                                                <div class="rental-info">
-                                                    <h4>
-                                                        <%= rental.product?.product_name %>
-                                                    </h4>
-                                                    <p>วันที่เช่า: <%= new
-                                                            Date(rental.rental_date).toLocaleDateString("th-TH") %>
-                                                    </p>
-                                                    <p>วันที่คืน: <%= new
-                                                            Date(rental.rental_end_date).toLocaleDateString("th-TH") %>
-                                                    </p>
-                                                </div>
-                                            </div>
-                                            <% }) %>
-
-                                                <div class="order-footer">
-                                                    <a href="/api/Detail_Ren?order_id=<%= order.order_id %>"
-                                                        class="btn">ดูรายละเอียด</a>
-                                                </div>
-                                    </div>
-                                    <% }) %>
-                                        <% } else { %>
-                                            <div class="empty-state">
-                                                <p>ยังไม่มีรายการกำลังจัดส่ง</p>
-                                            </div>
-                                            <% } %>
-                    </div>
-
-
-                    <!-- 🔸 กำลังเช่า -->
-                    <div id="renting" class="tab-content" style="display:none">
-                        <% const rentingOrders=renting || []; %>
-                            <% if (rentingOrders.length> 0) { %>
-                                <% rentingOrders.forEach(order=> { %>
-                                    <div class="order-card">
-                                        <h3>คำสั่งซื้อ: <%= order.order_code %>
-                                        </h3>
-                                        <p>วันที่สั่ง: <%= new Date(order.created_at).toLocaleDateString("th-TH") %>
-                                        </p>
-                                        <p class="status">สถานะ: กำลังเช่า</p>
-
-                                        <% order.Rentals.forEach(rental=> { %>
-                                            <div class="rental-card">
-                                                <img src="<%= rental.product?.images?.[0]?.image_url || '/images/no-image.png' %>"
-                                                    alt="">
-                                                <div class="rental-info">
-                                                    <h4>
-                                                        <%= rental.product?.product_name %>
-                                                    </h4>
-                                                    <p>วันที่เช่า: <%= new
-                                                            Date(rental.rental_date).toLocaleDateString("th-TH") %>
-                                                    </p>
-                                                    <p>วันที่คืน: <%= new
-                                                            Date(rental.rental_end_date).toLocaleDateString("th-TH") %>
-                                                    </p>
-                                                </div>
-                                            </div>
-                                            <% }) %>
-
-                                                <div class="order-footer">
-                                                    <a href="/api/Detail_Ren?order_id=<%= order.order_id %>"
-                                                        class="btn">ดูรายละเอียด</a>
-                                                </div>
-                                    </div>
-                                    <% }) %>
-                                        <% } else { %>
-                                            <div class="empty-state">
-                                                <p>ยังไม่มีรายการกำลังเช่า</p>
-                                            </div>
-                                            <% } %>
-                    </div>
-
-                    <!-- 🔸 กำลังส่งคืน -->
-                    <div id="returning" class="tab-content" style="display:none">
-                        <% const returningOrders=returning || []; %>
-                            <% if (returningOrders.length> 0) { %>
-                                <% returningOrders.forEach(order=> { %>
-                                    <div class="order-card">
-                                        <h3>คำสั่งซื้อ: <%= order.order_code %>
-                                        </h3>
-                                        <p>วันที่สั่ง: <%= new Date(order.created_at).toLocaleDateString("th-TH") %>
-                                        </p>
-                                        <p class="status">สถานะ: กำลังส่งคืน 📦</p>
-
-                                        <% order.Rentals.forEach(rental=> { %>
-                                            <div class="rental-card">
-                                                <img src="<%= rental.product?.images?.[0]?.image_url || '/images/no-image.png' %>"
-                                                    alt="">
-                                                <div class="rental-info">
-                                                    <h4>
-                                                        <%= rental.product?.product_name %>
-                                                    </h4>
-                                                    <p>วันที่เช่า: <%= new
-                                                            Date(rental.rental_date).toLocaleDateString("th-TH") %>
-                                                    </p>
-                                                    <p>วันที่คืน: <%= new
-                                                            Date(rental.rental_end_date).toLocaleDateString("th-TH") %>
-                                                    </p>
-
-                                                </div>
-                                            </div>
-                                            <% }) %>
-
-                                                <div class="order-footer">
-                                                    <a href="/api/Detail_Ren?order_id=<%= order.order_id %>"
-                                                        class="btn">ดูรายละเอียด</a>
-                                                </div>
-                                    </div>
-                                    <% }) %>
-                                        <% } else { %>
-                                            <div class="empty-state">
-                                                <p>ยังไม่มีรายการกำลังส่งคืน</p>
-                                            </div>
-                                            <% } %>
-                    </div>
-
-
-                    <!-- 🔸 คืนแล้ว -->
-                    <div id="returned" class="tab-content" style="display:none">
-                        <% const returnedOrders=returned || []; %>
-                            <% if (returnedOrders.length> 0) { %>
-                                <% returnedOrders.forEach(order=> { %>
-                                    <div class="order-card">
-                                        <h3>คำสั่งซื้อ: <%= order.order_code %>
-                                        </h3>
-                                        <p>วันที่สั่ง: <%= new Date(order.created_at).toLocaleDateString("th-TH") %>
-                                        </p>
-                                        <p class="status">สถานะ: คืนแล้ว ✅</p>
-
-                                        <% order.Rentals.forEach(rental=> { %>
-                                            <div class="rental-card">
-                                                <img src="<%= rental.product?.images?.[0]?.image_url || '/images/no-image.png' %>"
-                                                    alt="">
-                                                <div class="rental-info">
-                                                    <h4>
-                                                        <%= rental.product?.product_name %>
-                                                    </h4>
-                                                    <p>วันที่เช่า: <%= new
-                                                            Date(rental.rental_date).toLocaleDateString("th-TH") %>
-                                                    </p>
-                                                    <p>วันที่คืน: <%= new
-                                                            Date(rental.rental_end_date).toLocaleDateString("th-TH") %>
-                                                    </p>
-                                                </div>
-                                            </div>
-                                            <% }) %>
-
-                                                <div class="order-footer">
-                                                    <a href="/api/Detail_Ren?order_id=<%= order.order_id %>"
-                                                        class="btn">ดูรายละเอียด</a>
-                                                </div>
-                                    </div>
-                                    <% }) %>
-                                        <% } else { %>
-                                            <div class="empty-state">
-                                                <p>ยังไม่มีรายการคืนแล้ว</p>
-                                            </div>
-                                            <% } %>
-                    </div>
-
-                    <!-- 🔸 ยกเลิก / มีปัญหา -->
-                    <div id="cancelled" class="tab-content" style="display:none">
-                        <% const cancelOrders=cancelled || []; %>
-                            <% if (cancelOrders.length> 0) { %>
-                                <% cancelOrders.forEach(order=> { %>
-                                    <div class="order-card problem">
-                                        <h3>คำสั่งซื้อ: <%= order.order_code %>
-                                        </h3>
-                                        <p>วันที่สั่ง: <%= new Date(order.created_at).toLocaleDateString("th-TH") %>
-                                        </p>
-                                        <p class="status">สถานะ: ยกเลิก / มีปัญหา ❌</p>
-
-                                        <% order.Rentals.forEach(rental=> { %>
-                                            <div class="rental-card">
-                                                <img src="<%= rental.product?.images?.[0]?.image_url || '/images/no-image.png' %>"
-                                                    alt="">
-                                                <div class="rental-info">
-                                                    <h4>
-                                                        <%= rental.product?.product_name %>
-                                                    </h4>
-                                                    <p>วันที่เช่า: <%= new
-                                                            Date(rental.rental_date).toLocaleDateString("th-TH") %>
-                                                    </p>
-                                                    <p>วันที่คืน: <%= new
-                                                            Date(rental.rental_end_date).toLocaleDateString("th-TH") %>
-                                                    </p>
-                                                </div>
-                                            </div>
-                                            <% }) %>
-
-                                                <div class="order-footer">
-                                                    <a href="/api   /Detail_Ren?order_id=<%= order.order_id %>"
-                                                        class="btn">ดูรายละเอียด</a>
-                                                </div>
-                                    </div>
-                                    <% }) %>
-                                        <% } else { %>
-                                            <div class="empty-state">
-                                                <p>ยังไม่มีรายการยกเลิกหรือมีปัญหา</p>
-                                            </div>
-                                            <% } %>
-                    </div>
-                </section>
-            </main>
-
-            <%- include('includes/footer') %>
-            <%- include('includes/chatWidget') %>
-            
-                <script src="/js/script.js"></script>
-            
-
-                <script>
-                    function openTab(event, tabId, el) {
-                        event.preventDefault();
-                        document.querySelectorAll('.tab-content').forEach(div => div.style.display = 'none');
-                        document.querySelectorAll('.tabs a').forEach(a => a.classList.remove('active'));
-                        document.getElementById(tabId).style.display = 'block';
-                        el.classList.add('active');
-                    }
-                </script>
-
-
-                <script>
-                    document.querySelectorAll(".countdown").forEach(span => {
-                        const startTime = Number(span.dataset.time);
-                        function update() {
-                            const remain = 30 * 60 * 1000 - (Date.now() - startTime);
-                            if (remain <= 0) { span.textContent = "หมดเวลาแล้ว"; return; }
-                            const min = Math.floor(remain / 60000);
-                            const sec = Math.floor((remain % 60000) / 1000);
-                            span.textContent = `${min}:${sec.toString().padStart(2, '0')} นาที`;
-                            requestAnimationFrame(update);
-                        }
-                        update();
+                    tabs.forEach(item => {
+                        const isActive = item === tab;
+                        item.classList.toggle('is-active', isActive);
+                        item.setAttribute('aria-selected', String(isActive));
+                        item.tabIndex = isActive ? 0 : -1;
                     });
-                </script>
-    </body>
 
-    </html>
+                    panels.forEach(panel => {
+                        panel.hidden = panel.id !== `panel-${tabId}`;
+                    });
+
+                    if (updateHash) history.replaceState(null, '', `#${tabId}`);
+                    if (focus) tab.focus();
+                }
+
+                tabs.forEach((tab, index) => {
+                    tab.addEventListener('click', () => activateTab(tab));
+                    tab.addEventListener('keydown', event => {
+                        const keyMap = {
+                            ArrowRight: (index + 1) % tabs.length,
+                            ArrowLeft: (index - 1 + tabs.length) % tabs.length,
+                            Home: 0,
+                            End: tabs.length - 1,
+                        };
+
+                        if (keyMap[event.key] === undefined) return;
+                        event.preventDefault();
+                        activateTab(tabs[keyMap[event.key]], { focus: true });
+                    });
+                });
+
+                const requestedTab = window.location.hash.replace('#', '');
+                const initialTab = tabs.find(tab => tab.dataset.tab === requestedTab) || tabs[0];
+                if (initialTab) activateTab(initialTab, { updateHash: false });
+
+                const countdowns = Array.from(document.querySelectorAll('.countdown'));
+                const timers = new Map();
+
+                function expirePayment(startTime) {
+                    document.querySelectorAll(`[data-time="${startTime}"]`).forEach(countdown => {
+                        countdown.textContent = 'หมดเวลาแล้ว';
+                        const paymentLink = countdown.closest('[data-payment-link], .priority-bar')?.querySelector('a[href^="/payment"]') || countdown.closest('a[href^="/payment"]');
+                        if (!paymentLink) return;
+                        paymentLink.removeAttribute('href');
+                        paymentLink.setAttribute('aria-disabled', 'true');
+                        paymentLink.classList.add('is-disabled');
+                        const label = paymentLink.querySelector('.payment-link__label');
+                        if (label) label.textContent = 'รายการหมดอายุ';
+                    });
+                }
+
+                function updateCountdown(startTime) {
+                    const remaining = (30 * 60 * 1000) - (Date.now() - startTime);
+                    if (remaining <= 0) {
+                        expirePayment(startTime);
+                        clearInterval(timers.get(startTime));
+                        return;
+                    }
+
+                    const minutes = Math.floor(remaining / 60000);
+                    const seconds = Math.floor((remaining % 60000) / 1000);
+                    document.querySelectorAll(`[data-time="${startTime}"]`).forEach(countdown => {
+                        countdown.textContent = `${minutes}:${String(seconds).padStart(2, '0')} นาที`;
+                    });
+                }
+
+                [...new Set(countdowns.map(item => Number(item.dataset.time)))].forEach(startTime => {
+                    if (!Number.isFinite(startTime)) return;
+                    updateCountdown(startTime);
+                    timers.set(startTime, setInterval(() => updateCountdown(startTime), 1000));
+                });
+            })();
+        </script>
+    </body>
+</html>

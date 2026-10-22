@@ -7,8 +7,10 @@
     <%- include('includes/nav') %>
 
       <main>
-        <section class="index product1">
-          <h2>ชุดที่ถูกใจ</h2>
+        <section class="index product1 favorites-page">
+          <div class="favorites-heading">
+            <h2>ชุดที่ถูกใจ <span>(<%= favorites ? favorites.length : 0 %> รายการ)</span></h2>
+          </div>
 
           <!-- 🧺 container สำหรับสินค้าที่โหลดจาก API -->
           <div class="pro-container">
@@ -18,7 +20,10 @@
 
                   <% }) %>
                     <% } else { %>
-                      <p style="text-align:center;">ยังไม่มีสินค้าที่ถูกใจ</p>
+                      <div class="wishlist-empty">
+                        <p>คุณยังไม่ได้บันทึกชุดที่ถูกใจไว้ในรายการ ลองเลือกดูสินค้าแล้วกดหัวใจเพื่อเก็บชุดโปรดไว้เช่าครั้งหน้า</p>
+                        <a href="/products">เริ่มเลือกชุด</a>
+                      </div>
                       <% } %>
           </div>
         </section>

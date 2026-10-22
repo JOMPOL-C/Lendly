@@ -1,17 +1,52 @@
-const prisma = require('../../prisma/prisma');
+const crypto = require("crypto");
+const prisma = require("../../prisma/prisma");
+
+async function generateCategoryId() {
+    let categoryId = "";
+    let exists = true;
+
+    while (exists) {
+        categoryId = `CAT${crypto.randomBytes(4).toString("hex").slice(0, 6).toUpperCase()}`;
+        exists = await prisma.category.findUnique({
+            where: { category_id: categoryId },
+        });
+    }
+
+    return categoryId;
+}
 
 //สร้างหมวดหมู่
 exports.createCategory = async (req, res) => {
     try {
-        const { category_name, category_id } = req.body
+        const category_name = req.body.category_name?.trim();
+
+        if (!category_name) {
+            return res.status(400).json({ message: "กรุณาระบุชื่อหมวดหมู่" });
+        }
+
+        const existingCategory = await prisma.category.findFirst({
+            where: { category_name },
+        });
+
+        if (existingCategory) {
+            return res.status(409).json({
+                message: "มีหมวดหมู่นี้อยู่แล้ว",
+                category: existingCategory,
+            });
+        }
+
+        const category_id = await generateCategoryId();
         const newCategory = await prisma.category.create({
             data: {
-                category_id: category_id,
-                category_name: category_name,
+                category_id,
+                category_name,
             },
         });
 
-        res.json(newCategory);
+        res.status(201).json({
+            message: "สร้างหมวดหมู่สำเร็จ",
+            category: newCategory,
+        });
     } catch(err) {
         console.log(err);
         res.status(500).json({ message: 'สร้างหมวดหมู่ล้มเหลว' });
@@ -49,4 +84,3 @@ exports.getCategoryWithProducts = async (req, res) => {
         res.status(500).send('Server Error');
     }
 };
-

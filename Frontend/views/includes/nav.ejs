@@ -2,7 +2,7 @@
   <a href="/"><img src="/imag/LENDLY_logo.png" alt="" style="width: 50px;"></a>
 
   <!-- 🔍 ฟอร์มค้นหาสินค้า -->
-  <form action="/category" method="get" class="input-field">
+  <form action="/products" method="get" class="input-field">
     <i class='bx bx-search'></i>
     <input type="text" name="search" placeholder="ค้นหาสินค้า..." value="<%= typeof searchTerm !== 'undefined' ? searchTerm : '' %>">
 
@@ -10,10 +10,10 @@
 
   <div>
     <ul id="navbar">
-      <li><a href="/">หน้าหลัก</a></li>
-      <li><a href="/category" class="active">หมวดหมู่</a></li>
-      <li><a href="/my_rentals">เช่าของฉัน</a></li>
-      <li><a href="/all_review">รีวิวทั้งหมด</a></li>
+      <li><a href="/" class="<%= typeof currentPath !== 'undefined' && currentPath === '/' ? 'active' : '' %>" <%- typeof currentPath !== 'undefined' && currentPath === '/' ? 'aria-current="page"' : '' %>>หน้าหลัก</a></li>
+      <li><a href="/products" class="<%= typeof currentPath !== 'undefined' && currentPath === '/products' ? 'active' : '' %>" <%- typeof currentPath !== 'undefined' && currentPath === '/products' ? 'aria-current="page"' : '' %>>สินค้าทั้งหมด</a></li>
+      <li><a href="/my_rentals" class="<%= typeof currentPath !== 'undefined' && currentPath === '/my_rentals' ? 'active' : '' %>" <%- typeof currentPath !== 'undefined' && currentPath === '/my_rentals' ? 'aria-current="page"' : '' %>>เช่าของฉัน</a></li>
+      <li><a href="/all_review" class="<%= typeof currentPath !== 'undefined' && currentPath === '/all_review' ? 'active' : '' %>" <%- typeof currentPath !== 'undefined' && currentPath === '/all_review' ? 'aria-current="page"' : '' %>>รีวิวทั้งหมด</a></li>
       <li id="lg-fav"><a href="/favorites" class="nav-fav-link"><i class="bx bx-heart"></i></a></li>
       <li id="lg-bag"><a href="/cart"><i class='bx bx-cart'></i></a></li>
 
@@ -31,6 +31,9 @@
             <li><a href="/login">เข้าสู่ระบบ</a></li>
             <li><a href="/register">สมัครบัญชี</a></li>
             <% } else { %>
+              <% if (user.role === "ADMIN") { %>
+                <li><a href="/admin/dashboard">หน้าผู้ดูแลระบบ</a></li>
+              <% } %>
               <li><a href="/profile">จัดการโปรไฟล์</a></li>
               <li><a href="/api/auth/logout">ออกจากระบบ</a></li>
               <% } %>

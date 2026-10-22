@@ -3,9 +3,11 @@ const router = express.Router();
 const adminController = require('../Controllers/adminController');
 const { requireAdmin } = require("../middlewares/roleMiddleware");
 
+router.use('/admin', requireAdmin);
+
 // ✅ ผู้ใช้ทั้งหมด
 router
-    .get('/admin/customers', requireAdmin, adminController.getAllCustomers);
+    .get('/admin/customers', adminController.getAllCustomers);
 
 
 // ✅ ยืนยันการเช่า

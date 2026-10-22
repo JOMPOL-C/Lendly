@@ -4,42 +4,82 @@
 
 <body>
   <%- include('includes/nav') %>
+  <% const cartItems = cart?.items || []; %>
+  <% const itemCount = cartItems.length; %>
+  <% const formatCartDate = (date) => date ? new Date(date).toISOString().split('T')[0] : '-'; %>
   <main>
-    <section class="index">
-      <h2>ตะกร้าสินค้า</h2>
-      <div id="cart">
-        <% if (cart && cart.items.length > 0) { %>
-          <form id="rentalForm">
-            <div style="display:flex; align-items:center; gap:10px; margin-bottom:15px;">
-              <input type="checkbox" id="selectAll" />
-              <label for="selectAll" style="font-weight:600;">เลือกสินค้าทั้งหมด</label>
+    <section class="index product1 cart-page">
+      <div class="cart-heading">
+        <h2>ตะกร้าสินค้า <span>(<%= itemCount %> รายการ)</span></h2>
+      </div>
+
+      <% if (itemCount > 0) { %>
+        <div class="cart-shell">
+          <form id="rentalForm" class="cart-form">
+            <div class="cart-toolbar">
+              <label class="cart-select-all" for="selectAll">
+                <input type="checkbox" id="selectAll" />
+                <span>เลือกสินค้าทั้งหมด</span>
+              </label>
+              <p>เลือกชุดที่ต้องการเช่า แล้วไปต่อที่หน้าชำระเงินได้ทันที</p>
             </div>
 
-            <% cart.items.forEach(item => { %>
-              <div class="rental-card">
-                <input type="checkbox" name="selected" value="<%= item.cartItem_id %>" />
-                <img src="<%= item.product.images[0]?.image_url %>" alt="Product Image"
-                     style="width:150px; border-radius:10px;">
-                <div class="rental-info">
-                  <a href="/api/products/<%= item.product.product_id %>"><%= item.product.product_name %></a>
-                  <p>ราคาค่าเช่า: <%= item.displayPrice %></p>
-                  <p>วันที่เช่า: <%= item.startDate ? item.startDate.toISOString().split('T')[0] : '-' %></p>
-                  <p>วันที่คืน: <%= item.endDate ? item.endDate.toISOString().split('T')[0] : '-' %></p>
-                </div>
-                <button type="button" class="remove-btn" data-id="<%= item.cartItem_id %>">
-                  <i class='bx bx-trash'></i>
-                </button>
-              </div>
-            <% }) %>
+            <div class="cart-list">
+              <% cartItems.forEach(item => { %>
+                <article class="cart-card">
+                  <label class="cart-check" aria-label="เลือก <%= item.product.product_name %>">
+                    <input type="checkbox" name="selected" value="<%= item.cartItem_id %>" />
+                  </label>
+
+                  <a href="/api/products/<%= item.product.product_id %>" class="cart-media">
+                    <img src="<%= item.product.images[0]?.image_url || '/images/no-image.png' %>" alt="<%= item.product.product_name %>">
+                  </a>
+
+                  <div class="cart-copy">
+                    <div class="cart-copy-top">
+                      <a href="/api/products/<%= item.product.product_id %>" class="cart-product-link"><%= item.product.product_name %></a>
+                      <p class="cart-price">ราคาเช่า <strong><%= item.displayPrice %></strong></p>
+                    </div>
+
+                    <div class="cart-meta">
+                      <div>
+                        <span>วันที่เช่า</span>
+                        <strong><%= formatCartDate(item.startDate) %></strong>
+                      </div>
+                      <div>
+                        <span>วันที่คืน</span>
+                        <strong><%= formatCartDate(item.endDate) %></strong>
+                      </div>
+                      <div>
+                        <span>รูปแบบ</span>
+                        <strong><%= item.mode === "test" ? "เทส" : "ไพร" %></strong>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="cart-item-actions">
+                    <span class="cart-mode-badge"><%= item.mode === "test" ? "โหมดเทส" : "โหมดไพร" %></span>
+                    <button type="button" class="remove-btn" data-id="<%= item.cartItem_id %>" aria-label="ลบ <%= item.product.product_name %> ออกจากตะกร้า">
+                      <i class='bx bx-trash'></i>
+                    </button>
+                  </div>
+                </article>
+              <% }) %>
+            </div>
 
             <div class="cart-actions">
               <button type="button" id="rentSelectedBtn" class="btn-rent">เช่าสินค้าที่เลือก</button>
             </div>
           </form>
-        <% } else { %>
-          <p>ไม่มีสินค้าในตะกร้า</p>
-        <% } %>
-      </div>
+        </div>
+      <% } else { %>
+        <div class="pro-container">
+          <div class="wishlist-empty cart-empty">
+            <p>คุณยังไม่ได้เพิ่มสินค้าไว้ในตะกร้า ลองเลือกดูสินค้าที่ต้องการ แล้วเพิ่มลงตะกร้าเพื่อดำเนินการเช่าต่อได้เลย</p>
+            <a href="/products">เริ่มเลือกชุด</a>
+          </div>
+        </div>
+      <% } %>
     </section>
   </main>
 
@@ -79,7 +119,7 @@
         if (!res.ok) {
           showTooltip(data.message || "กรุณาแก้ไขโปรไฟล์ก่อนเช่าสินค้า", "warning");
           if (data.message?.includes("โปรไฟล์ของคุณยังไม่สมบูรณ์")) {
-            setTimeout(() => window.location.href);
+            setTimeout(() => window.location.href = "/profile", 1200);
           }
           return;
         }

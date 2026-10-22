@@ -10,6 +10,49 @@ function toggleField(checkboxId, fieldId) {
   });
 }
 
+function ensurePopupElements() {
+  let overlay = document.getElementById("formPopupOverlay");
+  if (overlay) return overlay;
+
+  overlay = document.createElement("div");
+  overlay.id = "formPopupOverlay";
+  overlay.className = "form-popup-overlay hidden";
+  overlay.innerHTML = `
+    <div class="form-popup" role="alertdialog" aria-modal="true" aria-labelledby="formPopupTitle">
+      <div class="form-popup-icon">!</div>
+      <h3 id="formPopupTitle">เกิดข้อผิดพลาด</h3>
+      <p id="formPopupMessage"></p>
+      <button type="button" id="formPopupClose">ปิด</button>
+    </div>
+  `;
+
+  document.body.appendChild(overlay);
+
+  const closeButton = document.getElementById("formPopupClose");
+  closeButton?.addEventListener("click", () => {
+    overlay.classList.add("hidden");
+  });
+
+  overlay.addEventListener("click", (event) => {
+    if (event.target === overlay) {
+      overlay.classList.add("hidden");
+    }
+  });
+
+  return overlay;
+}
+
+function showFormPopup(message, title = "เกิดข้อผิดพลาด") {
+  const overlay = ensurePopupElements();
+  const titleElement = document.getElementById("formPopupTitle");
+  const messageElement = document.getElementById("formPopupMessage");
+
+  if (titleElement) titleElement.textContent = title;
+  if (messageElement) messageElement.textContent = message;
+
+  overlay.classList.remove("hidden");
+}
+
 // mapping ของให้เช่า
 toggleField("rentCostume", "priceCostume");
 toggleField("rentWig", "priceWig");
@@ -21,8 +64,14 @@ toggleField("rentShoe", "priceAddonShoe");
 const rentCostume = document.getElementById("rentCostume");
 const rentWig = document.getElementById("rentWig");
 const priceSuitWigField = document.getElementById("priceSuitWig");
+const sizeUnitSelect = document.getElementById("sizeUnit");
+const measurementInputs = Array.from(
+  document.querySelectorAll("[data-measurement-input]")
+);
 
 function updateSuitWigVisibility() {
+  if (!rentCostume || !rentWig || !priceSuitWigField) return;
+
   if (rentCostume.checked && rentWig.checked) {
     priceSuitWigField.classList.remove("hidden");
   } else {
@@ -34,8 +83,41 @@ function updateSuitWigVisibility() {
 updateSuitWigVisibility();
 
 // ฟังการเปลี่ยนค่าทั้งสองช่อง
-rentCostume.addEventListener("change", updateSuitWigVisibility);
-rentWig.addEventListener("change", updateSuitWigVisibility);
+if (rentCostume) {
+  rentCostume.addEventListener("change", updateSuitWigVisibility);
+}
+
+if (rentWig) {
+  rentWig.addEventListener("change", updateSuitWigVisibility);
+}
+
+if (sizeUnitSelect && measurementInputs.length > 0) {
+  sizeUnitSelect.addEventListener("change", () => {
+    const previousUnit = sizeUnitSelect.dataset.currentUnit || "cm";
+    const nextUnit = sizeUnitSelect.value;
+
+    if (previousUnit === nextUnit) return;
+
+    measurementInputs.forEach((input) => {
+      const rawValue = input.value.trim();
+      if (!rawValue) return;
+
+      const numericValue = parseFloat(rawValue);
+      if (Number.isNaN(numericValue)) return;
+
+      const convertedValue =
+        previousUnit === "cm" && nextUnit === "in"
+          ? numericValue / 2.54
+          : previousUnit === "in" && nextUnit === "cm"
+            ? numericValue * 2.54
+            : numericValue;
+
+      input.value = Number(convertedValue.toFixed(1));
+    });
+
+    sizeUnitSelect.dataset.currentUnit = nextUnit;
+  });
+}
 
 
 // จำนวนวัน Test / Pri
@@ -56,12 +138,49 @@ if (pryCheckbox && pryExtraField) {
 // Preview รูป
 const input = document.getElementById("product_images");
 const previewContainer = document.getElementById("preview-container");
+const uploadDropzone = document.getElementById("uploadDropzone");
+const uploadFileCount = document.getElementById("uploadFileCount");
+const uploadStatus = document.getElementById("uploadStatus");
+const MAX_UPLOAD_FILES = 5;
 
 if (input && previewContainer) {
-  input.addEventListener("change", () => {
+  let selectedFiles = [];
+
+  const setUploadStatus = (message = "", type = "info") => {
+    if (!uploadStatus) return;
+
+    if (!message) {
+      uploadStatus.textContent = "";
+      uploadStatus.classList.add("hidden");
+      uploadStatus.classList.remove("is-info", "is-error");
+      return;
+    }
+
+    uploadStatus.textContent = message;
+    uploadStatus.classList.remove("hidden", "is-info", "is-error");
+    uploadStatus.classList.add(`is-${type}`);
+  };
+
+  const syncInputFiles = () => {
+    const dt = new DataTransfer();
+    selectedFiles.forEach((file) => dt.items.add(file));
+    input.files = dt.files;
+  };
+
+  const updateUploadMeta = () => {
+    const totalFiles = selectedFiles.length;
+
+    if (!uploadFileCount) return;
+
+    uploadFileCount.textContent = totalFiles
+      ? `เลือกรูปแล้ว ${totalFiles}/${MAX_UPLOAD_FILES} ไฟล์`
+      : "ยังไม่ได้เลือกรูป";
+  };
+
+  const renderPreview = () => {
     previewContainer.innerHTML = "";
 
-    Array.from(input.files).forEach((file, index) => {
+    selectedFiles.forEach((file, index) => {
       const reader = new FileReader();
       reader.onload = (e) => {
         const div = document.createElement("div");
@@ -78,13 +197,228 @@ if (input && previewContainer) {
       };
       reader.readAsDataURL(file);
     });
-  });
+    updateUploadMeta();
+  };
 
   function removeFile(removeIndex) {
-    const dt = new DataTransfer();
-    Array.from(input.files).forEach((file, idx) => {
-      if (idx !== removeIndex) dt.items.add(file);
-    });
-    input.files = dt.files;
+    selectedFiles = selectedFiles.filter((_, idx) => idx !== removeIndex);
+    syncInputFiles();
+    if (selectedFiles.length < MAX_UPLOAD_FILES) {
+      setUploadStatus("");
+    }
+    renderPreview();
   }
+
+  const appendFiles = (incomingFiles) => {
+    const imageFiles = Array.from(incomingFiles).filter((file) =>
+      file.type.startsWith("image/")
+    );
+
+    if (!imageFiles.length) {
+      setUploadStatus("กรุณาเลือกรูปภาพเท่านั้น", "error");
+      return;
+    }
+
+    const availableSlots = MAX_UPLOAD_FILES - selectedFiles.length;
+
+    if (availableSlots <= 0) {
+      setUploadStatus(`อัปโหลดได้สูงสุด ${MAX_UPLOAD_FILES} รูป`, "error");
+      return;
+    }
+
+    const filesToAdd = imageFiles.slice(0, availableSlots);
+    selectedFiles = [...selectedFiles, ...filesToAdd];
+    syncInputFiles();
+    renderPreview();
+
+    if (imageFiles.length > availableSlots) {
+      setUploadStatus(`เพิ่มได้สูงสุด ${MAX_UPLOAD_FILES} รูป ระบบเลือกให้เท่าที่ว่าง`, "error");
+      return;
+    }
+
+    if (selectedFiles.length === MAX_UPLOAD_FILES) {
+      setUploadStatus(`ครบ ${MAX_UPLOAD_FILES} รูปแล้ว สามารถลบรูปเดิมก่อนเพิ่มใหม่ได้`, "info");
+      return;
+    }
+
+    setUploadStatus("");
+  };
+
+  input.addEventListener("change", () => {
+    appendFiles(input.files);
+  });
+
+  if (uploadDropzone) {
+    ["dragenter", "dragover"].forEach((eventName) => {
+      uploadDropzone.addEventListener(eventName, (event) => {
+        event.preventDefault();
+        uploadDropzone.classList.add("is-dragover");
+      });
+    });
+
+    ["dragleave", "dragend", "drop"].forEach((eventName) => {
+      uploadDropzone.addEventListener(eventName, (event) => {
+        event.preventDefault();
+        uploadDropzone.classList.remove("is-dragover");
+      });
+    });
+
+    uploadDropzone.addEventListener("drop", (event) => {
+      const droppedFiles = event.dataTransfer?.files;
+      if (!droppedFiles?.length) return;
+      appendFiles(droppedFiles);
+    });
+  }
+
+  updateUploadMeta();
+}
+
+const categorySelect = document.getElementById("categoryId");
+const toggleNewCategoryButton = document.getElementById("toggleNewCategory");
+const newCategoryBox = document.getElementById("newCategoryBox");
+const newCategoryInput = document.getElementById("newCategoryName");
+const addCategoryButton = document.getElementById("addCategoryButton");
+const categoryFeedback = document.getElementById("categoryFeedback");
+
+function setCategoryFeedback(message, type = "info") {
+  if (!categoryFeedback) return;
+
+  categoryFeedback.textContent = message;
+  categoryFeedback.classList.remove("hidden", "is-success", "is-error", "is-info");
+  categoryFeedback.classList.add(`is-${type}`);
+}
+
+function upsertCategoryOption(category) {
+  if (!categorySelect || !category?.category_id || !category?.category_name) return;
+
+  let option = Array.from(categorySelect.options).find(
+    (item) => item.value === category.category_id
+  );
+
+  if (!option) {
+    option = document.createElement("option");
+    option.value = category.category_id;
+    option.textContent = category.category_name;
+    categorySelect.appendChild(option);
+  } else {
+    option.textContent = category.category_name;
+  }
+
+  categorySelect.value = category.category_id;
+}
+
+async function createCategoryFromInput() {
+  const categoryName = newCategoryInput?.value.trim();
+
+  if (!categoryName) {
+    setCategoryFeedback("กรุณากรอกชื่อหมวดหมู่ก่อน", "error");
+    newCategoryInput?.focus();
+    return;
+  }
+
+  if (!addCategoryButton) return;
+
+  addCategoryButton.disabled = true;
+  addCategoryButton.textContent = "กำลังเพิ่ม...";
+
+  try {
+    const response = await fetch("/api/categories", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ category_name: categoryName }),
+    });
+
+    const payload = await response.json().catch(() => ({}));
+    const category = payload.category || payload;
+
+    if (!response.ok) {
+      if (response.status === 409 && category?.category_id) {
+        upsertCategoryOption(category);
+        setCategoryFeedback("มีหมวดหมู่นี้อยู่แล้ว ระบบเลือกให้เรียบร้อย", "info");
+        newCategoryInput.value = "";
+        return;
+      }
+
+      throw new Error(payload.message || "ไม่สามารถเพิ่มหมวดหมู่ได้");
+    }
+
+    upsertCategoryOption(category);
+    setCategoryFeedback("เพิ่มหมวดหมู่ใหม่สำเร็จ", "success");
+    newCategoryInput.value = "";
+  } catch (error) {
+    setCategoryFeedback(error.message || "เกิดข้อผิดพลาดในการเพิ่มหมวดหมู่", "error");
+  } finally {
+    addCategoryButton.disabled = false;
+    addCategoryButton.textContent = "เพิ่มหมวด";
+  }
+}
+
+if (toggleNewCategoryButton && newCategoryBox) {
+  toggleNewCategoryButton.addEventListener("click", () => {
+    const isHidden = newCategoryBox.classList.toggle("hidden");
+    toggleNewCategoryButton.textContent = isHidden
+      ? "ไม่มีหมวดหมู่ที่ต้องการ? เพิ่มหมวดใหม่"
+      : "ซ่อนฟอร์มเพิ่มหมวดหมู่";
+
+    if (!isHidden) {
+      setCategoryFeedback("พิมพ์ชื่อหมวดหมู่ใหม่แล้วกดเพิ่มหมวดได้เลย", "info");
+      newCategoryInput?.focus();
+    }
+  });
+}
+
+if (addCategoryButton) {
+  addCategoryButton.addEventListener("click", createCategoryFromInput);
+}
+
+if (newCategoryInput) {
+  newCategoryInput.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      createCategoryFromInput();
+    }
+  });
+}
+
+const productForm = document.querySelector(".product-form");
+const productFormSubmitButton = productForm?.querySelector(".submit-btn");
+
+if (productForm) {
+  productForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    const originalButtonText = productFormSubmitButton?.textContent;
+    if (productFormSubmitButton) {
+      productFormSubmitButton.disabled = true;
+      productFormSubmitButton.textContent = "กำลังบันทึก...";
+    }
+
+    try {
+      const response = await fetch(productForm.action, {
+        method: productForm.method || "POST",
+        body: new FormData(productForm),
+        credentials: "same-origin",
+      });
+
+      if (!response.ok) {
+        const errorText = (await response.text()).trim();
+        throw new Error(errorText || "ไม่สามารถบันทึกข้อมูลได้");
+      }
+
+      if (response.redirected && response.url) {
+        window.location.href = response.url;
+        return;
+      }
+
+      window.location.reload();
+    } catch (error) {
+      showFormPopup(error.message || "เกิดข้อผิดพลาดในการบันทึกข้อมูล");
+      if (productFormSubmitButton) {
+        productFormSubmitButton.disabled = false;
+        productFormSubmitButton.textContent = originalButtonText || "บันทึก";
+      }
+    }
+  });
 }

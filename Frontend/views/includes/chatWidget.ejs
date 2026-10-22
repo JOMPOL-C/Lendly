@@ -1,11 +1,18 @@
-<!-- 🔹 Floating Chat Widget -->
 <link rel="stylesheet" href="/styles/chatWidget.css">
 <div id="chat-widget">
-  <button id="chat-toggle">💬 แชทกับแอดมิน</button>
+  <button id="chat-toggle" aria-label="เปิดแชทกับแอดมิน">
+    <i class="bx bx-message-rounded-dots"></i>
+    <span>แชทกับแอดมิน</span>
+  </button>
   <div id="chat-box" class="hidden">
     <div id="chat-header">
-      <p>ฝ่ายบริการลูกค้า</p>
-      <span id="chat-close">&times;</span>
+      <div>
+        <span>Support</span>
+        <p>ฝ่ายบริการลูกค้า</p>
+      </div>
+      <button id="chat-close" type="button" aria-label="ปิดแชท">
+        <i class="bx bx-x"></i>
+      </button>
     </div>
     <div id="chat-messages"></div>
     <form id="chat-form">

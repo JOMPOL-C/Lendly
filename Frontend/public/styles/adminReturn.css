@@ -2,7 +2,7 @@
 /* โทนสีหลัก: ม่วงพาสเทล - เน้นความเรียบและมืออาชีพ */
 
 body {
-    font-family: 'Prompt', sans-serif;
+    font-family: var(--font-body);
     background-color: #faf7ff;
     color: #333;
     margin: 0;
