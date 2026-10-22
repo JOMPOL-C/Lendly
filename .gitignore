@@ -5,3 +5,5 @@ Backend/uploads/
 Backend/*.json
 
 .env
+.env.*
+!.env.example

@@ -47,6 +47,7 @@ cloudinary.config({
 // ============================
 app.use(cookieParser());
 app.use(cors());
+app.get('/healthz', (req, res) => res.status(200).json({ status: 'ok' }));
 app.use(morgan("dev"));
 app.use(express.static(path.join(__dirname, "../Frontend/public")));
 
@@ -200,6 +201,7 @@ cloudinary.api
 // ============================
 // 🧠 SERVER LISTEN
 // ============================
-app.listen(8000, () => {
-  console.log("🚀 Server is running on http://localhost:8000");
+const port = process.env.PORT || 8000;
+app.listen(port, '0.0.0.0', () => {
+  console.log(`🚀 Server is listening on port ${port}`);
 });

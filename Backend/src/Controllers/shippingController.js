@@ -38,16 +38,17 @@ async function getThaiPostToken() {
     if (thaiPostToken && now < thaiPostExpire) return thaiPostToken;
 
     console.log("🔑 ขอ token ใหม่จากไทยโพสต์...");
-    console.log("📡 ใช้ Header:", { Authorization: `Token ${process.env.TH_POST_API_KEY?.slice(0, 25)}...` });
 
     // ✅ ยิงขอ token จากไปรษณีย์ไทย
-    const res = await axios.post(
+    const res = await axios.get(
         'https://trackapi.thailandpost.co.th/post/api/v1/authenticate/token',
-        {},
-        { headers: { Authorization: `Token ${process.env.TH_POST_API_KEY}` } }
+        {
+            headers: { Authorization: `Token ${process.env.TH_POST_API_KEY}` },
+            timeout: 15000,
+        }
     );
 
-    console.log("✅ ได้ token:", res.data.token?.slice(0, 30) + "...");
+    if (!res.data.token) throw new Error('Thai Post did not return an access token');
 
     thaiPostToken = res.data.token;
     thaiPostExpire = now + 55 * 60 * 1000; // อายุ 55 นาที
@@ -584,5 +585,4 @@ exports.createReturnBox = async (req, res) => {
 };
 
 
-console.log("TH_POST_API_KEY:", process.env.TH_POST_API_KEY?.slice(0, 25) + "...");
 exports.getThaiPostToken = getThaiPostToken;
